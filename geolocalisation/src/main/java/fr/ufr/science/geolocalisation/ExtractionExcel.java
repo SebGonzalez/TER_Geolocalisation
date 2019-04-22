@@ -88,6 +88,12 @@ public class ExtractionExcel
 					Cell cell = row.getCell(c);
 					if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK)
 					{
+						if(i==tab[0])
+						{
+							//p.setNom(cell.toString());
+							 p.setNumClient(cell.toString());
+							 //System.out.println(cell.toString());
+						}
 						if(i==tab[1])
 						{
 							p.setNom(cell.toString());
@@ -109,7 +115,7 @@ public class ExtractionExcel
 
 				}
 			}
-			System.out.println(p.getNom()+ " " + p.getPays()+ " " + p.getPrenom()+ " " + p.getVille());
+			System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 
 
 		}

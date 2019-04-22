@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 public class Personne 
 {
-	private long numClient;
-	
+	private String numClient;
 	private String Nom;
 	private String Prenom;
 	
@@ -15,11 +14,11 @@ public class Personne
 	ArrayList<String> infoComplementaireNom;
 	ArrayList<String> infoComplementaire;
 
-	public long getNumClient() {
+	public String getNumClient() {
 		return numClient;
 	}
 
-	public void setNumClient(long numClient) {
+	public void setNumClient(String numClient) {
 		this.numClient = numClient;
 	}
 
