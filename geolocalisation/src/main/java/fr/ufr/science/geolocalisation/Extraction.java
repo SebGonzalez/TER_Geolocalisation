@@ -15,20 +15,15 @@ public class Extraction
 		BufferedReader br = new BufferedReader(fr);
 
 		int i;
-		int nbValeurs = 1;	//COMPTEUR NOMBRE DE COLONNES 
-		//int cpt = 0;
 
-		boolean prem = true;	//FLAG POUR LA PREMIERE CHAINE
-		boolean nonCop = true;	//FLAG NON COPIE EN DOUBLE DES COLONNE DU INSERT
+		boolean prem = true;	//FLAG POUR LA PREMIERE LIGNE
 
 		String line = br.readLine();	//INITIALISATION DE LECTURE FICHIER
 		String[] tabChaine;
 
 		int[] tab = new int[1000];
-		int cptTab = 0;
-		String infoColonne[] = new String[1000];
 
-		for(i=0;i<tab.length-1;i++)
+		for(i=0;i<tab.length-1;i++)	//INIT SECURITE
 		{
 			tab[i]=-1;
 		}
@@ -38,45 +33,31 @@ public class Extraction
 
 			Personne p = new Personne(); //CREATION NOUVELLE PERSONNE
 
-			tabChaine = line.split(",");	//SEPARATION STANDART EN CSV
-			//System.out.println(line);
+			tabChaine = line.split(",");	//SEPARATION STANDART EN CSV CONVERTIT DE XLSX
 			if(prem==true)	//PREMIERE LIGNE -> INISTIALISATION
 			{
 				for(i=0;i<tabChaine.length-1;i++)	//PREMIERE LIGNE DOIT FAIRE CREATE ICI
 				{
-					//System.out.println(tabChaine[i]);
 					if(tabChaine[i].compareTo("NUMCLI")==0)
-					//if(tabChaine[i]=="NUMCLI")
 					{
-						//System.out.println(tabChaine[i]);
 						//p.setNumClient(Long.parseLong(tabChaine[i]));	//CONVERSION NUMCLIENT EN LONG
 						tab[0]=i;
-						infoColonne[cptTab]="NUMCLI";
 					}
 					else if(tabChaine[i].compareTo("NOM")==0)
 					{	
-						//p.setNom(tabChaine[i]);
-						//System.out.println(tabChaine[i]);
 						tab[1]=i;
-						infoColonne[cptTab]="NOM";
 					}
 					else if(tabChaine[i].compareTo("PRENOM")==0)
 					{
-						//p.setPrenom(tabChaine[i]);
 						tab[2]=i;
-						infoColonne[cptTab]="PRENOM";
 					}
 					else if(tabChaine[i].compareTo("VILLE")==0)
 					{
-						//p.setVille(tabChaine[i]);
 						tab[3]=i;
-						infoColonne[cptTab]="VILLE";
 					}
 					else if(tabChaine[i].compareTo("PAYS")==0)
 					{
-						//p.setPays(tabChaine[i]);
 						tab[4]=i;
-						infoColonne[cptTab]="PAYS";
 					}
 					else
 					{
@@ -106,7 +87,6 @@ public class Extraction
 						}
 						else if(i==3)
 						{
-							//System.out.println(tab[i]);
 							p.setVille(tabChaine[tab[3]]);
 						}
 						else if(i==4)
@@ -118,29 +98,20 @@ public class Extraction
 
 					else
 					{
-						//if(tabChaine[i].compareTo("")!=0)
 						//p.infoComplementaire.add(tabChaine[i]);
 					}
 				}
 
 			}
 			line = br.readLine();
-			//if(br.readLine==null) {break;}
-			
-			
-		System.out.println(p.getNom()+ " " + p.getPays()+ " " + p.getPrenom()+ " " + p.getVille());
-			//System.out.println(p.getPays());
-		
+
+			System.out.println(p.getNom()+ " " + p.getPays()+ " " + p.getPrenom()+ " " + p.getVille());
+
 		}
 		br.close();
 		fr.close();
-		
-		
-
-
-		
 	}
-	
+
 	public static void main(String[] args) throws IOException
 	{
 		Extraction ec = new Extraction();

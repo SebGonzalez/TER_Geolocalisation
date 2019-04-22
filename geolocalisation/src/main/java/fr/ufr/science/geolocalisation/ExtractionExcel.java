@@ -27,7 +27,7 @@ public class ExtractionExcel
 		Iterator<Row> rowIt = sheet.iterator();	//ITERATION SUR COLONNES
 
 		int i;	//COMPTEUR POUR PLACEMENT DES INFORMATIONS
-		boolean prem = true;	//FLAG POUR LA PREMIERE CHAINE
+		boolean prem = true;	//FLAG POUR LA PREMIERE LIGNE
 
 		int[] tab = new int[1000];
 		for(i=0;i<tab.length-1;i++)	//INITIALISATION, SECURITE
