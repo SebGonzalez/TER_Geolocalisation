@@ -1,6 +1,7 @@
 package fr.ufr.science.geolocalisation;
 
 import java.io.File;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
@@ -54,5 +55,12 @@ public class MainWindow extends JFrame {
         this.setSize(800, 600);
         this.add(mapViewer);
         this.setVisible(true);
+        
+        String address = "The White House, Washington DC";
+        Map<String, Double> coords;
+        coords = OpenStreetMapUtils.getInstance().getCoordinates(address);
+        System.out.println("latitude :" + coords.get("lat"));
+        System.out.println("longitude:" + coords.get("lon"));
+        //System.out.println(c.toString());
 	}
 }
