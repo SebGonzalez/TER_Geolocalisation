@@ -1,5 +1,7 @@
 package fr.ufr.science.geolocalisation;
 
+import java.util.ArrayList;
+
 public class Personne 
 {
 	private long numClient;
@@ -10,7 +12,8 @@ public class Personne
 	private String ville;
 	private String pays;
 	
-	private String[][] infoComplementaire;
+	ArrayList<String> infoComplementaireNom;
+	ArrayList<String> infoComplementaire;
 
 	public long getNumClient() {
 		return numClient;
@@ -52,14 +55,19 @@ public class Personne
 		this.pays = pays;
 	}
 
-	public String[][] getInfoComplementaire() {
+	public ArrayList<String> getInfoComplementaireNom() {
+		return infoComplementaireNom;
+	}
+
+	public void setInfoComplementaireNom(ArrayList<String> infoComplementaireNom) {
+		this.infoComplementaireNom = infoComplementaireNom;
+	}
+
+	public ArrayList<String> getInfoComplementaire() {
 		return infoComplementaire;
 	}
 
-	public void setInfoComplementaire(String[][] infoComplementaire) {
+	public void setInfoComplementaire(ArrayList<String> infoComplementaire) {
 		this.infoComplementaire = infoComplementaire;
-	}
-
-	
-	
+	}	
 }
