@@ -5,14 +5,22 @@ import java.util.ArrayList;
 public class Personne 
 {
 	private String numClient;
-	private String Nom;
-	private String Prenom;
+	private String nom;
+	private String prenom;
 	
 	private String ville;
 	private String pays;
 	
 	ArrayList<String> infoComplementaireNom;
 	ArrayList<String> infoComplementaire;
+	
+	public Personne(String numClient, String nom, String prenom, String ville, String pays) {
+		this.numClient = numClient;
+		this.nom = nom;
+		this.prenom = prenom;
+		this.ville = ville;
+		this.pays = pays;
+	}
 
 	public String getNumClient() {
 		return numClient;
@@ -23,19 +31,19 @@ public class Personne
 	}
 
 	public String getNom() {
-		return Nom;
+		return nom;
 	}
 
 	public void setNom(String nom) {
-		Nom = nom;
+		nom = nom;
 	}
 
 	public String getPrenom() {
-		return Prenom;
+		return prenom;
 	}
 
 	public void setPrenom(String prenom) {
-		Prenom = prenom;
+		prenom = prenom;
 	}
 
 	public String getVille() {

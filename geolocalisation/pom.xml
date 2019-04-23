@@ -5,6 +5,28 @@
 	<groupId>fr.ufr.science</groupId>
 	<artifactId>geolocalisation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<packaging>jar</packaging>
 
 	<name>geolocalisation</name>

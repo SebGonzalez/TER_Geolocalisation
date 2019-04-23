@@ -1,7 +1,9 @@
 package fr.ufr.science.geolocalisation;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
@@ -16,12 +18,19 @@ import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.jxmapviewer.viewer.WaypointPainter;
+
+import fr.ufr.science.geolocalisation.src.sample7_swingwaypoints.SwingWaypoint;
+import fr.ufr.science.geolocalisation.src.sample7_swingwaypoints.SwingWaypointOverlayPainter;
 
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
-	public MainWindow() {
+	private GestionnairePersonne gestionnairePersonne;
+	
+	public MainWindow(GestionnairePersonne gestionnairePersonne) {
+		this.gestionnairePersonne = gestionnairePersonne;
+		
 		// Create a TileFactoryInfo for OpenStreetMap
         TileFactoryInfo info = new OSMTileFactoryInfo();
         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
@@ -56,11 +65,22 @@ public class MainWindow extends JFrame {
         this.add(mapViewer);
         this.setVisible(true);
         
-        String address = "The White House, Washington DC";
-        Map<String, Double> coords;
-        coords = OpenStreetMapUtils.getInstance().getCoordinates(address);
-        System.out.println("latitude :" + coords.get("lat"));
-        System.out.println("longitude:" + coords.get("lon"));
-        //System.out.println(c.toString());
+        Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
+        for(Personne p : gestionnairePersonne.getListePersonne()) {
+        		Map<String, Double> coords;
+            coords = OpenStreetMapUtils.getInstance().getCoordinates(p.getVille());
+            GeoPosition geo = new GeoPosition(coords.get("lat"), coords.get("lon"));
+            waypoints.add( new SwingWaypoint("", geo));
+        }
+        
+     // Set the overlay painter
+        WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
+        swingWaypointPainter.setWaypoints(waypoints);
+        mapViewer.setOverlayPainter(swingWaypointPainter);
+
+        // Add the JButtons to the map viewer
+        for (SwingWaypoint w : waypoints) {
+            mapViewer.add(w.getButton());
+        }
 	}
 }
