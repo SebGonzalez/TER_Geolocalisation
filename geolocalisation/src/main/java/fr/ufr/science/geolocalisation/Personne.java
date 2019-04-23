@@ -2,6 +2,7 @@ package fr.ufr.science.geolocalisation;
 
 import java.util.ArrayList;
 
+//serialiser
 public class Personne 
 {
 	private String numClient;
@@ -11,9 +12,13 @@ public class Personne
 	private String ville;
 	private String pays;
 	
+	//hashmap
 	ArrayList<String> infoComplementaireNom;
 	ArrayList<String> infoComplementaire;
 	
+	public Personne() {
+	}
+
 	public Personne(String numClient, String nom, String prenom, String ville, String pays) {
 		this.numClient = numClient;
 		this.nom = nom;
