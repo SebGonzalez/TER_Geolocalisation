@@ -25,11 +25,12 @@ public class SwingWaypoint extends DefaultWaypoint {
         super(coord);
         
         button = new JButton();
-        button.setSize(24, 24);
-        button.setPreferredSize(new Dimension(64, 54));
+        button.setSize(64, 64);
+        button.setContentAreaFilled(false);
+        button.setBorder(null);
         button.addMouseListener(new SwingWaypointMouseListener());
         try {
-            Image img = ImageIO.read(getClass().getResource("src/main/resources/fr/ufr/science/geolocalisation/marker.png"));
+            Image img = ImageIO.read(getClass().getResource("/fr/ufr/science/geolocalisation/marker2.png"));
             button.setIcon(new ImageIcon(img));
           } catch (Exception ex) {
             ex.printStackTrace();

@@ -20,9 +20,6 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
-import fr.ufr.science.geolocalisation.src.sample7_swingwaypoints.SwingWaypoint;
-import fr.ufr.science.geolocalisation.src.sample7_swingwaypoints.SwingWaypointOverlayPainter;
-
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -70,7 +67,7 @@ public class MainWindow extends JFrame {
         		Map<String, Double> coords;
             coords = OpenStreetMapUtils.getInstance().getCoordinates(p.getVille());
             GeoPosition geo = new GeoPosition(coords.get("lat"), coords.get("lon"));
-            waypoints.add( new SwingWaypoint("", geo));
+            waypoints.add( new SwingWaypoint(geo));
         }
         
      // Set the overlay painter
