@@ -1,6 +1,7 @@
 package fr.ufr.science.geolocalisation.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 //serialiser
 public class Personne 
@@ -12,11 +13,11 @@ public class Personne
 	private String ville;
 	private String pays;
 	
-	//hashmap
-	ArrayList<String> infoComplementaireNom;
-	ArrayList<String> infoComplementaire;
+	public HashMap<String, String> infoComplementaires;
 	
-	public Personne() {
+	public Personne() 
+	{
+		this.infoComplementaires  = new HashMap<String, String>();
 	}
 
 	public Personne(String numClient, String nom, String prenom, String ville, String pays) {
@@ -25,6 +26,7 @@ public class Personne
 		this.prenom = prenom;
 		this.ville = ville;
 		this.pays = pays;
+		//this.infoComplementaires  = new HashMap<String, String>();
 	}
 
 	public String getNumClient() {
@@ -67,19 +69,12 @@ public class Personne
 		this.pays = pays;
 	}
 
-	public ArrayList<String> getInfoComplementaireNom() {
-		return infoComplementaireNom;
+	public HashMap<String, String> getInfoComplementaires() {
+		return infoComplementaires;
 	}
 
-	public void setInfoComplementaireNom(ArrayList<String> infoComplementaireNom) {
-		this.infoComplementaireNom = infoComplementaireNom;
+	public void setInfoComplementaires(HashMap<String, String> infoComplementaires) {
+		this.infoComplementaires = infoComplementaires;
 	}
 
-	public ArrayList<String> getInfoComplementaire() {
-		return infoComplementaire;
-	}
-
-	public void setInfoComplementaire(ArrayList<String> infoComplementaire) {
-		this.infoComplementaire = infoComplementaire;
-	}	
 }

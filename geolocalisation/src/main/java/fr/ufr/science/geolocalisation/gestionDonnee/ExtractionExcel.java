@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -24,7 +25,7 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 public class ExtractionExcel 
 {
 	//TODO : EMPECHER LES DOUBLONS ?
-	
+
 	public void readFile(File file,GestionnairePersonne g) throws IOException
 	{
 		FileInputStream fis = new FileInputStream(file);
@@ -32,19 +33,18 @@ public class ExtractionExcel
 		XSSFSheet sheet = workbook.getSheetAt(0);
 
 		Iterator<Row> rowIt = sheet.iterator();	//ITERATION SUR COLONNES
-		
+
 		SauvegardeCSV save= new SauvegardeCSV();	//FICHIER POUR SAUVEGARDE DES PERSONNES DANS UN CSV
 		ArrayList<String> tabNumclient = new ArrayList<String>();	//LISTE DE NUMCLIENT DEJA SAUVEGARDE
 		save.initListeNumclient(tabNumclient);
-		
+
 		int i;	//COMPTEUR POUR PLACEMENT DES INFORMATIONS
 		boolean prem = true;	//FLAG POUR LA PREMIERE LIGNE
 
-		int[] tab = new int[1000];
-		for(i=0;i<tab.length-1;i++)	//INITIALISATION, SECURITE
-		{
-			tab[i]=-1;
-		}
+		int[] tab = new int[5];
+
+		HashMap<Integer, String> idNomColonne = new HashMap<Integer, String>();		//STOCKE "ID DE LA COLONNE" "NOM DE LA COLONNE"
+		//HashMap<String, String> infoComp = new HashMap<String, String>();
 
 		while(rowIt.hasNext())	//TANT QUE LIGNES SUIVANTES EXISTE
 		{
@@ -54,6 +54,7 @@ public class ExtractionExcel
 
 			Iterator<Cell> cellIterator = row.cellIterator();	//ITERATION SUR CELLULE DE LA LIGNE
 			i=0;
+			//j=0;
 
 			if(prem==true)	//PREMIERE LIGNE -> INISTIALISATION
 			{
@@ -62,7 +63,6 @@ public class ExtractionExcel
 					Cell cell = cellIterator.next();
 					if(cell.toString().compareTo("NUMCLI")==0)
 					{
-						//p.setNumClient(Long.parseLong(tabChaine[i]));	//CONVERSION NUMCLIENT EN LONG
 						tab[0]=i;
 					}
 					else if(cell.toString().compareTo("NOM")==0)
@@ -83,7 +83,7 @@ public class ExtractionExcel
 					}
 					else
 					{
-						//p.infoComplementaireNom.add(tabChaine[i]);
+						idNomColonne.put(i, cell.toString());	//STOCKE L'ID DE LA COLONNE AVEC LE NOM DE LA COLONNE
 					}
 					i++;
 				}
@@ -94,6 +94,7 @@ public class ExtractionExcel
 			else	//TOUT AUTRES CAS
 			{
 				i=0;
+				//j=0;
 				for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++)	//PARCOURS DIFFERENT DE ITERATOR POUR DETECTER CELLULES VIDES 
 				{
 					Cell cell = row.getCell(c);
@@ -101,36 +102,41 @@ public class ExtractionExcel
 					{
 						if(i==tab[0])
 						{
-							//p.setNom(cell.toString());
-							 p.setNumClient(cell.toString());
-							 //System.out.println(cell.toString());
+							p.setNumClient(cell.toString());
 						}
-						if(i==tab[1])
+						else if(i==tab[1])
 						{
-							//System.out.println(cell.toString());
-							//String a = cell.toString();
 							p.setNom(cell.toString());
-							//p.setNom(cell.toString());
-							//System.out.println(p.getNom());
 						}
-						if(i==tab[2])
+						else if(i==tab[2])
 						{
 							p.setPrenom(cell.toString());
 						}
-						if(i==tab[3])
+						else if(i==tab[3])
 						{
 							p.setVille(cell.toString());
 						}
-						if(i==tab[4])
+						else if(i==tab[4])
 						{
 							p.setPays(cell.toString());
 						}
+						else
+						{
+							if (idNomColonne.containsKey(i))
+							{
+								p.infoComplementaires.put(idNomColonne.get(i),cell.toString());	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
+							}
+						}
+
 					}
 					i++;
+
 
 				}
 			}
 			System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
+			System.out.println(p.infoComplementaires.get("Score ISF"));
+
 			if(p.getNumClient()!=null)
 			{
 				g.addPersonne(p);
