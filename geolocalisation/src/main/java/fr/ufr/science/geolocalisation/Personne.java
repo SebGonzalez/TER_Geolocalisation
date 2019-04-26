@@ -40,7 +40,7 @@ public class Personne
 	}
 
 	public void setNom(String nom) {
-		nom = nom;
+		this.nom = nom;
 	}
 
 	public String getPrenom() {
@@ -48,7 +48,7 @@ public class Personne
 	}
 
 	public void setPrenom(String prenom) {
-		prenom = prenom;
+		this.prenom = prenom;
 	}
 
 	public String getVille() {
