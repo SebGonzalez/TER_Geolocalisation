@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -18,14 +19,20 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 public class ExtractionExcel 
 {
-	public void readFile(File file) throws IOException
+	//TODO : EMPECHER LES DOUBLONS ?
+	
+	public void readFile(File file,GestionnairePersonne g) throws IOException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);	//ENTITE POUR LECTURE FICHIER EXCEL
 		XSSFSheet sheet = workbook.getSheetAt(0);
 
 		Iterator<Row> rowIt = sheet.iterator();	//ITERATION SUR COLONNES
-
+		
+		SauvegardeCSV save= new SauvegardeCSV();	//FICHIER POUR SAUVEGARDE DES PERSONNES DANS UN CSV
+		ArrayList<String> tabNumclient = new ArrayList<String>();	//LISTE DE NUMCLIENT DEJA SAUVEGARDE
+		save.initListeNumclient(tabNumclient);
+		
 		int i;	//COMPTEUR POUR PLACEMENT DES INFORMATIONS
 		boolean prem = true;	//FLAG POUR LA PREMIERE LIGNE
 
@@ -96,7 +103,11 @@ public class ExtractionExcel
 						}
 						if(i==tab[1])
 						{
+							//System.out.println(cell.toString());
+							//String a = cell.toString();
 							p.setNom(cell.toString());
+							//p.setNom(cell.toString());
+							//System.out.println(p.getNom());
 						}
 						if(i==tab[2])
 						{
@@ -116,17 +127,22 @@ public class ExtractionExcel
 				}
 			}
 			System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
-
+			if(p.getNumClient()!=null)
+			{
+				g.addPersonne(p);
+				save.sauvegarde(p,tabNumclient);
+			}
 
 		}
 
 	}
 
 	public static void main(String[] args) throws IOException
-	{
+	{		
 		ExtractionExcel ec = new ExtractionExcel();
 		File f = new File("Exple-mouvements-BDD-Grands-Mécènes.xlsx");
-		ec.readFile(f);
+		GestionnairePersonne gestP = new GestionnairePersonne();
+		ec.readFile(f,gestP);
 	}
 
 
