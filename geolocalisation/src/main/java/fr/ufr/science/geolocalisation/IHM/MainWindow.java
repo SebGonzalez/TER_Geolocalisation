@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.IHM;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -34,6 +34,10 @@ import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
+
+import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
+import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
 
 public class MainWindow extends JFrame {
 
@@ -140,12 +144,12 @@ public class MainWindow extends JFrame {
         jPanel1.setLayout(new GridBagLayout());
 
         zoomInButton.setAction(getZoomOutAction());
-        zoomInButton.setIcon(new ImageIcon(JXMapKit.class.getResource("/images/plus.png")));
-        zoomInButton.setMargin(new Insets(2, 2, 2, 2));
-        zoomInButton.setMaximumSize(new Dimension(20, 20));
-        zoomInButton.setMinimumSize(new Dimension(20, 20));
+        zoomInButton.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/plus.png")));
+        zoomInButton.setMargin(new Insets(2, 2, 10, 2));
+        zoomInButton.setMaximumSize(new Dimension(30, 30));
+        zoomInButton.setMinimumSize(new Dimension(30, 30));
         zoomInButton.setOpaque(false);
-        zoomInButton.setPreferredSize(new Dimension(20, 20));
+        zoomInButton.setPreferredSize(new Dimension(30, 30));
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -155,12 +159,12 @@ public class MainWindow extends JFrame {
         jPanel1.add(zoomInButton, gridBagConstraints);
 
         zoomOutButton.setAction(getZoomInAction());
-        zoomOutButton.setIcon(new ImageIcon(JXMapKit.class.getResource("/images/minus.png")));
-        zoomOutButton.setMargin(new Insets(2, 2, 2, 2));
-        zoomOutButton.setMaximumSize(new Dimension(20, 20));
-        zoomOutButton.setMinimumSize(new Dimension(20, 20));
+        zoomOutButton.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/minus.png")));
+        zoomOutButton.setMargin(new Insets(10, 10, 10, 10));
+        zoomOutButton.setMaximumSize(new Dimension(30, 30));
+        zoomOutButton.setMinimumSize(new Dimension(30, 30));
         zoomOutButton.setOpaque(false);
-        zoomOutButton.setPreferredSize(new Dimension(20, 20));
+        zoomOutButton.setPreferredSize(new Dimension(30, 30));
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -169,10 +173,9 @@ public class MainWindow extends JFrame {
         jPanel1.add(zoomOutButton, gridBagConstraints);
 
         zoomSlider.setMajorTickSpacing(1);
-        zoomSlider.setMaximum(15);
-        zoomSlider.setMinimum(10);
         zoomSlider.setMinorTickSpacing(1);
         zoomSlider.setOrientation(SwingConstants.VERTICAL);
+        zoomSlider.setInverted(true);
         zoomSlider.setPaintTicks(true);
         zoomSlider.setSnapToTicks(true);
         zoomSlider.setMinimumSize(new Dimension(35, 100));
@@ -245,7 +248,6 @@ public class MainWindow extends JFrame {
                 setZoom(mapViewer.getZoom() - 1);
             }
         };
-        act.putValue(Action.NAME, "-");
         return act;
     }
     
@@ -261,7 +263,6 @@ public class MainWindow extends JFrame {
                 setZoom(mapViewer.getZoom() + 1);
             }
         };
-        act.putValue(Action.NAME, "+");
         return act;
     }
 }

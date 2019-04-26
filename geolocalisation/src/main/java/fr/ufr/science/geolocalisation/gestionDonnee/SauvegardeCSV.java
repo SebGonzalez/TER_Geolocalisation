@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.gestionDonnee;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+
+import fr.ufr.science.geolocalisation.model.Personne;
 
 
 //TODO : CHARGER LES FICHIER ET VERIF SI NUMCLIENT EXISTE
