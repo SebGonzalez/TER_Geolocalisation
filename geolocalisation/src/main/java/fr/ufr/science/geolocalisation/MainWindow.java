@@ -1,13 +1,28 @@
 package fr.ufr.science.geolocalisation;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputListener;
 
+import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.cache.FileBasedLocalCache;
@@ -25,8 +40,19 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private GestionnairePersonne gestionnairePersonne;
 	
+	final JXMapViewer mapViewer;
+    private JPanel jPanel1;
+    private JButton zoomInButton;
+    private JButton zoomOutButton;
+    private JSlider zoomSlider;
+    
+	private boolean sliderReversed = false;
+	private boolean zoomChanging = false;
+	
 	public MainWindow(GestionnairePersonne gestionnairePersonne) {
 		this.gestionnairePersonne = gestionnairePersonne;
+		
+		this.setSize(800, 600);
 		
 		// Create a TileFactoryInfo for OpenStreetMap
         TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -37,14 +63,21 @@ public class MainWindow extends JFrame {
         tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, false));
 
         // Setup JXMapViewer
-        final JXMapViewer mapViewer = new JXMapViewer();
+        mapViewer = new JXMapViewer();
         mapViewer.setTileFactory(tileFactory);
+        
+        initComponents();
+        zoomSlider.setMinimum(tileFactory.getInfo().getMinimumZoomLevel());
+        zoomSlider.setMaximum(tileFactory.getInfo().getMaximumZoomLevel());
+        
+        zoomSlider.setOpaque(false);
 
         //toni ?
         GeoPosition france = new GeoPosition(46.227638, 2.213749);
 
         // Set the focus
         mapViewer.setZoom(13);
+        zoomSlider.setValue(13);
         mapViewer.setAddressLocation(france);
 
         // Add interactions
@@ -58,9 +91,14 @@ public class MainWindow extends JFrame {
 
         mapViewer.addKeyListener(new PanKeyListener(mapViewer));
         
-        this.setSize(800, 600);
-        this.add(mapViewer);
-        this.setVisible(true);
+        mapViewer.addPropertyChangeListener("zoom", new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                zoomSlider.setValue(mapViewer.getZoom());
+            }
+        });
         
         Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
         for(Personne p : gestionnairePersonne.getListePersonne()) {
@@ -79,5 +117,151 @@ public class MainWindow extends JFrame {
         for (SwingWaypoint w : waypoints) {
             mapViewer.add(w.getButton());
         }
+        
+        this.setVisible(true);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
 	}
+	
+	private void initComponents()
+    {
+        GridBagConstraints gridBagConstraints;
+
+        jPanel1 = new JPanel();
+        zoomInButton = new JButton();
+        zoomOutButton = new JButton();
+        zoomSlider = new JSlider();
+
+        setLayout(new GridBagLayout());
+
+        mapViewer.setLayout(new GridBagLayout());
+
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new GridBagLayout());
+
+        zoomInButton.setAction(getZoomOutAction());
+        zoomInButton.setIcon(new ImageIcon(JXMapKit.class.getResource("/images/plus.png")));
+        zoomInButton.setMargin(new Insets(2, 2, 2, 2));
+        zoomInButton.setMaximumSize(new Dimension(20, 20));
+        zoomInButton.setMinimumSize(new Dimension(20, 20));
+        zoomInButton.setOpaque(false);
+        zoomInButton.setPreferredSize(new Dimension(20, 20));
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel1.add(zoomInButton, gridBagConstraints);
+
+        zoomOutButton.setAction(getZoomInAction());
+        zoomOutButton.setIcon(new ImageIcon(JXMapKit.class.getResource("/images/minus.png")));
+        zoomOutButton.setMargin(new Insets(2, 2, 2, 2));
+        zoomOutButton.setMaximumSize(new Dimension(20, 20));
+        zoomOutButton.setMinimumSize(new Dimension(20, 20));
+        zoomOutButton.setOpaque(false);
+        zoomOutButton.setPreferredSize(new Dimension(20, 20));
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weighty = 1.0;
+        jPanel1.add(zoomOutButton, gridBagConstraints);
+
+        zoomSlider.setMajorTickSpacing(1);
+        zoomSlider.setMaximum(15);
+        zoomSlider.setMinimum(10);
+        zoomSlider.setMinorTickSpacing(1);
+        zoomSlider.setOrientation(SwingConstants.VERTICAL);
+        zoomSlider.setPaintTicks(true);
+        zoomSlider.setSnapToTicks(true);
+        zoomSlider.setMinimumSize(new Dimension(35, 100));
+        zoomSlider.setPreferredSize(new Dimension(35, 190));
+        zoomSlider.addChangeListener(new javax.swing.event.ChangeListener()
+        {
+            @Override
+            public void stateChanged(javax.swing.event.ChangeEvent evt)
+            {
+                zoomSliderStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = GridBagConstraints.NORTH;
+        jPanel1.add(zoomSlider, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new Insets(4, 4, 4, 4);
+        mapViewer.add(jPanel1, gridBagConstraints);
+
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(mapViewer, gridBagConstraints);
+    }
+	
+    public void setZoom(int zoom)
+    {
+        zoomChanging = true;
+        mapViewer.setZoom(zoom);
+        if (sliderReversed)
+        {
+            zoomSlider.setValue(zoomSlider.getMaximum() - zoom);
+        }
+        else
+        {
+            zoomSlider.setValue(zoom);
+        }
+       zoomChanging = false;
+    }
+    
+    private void zoomSliderStateChanged(javax.swing.event.ChangeEvent evt)
+    {
+        if (!zoomChanging)
+        {
+            setZoom(zoomSlider.getValue());
+        }
+       
+    }
+    
+	public Action getZoomOutAction()
+    {
+        Action act = new AbstractAction()
+        {
+            private static final long serialVersionUID = 1;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                setZoom(mapViewer.getZoom() - 1);
+            }
+        };
+        act.putValue(Action.NAME, "-");
+        return act;
+    }
+    
+    public Action getZoomInAction()
+    {
+        Action act = new AbstractAction()
+        {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public void actionPerformed(ActionEvent e)
+            {
+                setZoom(mapViewer.getZoom() + 1);
+            }
+        };
+        act.putValue(Action.NAME, "+");
+        return act;
+    }
 }
