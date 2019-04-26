@@ -2,6 +2,9 @@ package fr.ufr.science.geolocalisation;
 
 import javax.swing.UIManager;
 
+import fr.ufr.science.geolocalisation.IHM.MainWindow;
+import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
+
 /**
  * Hello world!
  *

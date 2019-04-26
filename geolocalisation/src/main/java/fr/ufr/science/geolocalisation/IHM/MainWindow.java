@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.IHM;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -34,6 +34,10 @@ import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
+
+import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
+import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
 
 public class MainWindow extends JFrame {
 

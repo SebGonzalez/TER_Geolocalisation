@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.gestionDonnee;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,6 +15,10 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
+
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 public class ExtractionExcel 

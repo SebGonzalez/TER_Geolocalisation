@@ -1,7 +1,9 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.ufr.science.geolocalisation.model.Personne;
 
 public class GestionnairePersonne {
 	private List<Personne> listePersonne;

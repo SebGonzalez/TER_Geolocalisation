@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.model;
 
 public class Coordonnee {
 

@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

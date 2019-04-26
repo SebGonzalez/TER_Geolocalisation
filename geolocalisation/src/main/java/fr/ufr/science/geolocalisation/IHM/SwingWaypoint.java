@@ -1,4 +1,4 @@
-package fr.ufr.science.geolocalisation;
+package fr.ufr.science.geolocalisation.IHM;
 
 import java.awt.Dimension;
 import java.awt.Image;
