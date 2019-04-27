@@ -35,7 +35,9 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
 
@@ -43,6 +45,7 @@ public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private GestionnairePersonne gestionnairePersonne;
+	private GestionnaireCoordonnee gestionnaireCoordonne;
 	
 	final JXMapViewer mapViewer;
     private JPanel jPanel1;
@@ -53,8 +56,9 @@ public class MainWindow extends JFrame {
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
 	
-	public MainWindow(GestionnairePersonne gestionnairePersonne) {
+	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne) {
 		this.gestionnairePersonne = gestionnairePersonne;
+		this.gestionnaireCoordonne = gestionnaireCoordonne;
 		
 		this.setSize(800, 600);
 		
@@ -106,9 +110,9 @@ public class MainWindow extends JFrame {
         
         Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
         for(Personne p : gestionnairePersonne.getListePersonne()) {
-        		Map<String, Double> coords;
-            coords = OpenStreetMapUtils.getInstance().getCoordinates(p.getVille());
-            GeoPosition geo = new GeoPosition(coords.get("lat"), coords.get("lon"));
+        		
+        		Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
+            GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
             waypoints.add( new SwingWaypoint(geo));
         }
         
@@ -124,6 +128,8 @@ public class MainWindow extends JFrame {
         
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        OpenStreetMapUtils.filtreDistance("Marseille",19);
         
 	}
 	
