@@ -13,8 +13,7 @@ import java.util.Iterator;
 import fr.ufr.science.geolocalisation.model.Personne;
 
 
-//TODO : CHARGER LES FICHIER ET VERIF SI NUMCLIENT EXISTE
-//TODO : SAUVEGARDE DE CHAQUE NUMCLIENT
+//TODO : SAUVEGARDE AUSSI DES INFO COMP
 public class SauvegardeCSV 
 {
 	public void sauvegarde(Personne p, ArrayList<String> numClient) throws IOException

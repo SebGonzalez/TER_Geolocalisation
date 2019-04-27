@@ -24,11 +24,10 @@ public class RestaurationCSV
 			if(tabChaine.length>=4)
 			{
 				Personne p = new Personne(tabChaine[0],tabChaine[1],tabChaine[2],tabChaine[3],tabChaine[4]);
+				g.addPersonne(p);
 				System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			}
-			line = br.readLine();
-
-			
+			line = br.readLine();	
 		}
 
 		br.close();
@@ -40,6 +39,10 @@ public class RestaurationCSV
 	{
 		RestaurationCSV r = new RestaurationCSV();
 		GestionnairePersonne gestP = new GestionnairePersonne();
+		if(gestP.getListePersonne().isEmpty())
+		{
+		System.out.println("vide");
+		}
 
 		r.restauration(gestP);
 	}
