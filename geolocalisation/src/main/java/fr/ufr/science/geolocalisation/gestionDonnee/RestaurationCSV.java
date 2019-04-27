@@ -21,9 +21,13 @@ public class RestaurationCSV
 		while(line!=null)	//READLINE RENV NULL SI FICHIER LUE EN ENTIER
 		{
 			tabChaine = line.split(";");	//SEPARATION DANS NOTRE FICHIER
-			if(tabChaine.length>=4)
+			if(tabChaine.length>=5)
 			{
 				Personne p = new Personne(tabChaine[0],tabChaine[1],tabChaine[2],tabChaine[4],tabChaine[3]);
+				for(int j=5;j<tabChaine.length-1;j++)
+				{
+					p.getInfoComplementaires().put(tabChaine[j],tabChaine[j+1]);
+				}
 				g.addPersonne(p);
 				//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			}

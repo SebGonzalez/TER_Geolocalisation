@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 import fr.ufr.science.geolocalisation.model.Personne;
 
@@ -18,7 +19,6 @@ public class SauvegardeCSV
 {
 	public void sauvegarde(Personne p, ArrayList<String> numClient) throws IOException
 	{
-		//File f = new File("SauvegardePersonne.csv");
 		Iterator<String> it = numClient.iterator();
 		boolean dejaPresent=false;
 		FileWriter fw = new FileWriter("SauvegardePersonne.csv",true);
@@ -36,11 +36,23 @@ public class SauvegardeCSV
 			}
 		}
 
+		//System.out.println("A");
 		if(dejaPresent==false)
 		{
+			//System.out.println("A");
+			//SAUV INFO BASE
 			numClient.add(p.getNumClient());	//AJOUTE NOUVEAU NUMCLIENT A LA LISTE DES DEJA PRESENT
 			fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille());
-			//fw.write(p.getNumClient());
+			
+			//SAUV INFO COMP
+			Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
+		    while (it2.hasNext()) 
+		    {
+		        Map.Entry pair = (Map.Entry)it2.next();
+		        fw.write(";");
+		        fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+		        it2.remove(); // avoids a ConcurrentModificationException
+		    }
 		}
 
 		fw.write("\r");
@@ -54,18 +66,13 @@ public class SauvegardeCSV
 		String line = br.readLine();
 
 		String[] tabChaine;		//POUR SEPARATION DES LIGNES EN ELLEMENT SEPARE PARS ;
-		
-		//System.out.println("AA");
-		
+
+
 		while(line!=null)	//READLINE RENV NULL SI FICHIER LUE EN ENTIER
 		{
-			//System.out.println("AA");
 			tabChaine = line.split(";");	//SEPARATION DANS NOTRE FICHIER
-
-			//for(int i=0;i<tabChaine.length-1;i++)	
-			//{
-				numclient.add(tabChaine[0]);//PREMIER ELEM LUE EST LE NUMCLIENT
-			//}
+			numclient.add(tabChaine[0]);//PREMIER ELEM LUE EST LE NUMCLIENT
+			//System.out.println(tabChaine[0]);
 			line = br.readLine();
 		}
 
@@ -73,27 +80,15 @@ public class SauvegardeCSV
 		fr.close();
 	}
 
-	/*public int tailleTabNumclient() throws FileNotFoundException
+	public static void main(String[] args) throws IOException
 	{
-		File f = new File("SauvegardePersonne.csv");
-		if(!f.isFile())
-		{ 
-			//System.out.println("Fichier ")
-			return -1;
-		}
-
-
-		return -1;
-	}*/
-
-	/*public static void main(String[] args) throws IOException
-	{
-		/*SauvegardeCSV c = new SauvegardeCSV();
+		SauvegardeCSV c = new SauvegardeCSV();
 		ArrayList<String> tabNumClient = new ArrayList<String>();	//LISTE DE NUMCLIENT DEJA SAUVEGARDE
 		c.initListeNumclient(tabNumClient);
-		System.out.println( tabNumClient.get(0));
-	}*/
-	
+		//c.sauvegarde(p, numClient);
+		//System.out.println( tabNumClient.get(0));
+	}
+
 
 }
 

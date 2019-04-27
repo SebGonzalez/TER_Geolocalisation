@@ -83,9 +83,10 @@ public class ExtractionExcel
 					}
 					else
 					{
-						idNomColonne.put(i, cell.toString());	//STOCKE L'ID DE LA COLONNE AVEC LE NOM DE LA COLONNE
+						idNomColonne.put(i, cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE L'ID DE LA COLONNE AVEC LE NOM DE LA COLONNE
 					}
 					i++;
+					
 				}
 				prem=false;
 
@@ -124,7 +125,7 @@ public class ExtractionExcel
 						{
 							if (idNomColonne.containsKey(i))
 							{
-								p.infoComplementaires.put(idNomColonne.get(i),cell.toString());	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
+								p.getInfoComplementaires().put(idNomColonne.get(i),cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
 							}
 						}
 
@@ -135,7 +136,7 @@ public class ExtractionExcel
 				}
 			}
 			System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
-			System.out.println(p.infoComplementaires.get("Score ISF"));
+			//System.out.println(p.infoComplementaires.get("Score ISF"));
 
 			if(p.getNumClient()!=null)
 			{
@@ -147,13 +148,13 @@ public class ExtractionExcel
 
 	}
 
-	/*public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException
 	{		
-		/*ExtractionExcel ec = new ExtractionExcel();
+		ExtractionExcel ec = new ExtractionExcel();
 		File f = new File("Exple-mouvements-BDD-Grands-Mécènes.xlsx");
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		ec.readFile(f,gestP);
-	}*/
+	}
 
 
 }
