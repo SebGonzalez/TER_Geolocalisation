@@ -147,13 +147,13 @@ public class ExtractionExcel
 
 	}
 
-	public static void main(String[] args) throws IOException
+	/*public static void main(String[] args) throws IOException
 	{		
-		ExtractionExcel ec = new ExtractionExcel();
+		/*ExtractionExcel ec = new ExtractionExcel();
 		File f = new File("Exple-mouvements-BDD-Grands-Mécènes.xlsx");
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		ec.readFile(f,gestP);
-	}
+	}*/
 
 
 }

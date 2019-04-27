@@ -26,7 +26,7 @@ public class Personne
 		this.prenom = prenom;
 		this.ville = ville;
 		this.pays = pays;
-		//this.infoComplementaires  = new HashMap<String, String>();
+		this.infoComplementaires  = new HashMap<String, String>();
 	}
 
 	public String getNumClient() {

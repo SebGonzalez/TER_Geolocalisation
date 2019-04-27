@@ -23,9 +23,9 @@ public class RestaurationCSV
 			tabChaine = line.split(";");	//SEPARATION DANS NOTRE FICHIER
 			if(tabChaine.length>=4)
 			{
-				Personne p = new Personne(tabChaine[0],tabChaine[1],tabChaine[2],tabChaine[3],tabChaine[4]);
+				Personne p = new Personne(tabChaine[0],tabChaine[1],tabChaine[2],tabChaine[4],tabChaine[3]);
 				g.addPersonne(p);
-				System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
+				//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			}
 			line = br.readLine();	
 		}
@@ -43,8 +43,10 @@ public class RestaurationCSV
 		{
 		System.out.println("vide");
 		}
+		
 
 		r.restauration(gestP);
+		//System.out.println("TEST");
 	}
 
 }

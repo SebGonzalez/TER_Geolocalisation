@@ -116,9 +116,9 @@ public class Extraction
 
 	public static void main(String[] args) throws IOException
 	{
-		Extraction ec = new Extraction();
+		/*Extraction ec = new Extraction();
 		File f = new File("Exple-mouvements-BDD-Grands-Mécènes.csv");
-		ec.readFile(f);
+		ec.readFile(f);*/
 	}
 
 

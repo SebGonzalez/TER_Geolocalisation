@@ -86,13 +86,13 @@ public class SauvegardeCSV
 		return -1;
 	}*/
 
-	public static void main(String[] args) throws IOException
+	/*public static void main(String[] args) throws IOException
 	{
-		SauvegardeCSV c = new SauvegardeCSV();
+		/*SauvegardeCSV c = new SauvegardeCSV();
 		ArrayList<String> tabNumClient = new ArrayList<String>();	//LISTE DE NUMCLIENT DEJA SAUVEGARDE
 		c.initListeNumclient(tabNumClient);
-		System.out.println( tabNumClient.get(0));	
-	}
+		System.out.println( tabNumClient.get(0));
+	}*/
 	
 
 }

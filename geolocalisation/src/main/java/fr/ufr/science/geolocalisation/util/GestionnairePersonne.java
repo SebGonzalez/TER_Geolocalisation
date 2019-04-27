@@ -3,10 +3,13 @@ package fr.ufr.science.geolocalisation.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ufr.science.geolocalisation.gestionDonnee.RestaurationCSV;
 import fr.ufr.science.geolocalisation.model.Personne;
 
 public class GestionnairePersonne {
 	private List<Personne> listePersonne;
+	RestaurationCSV rest = new RestaurationCSV();
+	
 	
 	public GestionnairePersonne() {
 		this.listePersonne = new ArrayList<Personne>();
