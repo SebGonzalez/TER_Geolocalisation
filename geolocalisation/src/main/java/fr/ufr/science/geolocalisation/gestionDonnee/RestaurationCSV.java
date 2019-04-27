@@ -43,10 +43,7 @@ public class RestaurationCSV
 		{
 		System.out.println("vide");
 		}
-		
-
 		r.restauration(gestP);
-		//System.out.println("TEST");
 	}
 
 }

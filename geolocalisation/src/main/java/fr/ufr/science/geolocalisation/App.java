@@ -19,16 +19,11 @@ public class App {
 
 
 	public static void main(String[] args) {
-		try
-		{
+	
+		try {
 			RestaurationCSV rest = new RestaurationCSV();
 			rest.restauration(gestionnairePersonne);
-		}
-		catch (Exception er) {
-			er.printStackTrace();
-		}
-
-		try {
+			
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
 			e.printStackTrace();
