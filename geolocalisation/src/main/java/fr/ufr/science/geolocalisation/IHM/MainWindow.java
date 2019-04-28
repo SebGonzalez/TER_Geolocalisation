@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -25,13 +26,18 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputListener;
+import javax.swing.filechooser.FileSystemView;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -45,6 +51,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
@@ -68,6 +75,11 @@ public class MainWindow extends JFrame {
     private JLabel distanceCheckResult;
     private GeoPosition currentPosition;
     private int currentZoom;
+    
+    private JMenu menuFichier;
+    private JMenuBar menuBar;
+    private JMenuItem importExcel;
+    private JFileChooser chooseExcel;
     
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
@@ -155,23 +167,7 @@ public class MainWindow extends JFrame {
 			}
         });
         
-        Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
-        for(Personne p : gestionnairePersonne.getListePersonne()) {
-        		
-        	Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
-            GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-            waypoints.add( new SwingWaypoint(geo, p.getNumClient()));
-        }
-        
-     // Set the overlay painter
-        WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
-        swingWaypointPainter.setWaypoints(waypoints);
-        mapViewer.setOverlayPainter(swingWaypointPainter);
-
-        // Add the JButtons to the map viewer
-        for (SwingWaypoint w : waypoints) {
-            mapViewer.add(w.getButton());
-        }
+        printWaypoints();
         
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -193,6 +189,10 @@ public class MainWindow extends JFrame {
         distanceCheckRange = new JTextField();
         distanceCheckResult = new JLabel();
         
+        menuBar = new JMenuBar();
+        menuFichier = new JMenu("Fichier");
+        importExcel = new JMenuItem("Importer Excel");
+        chooseExcel = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         
         setLayout(new GridBagLayout());
 
@@ -200,6 +200,34 @@ public class MainWindow extends JFrame {
         
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new GridBagLayout());
+        
+        menuFichier.add(importExcel);
+        menuBar.add(menuFichier);
+        this.setJMenuBar(menuBar);
+        
+        importExcel.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnValue;
+				if(e.getSource()==importExcel) {
+					returnValue = chooseExcel.showOpenDialog(null);
+					
+					if(returnValue == JFileChooser.APPROVE_OPTION) {
+						File selectedFile = chooseExcel.getSelectedFile();
+						ExtractionExcel extracteur = new ExtractionExcel();
+						try {
+							extracteur.readFile(selectedFile, gestionnairePersonne);
+							printWaypoints();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+				
+			}
+        	
+        });
         
         menu.setOpaque(true);
         menu.setLayout(new GridBagLayout());
@@ -465,6 +493,26 @@ public class MainWindow extends JFrame {
     	}
     	
     	System.out.println("Paramètres sauvegardés");  	
+    }
+    
+    private void printWaypoints() {
+    	Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
+        for(Personne p : gestionnairePersonne.getListePersonne()) {
+        		
+        	Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
+            GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
+            waypoints.add( new SwingWaypoint(geo, p.getNumClient()));
+        }
+        
+     // Set the overlay painter
+        WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
+        swingWaypointPainter.setWaypoints(waypoints);
+        mapViewer.setOverlayPainter(swingWaypointPainter);
+
+        // Add the JButtons to the map viewer
+        for (SwingWaypoint w : waypoints) {
+            mapViewer.add(w.getButton());
+        }
     }
    
 }
