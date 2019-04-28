@@ -31,7 +31,6 @@ public class App {
 			e.printStackTrace();
 		}
 
-
 		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne);
 	}
 }

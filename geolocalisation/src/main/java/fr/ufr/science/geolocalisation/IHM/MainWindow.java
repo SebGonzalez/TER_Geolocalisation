@@ -5,11 +5,20 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -17,12 +26,13 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputListener;
 
-import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.cache.FileBasedLocalCache;
@@ -49,9 +59,15 @@ public class MainWindow extends JFrame {
 	
 	final JXMapViewer mapViewer;
     private JPanel jPanel1;
+    private JPanel menu;
     private JButton zoomInButton;
     private JButton zoomOutButton;
     private JSlider zoomSlider;
+    private JTextField distanceCheckCityName;
+    private JTextField distanceCheckRange;
+    private JLabel distanceCheckResult;
+    private GeoPosition currentPosition;
+    private int currentZoom;
     
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
@@ -79,14 +95,13 @@ public class MainWindow extends JFrame {
         zoomSlider.setMaximum(tileFactory.getInfo().getMaximumZoomLevel());
         
         zoomSlider.setOpaque(false);
-
-        //toni ?
-        GeoPosition france = new GeoPosition(46.227638, 2.213749);
+        
+        loadSettings();
 
         // Set the focus
-        mapViewer.setZoom(13);
-        zoomSlider.setValue(13);
-        mapViewer.setAddressLocation(france);
+        mapViewer.setZoom(currentZoom);
+        zoomSlider.setValue(currentZoom);
+        mapViewer.setAddressLocation(currentPosition);
 
         // Add interactions
         MouseInputListener mia = new PanMouseInputListener(mapViewer);
@@ -108,12 +123,44 @@ public class MainWindow extends JFrame {
             }
         });
         
+        mapViewer.addMouseListener(new MouseListener() {				//C'est pas beau, mais?...
+
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(java.awt.event.MouseEvent e) {
+				java.awt.Point p = e.getPoint();
+				currentPosition = mapViewer.convertPointToGeoPosition(p);
+			}
+        });
+        
         Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
         for(Personne p : gestionnairePersonne.getListePersonne()) {
         		
-        		Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
+        	Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
             GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-            waypoints.add( new SwingWaypoint(geo));
+            waypoints.add( new SwingWaypoint(geo, p.getNumClient()));
         }
         
      // Set the overlay painter
@@ -138,17 +185,65 @@ public class MainWindow extends JFrame {
         GridBagConstraints gridBagConstraints;
 
         jPanel1 = new JPanel();
+        menu = new JPanel();
         zoomInButton = new JButton();
         zoomOutButton = new JButton();
         zoomSlider = new JSlider();
-
+        distanceCheckCityName = new JTextField();
+        distanceCheckRange = new JTextField();
+        distanceCheckResult = new JLabel();
+        
+        
         setLayout(new GridBagLayout());
 
         mapViewer.setLayout(new GridBagLayout());
-
+        
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new GridBagLayout());
+        
+        menu.setOpaque(true);
+        menu.setLayout(new GridBagLayout());
+        //menu.setMaximumSize(new Dimension(this.getHeight(), 200));
 
+        /*
+         * MENU
+         */
+        
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.7;
+        gridBagConstraints.weighty = 0.7;
+        this.add(menu, gridBagConstraints);
+        
+        distanceCheckCityName.setPreferredSize(new Dimension(150, 30));
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.weightx = 1;
+        gridBagConstraints.weighty = 1;
+        
+        menu.add(distanceCheckCityName, gridBagConstraints);
+        
+        distanceCheckRange.setPreferredSize(new Dimension(150, 30));
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.weightx = 1;
+        gridBagConstraints.weighty = 1;
+        
+        menu.add(distanceCheckRange, gridBagConstraints);
+        
+        
+        menu.add(distanceCheckResult);
+        
+        /*
+         * 
+         */
+        
         zoomInButton.setAction(getZoomOutAction());
         zoomInButton.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/plus.png")));
         zoomInButton.setMargin(new Insets(2, 2, 10, 2));
@@ -164,6 +259,7 @@ public class MainWindow extends JFrame {
         gridBagConstraints.weighty = 1.0;
         jPanel1.add(zoomInButton, gridBagConstraints);
 
+        
         zoomOutButton.setAction(getZoomInAction());
         zoomOutButton.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/minus.png")));
         zoomOutButton.setMargin(new Insets(10, 10, 10, 10));
@@ -178,6 +274,7 @@ public class MainWindow extends JFrame {
         gridBagConstraints.weighty = 1.0;
         jPanel1.add(zoomOutButton, gridBagConstraints);
 
+        
         zoomSlider.setMajorTickSpacing(1);
         zoomSlider.setMinorTickSpacing(1);
         zoomSlider.setOrientation(SwingConstants.VERTICAL);
@@ -216,12 +313,23 @@ public class MainWindow extends JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(mapViewer, gridBagConstraints);
+        
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                saveSettings();
+                System.exit(0);
+            }
+        });
+        
     }
 	
     public void setZoom(int zoom)
     {
         zoomChanging = true;
         mapViewer.setZoom(zoom);
+        currentZoom = zoom;
         if (sliderReversed)
         {
             zoomSlider.setValue(zoomSlider.getMaximum() - zoom);
@@ -271,4 +379,92 @@ public class MainWindow extends JFrame {
         };
         return act;
     }
+    
+    private boolean settingsFileExists(String file) {
+    	File f = new File(file);
+    	
+    	if(f.isFile())
+    		return true;
+    	return false;
+    }
+    
+    private void loadSettings() {
+    	Properties settings = new Properties();
+    	InputStream iS = null;
+    	
+    	if(settingsFileExists("settings.cfg")) {
+    		try {
+    			File f = new File("settings.cfg");
+    			iS = new FileInputStream(f);
+    		} catch(IOException e) {
+    			e.printStackTrace();
+    		}
+    		try {
+    			settings.load(iS);
+    		} catch(IOException e) {
+    			e.printStackTrace();
+    		}
+    	} else {
+        	createSettingsFile();
+        }
+    	double lat = Double.parseDouble(settings.getProperty("lat"));
+    	double lon = Double.parseDouble(settings.getProperty("lon"));
+    	currentPosition = new GeoPosition(lat, lon);
+    	currentZoom = Integer.parseInt(settings.getProperty("currentZoom"));
+    	
+    	System.out.println("Paramètres chargés");
+    }
+    
+    private void createSettingsFile() {
+    	File f = new File("settings.cfg");
+    	Properties settings = new Properties();
+    	
+    	settings.setProperty("currentZoom", "13");
+    	settings.setProperty("lat", "46.227638");
+    	settings.setProperty("lon", "2.213749");
+    	
+    	try {
+    		OutputStream out = new FileOutputStream(f);
+    		try {
+    			settings.store(out, "Paramètres");
+    			System.out.println("Paramètres créés");
+    		} catch(IOException e) {
+    			e.printStackTrace();
+    		}
+    	}catch(FileNotFoundException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    private void saveSettings() {
+    	//Met à jour les variables avec les valeurs actuelles
+    	currentZoom = mapViewer.getZoom();
+    	
+    	if(!settingsFileExists("settings.cfg")) {// Ne devrait normalement jamais arriver...
+    		createSettingsFile();
+    	}else {
+    		Properties settings = new Properties();
+    		System.out.println("Saving: " + currentPosition.toString());
+    		settings.setProperty("currentZoom", Integer.toString(currentZoom));
+        	settings.setProperty("lat", Double.toString(currentPosition.getLatitude()));
+        	settings.setProperty("lon", Double.toString(currentPosition.getLongitude()));
+    		
+    		File f = new File("settings.cfg");
+    		
+    		try {
+    			OutputStream out = new FileOutputStream(f);
+    			
+    			try {
+    				settings.store(out, "Paramètres");
+    			} catch(IOException e) {
+    				e.printStackTrace();
+    			}
+    		} catch(FileNotFoundException e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	System.out.println("Paramètres sauvegardés");  	
+    }
+   
 }

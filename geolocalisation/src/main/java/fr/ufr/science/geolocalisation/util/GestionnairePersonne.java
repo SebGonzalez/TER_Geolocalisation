@@ -30,4 +30,12 @@ public class GestionnairePersonne {
 		return listePersonne;
 	}
 	
+	public Personne getPersonneByID(String id) {		// Pour trouver une personne avec son ID (utile pour afficher les infos)
+		for(Personne p : listePersonne) {
+			if(p.getNumClient() == id)
+				return p;
+		}
+		return null;
+	}
+	
 }

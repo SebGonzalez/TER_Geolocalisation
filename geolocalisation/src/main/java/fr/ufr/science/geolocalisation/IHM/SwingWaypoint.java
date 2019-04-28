@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -13,6 +14,9 @@ import javax.swing.JOptionPane;
 import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 
+import fr.ufr.science.geolocalisation.App;
+import fr.ufr.science.geolocalisation.model.Personne;
+
 /**
  * A waypoint that is represented by a button on the map.
  *
@@ -20,6 +24,7 @@ import org.jxmapviewer.viewer.GeoPosition;
  */
 public class SwingWaypoint extends DefaultWaypoint {
     private final JButton button;
+    private String numPersonne = "";	// Pour afficher les infos de la personne
 
     public SwingWaypoint(GeoPosition coord) {
         super(coord);
@@ -37,16 +42,35 @@ public class SwingWaypoint extends DefaultWaypoint {
           }
         button.setVisible(true);
     }
+    
+    public SwingWaypoint(GeoPosition coord, String numPersonne) { // Constructeur avec num Personne
+    	this(coord);
+    	this.numPersonne = numPersonne;
+    }
 
     JButton getButton() {
         return button;
+    }
+    
+    public String getNumPersonne() {
+    	return numPersonne;
     }
 
     private class SwingWaypointMouseListener implements MouseListener {
 
         @Override
-        public void mouseClicked(MouseEvent e) {
-            JOptionPane.showMessageDialog(button, "You clicked on ");
+        public void mouseClicked(MouseEvent e) {		//Affichage des informations
+        	if(numPersonne != "") {
+	            Personne p = App.gestionnairePersonne.getPersonneByID(numPersonne);
+	            String toPrint = "Num. Client: " + p.getNumClient() + "\nNom: " +  p.getNom() + "\nPrénom: " + p.getPrenom() + "\nVille: " + p.getVille() + "\nPays: " + p.getPays();
+	            if(!p.getInfoComplementaires().isEmpty()) {
+	            	for(Map.Entry<String, String> entry : p.getInfoComplementaires().entrySet()) {
+	            		toPrint += "\n"+entry.getKey() + ": " + entry.getValue();
+	            	}
+	            }
+	        	JOptionPane.showMessageDialog(button, toPrint);
+        	}
+        	else JOptionPane.showMessageDialog(button, "Erreur: Aucune donnée");
         }
 
         @Override
