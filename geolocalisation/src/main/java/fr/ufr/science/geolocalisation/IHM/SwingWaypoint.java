@@ -1,6 +1,5 @@
 package fr.ufr.science.geolocalisation.IHM;
 
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,6 +9,8 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -68,7 +69,12 @@ public class SwingWaypoint extends DefaultWaypoint {
 	            		toPrint += "\n"+entry.getKey() + ": " + entry.getValue();
 	            	}
 	            }
-	        	JOptionPane.showMessageDialog(button, toPrint);
+	            JTextArea textArea = new JTextArea(35,50);
+	            textArea.setText(toPrint);
+	            textArea.setEditable(false);
+	            JScrollPane scrollPane = new JScrollPane(textArea);
+	            
+	        	JOptionPane.showMessageDialog(button, scrollPane);
         	}
         	else JOptionPane.showMessageDialog(button, "Erreur: Aucune donnée");
         }
