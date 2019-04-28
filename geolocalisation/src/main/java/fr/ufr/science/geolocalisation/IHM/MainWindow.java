@@ -37,6 +37,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jxmapviewer.JXMapViewer;
@@ -211,6 +212,11 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int returnValue;
 				if(e.getSource()==importExcel) {
+					chooseExcel.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooseExcel.setMultiSelectionEnabled(false);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
+					chooseExcel.setAcceptAllFileFilterUsed(false);
+					chooseExcel.addChoosableFileFilter(filter);
 					returnValue = chooseExcel.showOpenDialog(null);
 					
 					if(returnValue == JFileChooser.APPROVE_OPTION) {
