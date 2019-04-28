@@ -27,15 +27,21 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -49,6 +55,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
@@ -62,18 +69,24 @@ public class MainWindow extends JFrame {
 	private GestionnaireCoordonnee gestionnaireCoordonne;
 
 	final JXMapViewer mapViewer;
-	private JPanel jPanel1;
-	private JPanel menu;
-	private JButton zoomInButton;
-	private JButton zoomOutButton;
-	private JButton hideMenu;
-	private JSlider zoomSlider;
-	private JTextField distanceCheckCityName;
-	private JTextField distanceCheckRange;
-	private JLabel distanceCheckResult;
-	private GeoPosition currentPosition;
-	private int currentZoom;
 
+    private JPanel jPanel1;
+    private JPanel menu;
+    private JButton zoomInButton;
+    private JButton zoomOutButton;
+    private JSlider zoomSlider;
+    private JTextField distanceCheckCityName;
+    private JTextField distanceCheckRange;
+    private JLabel distanceCheckResult;
+    private GeoPosition currentPosition;
+    private int currentZoom;
+    
+    private JButton hideMenu;
+    private JMenu menuFichier;
+    private JMenuBar menuBar;
+    private JMenuItem importExcel;
+    private JFileChooser chooseExcel;
+    
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
@@ -202,6 +215,11 @@ public class MainWindow extends JFrame {
 		
 		JList<Personne> displayList = new JList<>();
         JScrollPane scrollPane = new JScrollPane(displayList);
+        
+        menuBar = new JMenuBar();
+        menuFichier = new JMenu("Fichier");
+        importExcel = new JMenuItem("Importer Excel");
+        chooseExcel = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
 		setLayout(new GridBagLayout());
 
@@ -212,7 +230,38 @@ public class MainWindow extends JFrame {
 
 		menu.setOpaque(true);
 		menu.setLayout(new GridBagLayout());
-		// menu.setMaximumSize(new Dimension(this.getHeight(), 200));
+		 menuFichier.add(importExcel);
+	        menuBar.add(menuFichier);
+	        this.setJMenuBar(menuBar);
+	        
+	        importExcel.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int returnValue;
+					if(e.getSource()==importExcel) {
+						chooseExcel.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						chooseExcel.setMultiSelectionEnabled(false);
+						FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
+						chooseExcel.setAcceptAllFileFilterUsed(false);
+						chooseExcel.addChoosableFileFilter(filter);
+						returnValue = chooseExcel.showOpenDialog(null);
+						
+						if(returnValue == JFileChooser.APPROVE_OPTION) {
+							File selectedFile = chooseExcel.getSelectedFile();
+							ExtractionExcel extracteur = new ExtractionExcel();
+							try {
+								extracteur.readFile(selectedFile, gestionnairePersonne);
+								printWaypoints();
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+					
+				}
+	        	
+	        });
 
 		/*
 		 * MENU
@@ -526,5 +575,24 @@ public class MainWindow extends JFrame {
 
 		System.out.println("Paramètres sauvegardés");
 	}
+    
+    private void printWaypoints() {
+    	Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
+        for(Personne p : gestionnairePersonne.getListePersonne()) {
+        		
+        	Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
+            GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
+            waypoints.add( new SwingWaypoint(geo, p.getNumClient()));
+        }
+        
+     // Set the overlay painter
+        WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
+        swingWaypointPainter.setWaypoints(waypoints);
+        mapViewer.setOverlayPainter(swingWaypointPainter);
 
+        // Add the JButtons to the map viewer
+        for (SwingWaypoint w : waypoints) {
+            mapViewer.add(w.getButton());
+        }
+    }
 }
