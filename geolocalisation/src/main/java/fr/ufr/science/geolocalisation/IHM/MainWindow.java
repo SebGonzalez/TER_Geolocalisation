@@ -296,6 +296,8 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.weighty = 1.0;
 		gridBagConstraints.insets = new Insets(4, 4, 4, 4);
 		mapViewer.add(jPanel1, gridBagConstraints);
+		
+		mapViewer.revalidate();
 	}
 
 	private void initComponents() {
