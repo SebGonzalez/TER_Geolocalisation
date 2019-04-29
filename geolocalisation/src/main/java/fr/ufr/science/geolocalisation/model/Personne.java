@@ -76,5 +76,10 @@ public class Personne
 	public void setInfoComplementaires(HashMap<String, String> infoComplementaires) {
 		this.infoComplementaires = infoComplementaires;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getPrenom() + " " + this.getNom();
+	}
 
 }

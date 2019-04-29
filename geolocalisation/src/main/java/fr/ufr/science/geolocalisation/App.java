@@ -4,6 +4,7 @@ import javax.swing.UIManager;
 
 import fr.ufr.science.geolocalisation.IHM.MainWindow;
 import fr.ufr.science.geolocalisation.gestionDonnee.RestaurationCSV;
+import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 /**
@@ -16,6 +17,7 @@ import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 // distance par rapport à un lieu
 public class App {
 	public static GestionnairePersonne gestionnairePersonne = new GestionnairePersonne();
+	public static GestionnaireCoordonnee gestionnaireCoordonne = new GestionnaireCoordonnee();
 
 
 	public static void main(String[] args) {
@@ -29,7 +31,6 @@ public class App {
 			e.printStackTrace();
 		}
 
-
-		MainWindow mainWindow = new MainWindow(gestionnairePersonne);
+		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne);
 	}
 }

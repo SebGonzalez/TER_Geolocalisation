@@ -4,22 +4,23 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
 
+import fr.ufr.science.geolocalisation.App;
+import fr.ufr.science.geolocalisation.model.Coordonnee;
+import fr.ufr.science.geolocalisation.model.Personne;
+
+//Possibilité d'ajouter une hashmap qui stocke les adresse-->coord
 public class OpenStreetMapUtils {
 
 	private static OpenStreetMapUtils instance = null;
-	private JSONParser jsonParser;
-
-	public OpenStreetMapUtils() {
-		jsonParser = new JSONParser();
-	}
 
 	public static OpenStreetMapUtils getInstance() {
 		if (instance == null) {
@@ -106,5 +107,39 @@ public class OpenStreetMapUtils {
 		}
 
 		return res;
+	}
+	
+	public static double distance(double lat1, double lon1, double lat2,
+	        double lon2) {
+
+	    final int R = 6371; // Radius of the earth
+
+	    double latDistance = Math.toRadians(lat2 - lat1);
+	    double lonDistance = Math.toRadians(lon2 - lon1);
+	    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+	            + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+	            * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	    double distance = R * c * 1000; // convert to meters
+
+	    distance = Math.pow(distance, 2);
+
+	    return Math.sqrt(distance) / 1000;
+	}
+	
+	public static List<Personne> filtreDistance(String adresse, int distance) {
+		List<Personne> listePersonneFiltre = new ArrayList<>();
+		
+		Coordonnee c = App.gestionnaireCoordonne.getCoordonnee(adresse);
+		
+		for(Personne p : App.gestionnairePersonne.getListePersonne()) {
+			Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(p.getVille());
+			if(distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+				System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
+				listePersonneFiltre.add(p);
+			}
+		}
+		
+		return listePersonneFiltre;
 	}
 }
