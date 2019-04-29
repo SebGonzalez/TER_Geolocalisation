@@ -90,6 +90,8 @@ public class MainWindow extends JFrame {
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
+	
+	DefaultTileFactory tileFactory;
 
 	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne) {
 		this.gestionnairePersonne = gestionnairePersonne;
@@ -99,7 +101,7 @@ public class MainWindow extends JFrame {
 
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
-		DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+		tileFactory = new DefaultTileFactory(info);
 
 		// Setup local file cache
 		File cacheDir = new File(System.getProperty("user.home") + File.separator + ".jxmapviewer2");
@@ -110,8 +112,6 @@ public class MainWindow extends JFrame {
 		mapViewer.setTileFactory(tileFactory);
 
 		initComponents();
-		zoomSlider.setMinimum(tileFactory.getInfo().getMinimumZoomLevel());
-		zoomSlider.setMaximum(tileFactory.getInfo().getMaximumZoomLevel());
 
 		zoomSlider.setOpaque(false);
 
@@ -247,6 +247,8 @@ public class MainWindow extends JFrame {
 		zoomSlider.setSnapToTicks(true);
 		zoomSlider.setMinimumSize(new Dimension(35, 100));
 		zoomSlider.setPreferredSize(new Dimension(35, 190));
+		zoomSlider.setMinimum(tileFactory.getInfo().getMinimumZoomLevel());
+		zoomSlider.setMaximum(tileFactory.getInfo().getMaximumZoomLevel());
 		zoomSlider.addChangeListener(new javax.swing.event.ChangeListener() {
 			@Override
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
