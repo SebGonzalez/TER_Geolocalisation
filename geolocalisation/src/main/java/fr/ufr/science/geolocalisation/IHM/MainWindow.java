@@ -313,7 +313,7 @@ public class MainWindow extends JFrame {
 		JLabel labelDistance = new JLabel("Distance (km) : ");
 		JButton filtre = new JButton("Lancer le filtre");
 
-		JList<Personne> displayList = new JList<>();
+		final JList<Personne> displayList = new JList<>();
 		JScrollPane scrollPane = new JScrollPane(displayList);
 
 		menuBar = new JMenuBar();
