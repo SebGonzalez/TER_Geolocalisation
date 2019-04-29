@@ -172,6 +172,9 @@ public class MainWindow extends JFrame {
 			}
 		});
 
+		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
 		for (Personne p : gestionnairePersonne.getListePersonne()) {
 
@@ -190,10 +193,7 @@ public class MainWindow extends JFrame {
 			mapViewer.add(w.getButton());
 		}
 
-		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		OpenStreetMapUtils.filtreDistance("Marseille", 19);
+		//OpenStreetMapUtils.getInstance().filtreDistance("Marseille", 19);
 
 	}
 
@@ -313,7 +313,7 @@ public class MainWindow extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<Personne> listePersonne = OpenStreetMapUtils.filtreDistance(distanceCheckCityName.getText(), Integer.parseInt(distanceCheckRange.getText()));
+				List<Personne> listePersonne = OpenStreetMapUtils.getInstance().filtreDistance(distanceCheckCityName.getText(), Integer.parseInt(distanceCheckRange.getText()));
 				Personne[] array = new Personne[listePersonne.size()];
 				listePersonne.toArray(array);
 				displayList.setListData(array);

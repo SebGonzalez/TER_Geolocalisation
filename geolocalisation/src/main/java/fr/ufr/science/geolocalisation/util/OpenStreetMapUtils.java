@@ -31,7 +31,7 @@ public class OpenStreetMapUtils {
 
 	private String getRequest(String url) throws Exception {
 
-		System.out.println(url);
+		//System.out.println(url);
 
 		final URL obj = new URL(url);
 		final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -40,7 +40,8 @@ public class OpenStreetMapUtils {
 
 		if (con.getResponseCode() != 200) {
 			System.out.println("NON" + con.getResponseCode());
-			//return null;
+			System.out.println(url);
+			return null;
 		}
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -51,8 +52,8 @@ public class OpenStreetMapUtils {
 			response.append(inputLine);
 		}
 		in.close();
-		
-		System.out.println("Reponse " + response);
+
+		//System.out.println("Reponse " + response);
 
 		return response.toString();
 	}
@@ -108,38 +109,72 @@ public class OpenStreetMapUtils {
 
 		return res;
 	}
-	
-	public static double distance(double lat1, double lon1, double lat2,
-	        double lon2) {
 
-	    final int R = 6371; // Radius of the earth
+	public static double distance(double lat1, double lon1, double lat2, double lon2) {
 
-	    double latDistance = Math.toRadians(lat2 - lat1);
-	    double lonDistance = Math.toRadians(lon2 - lon1);
-	    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-	            + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-	            * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	    double distance = R * c * 1000; // convert to meters
+		final int R = 6371; // Radius of the earth
 
-	    distance = Math.pow(distance, 2);
+		double latDistance = Math.toRadians(lat2 - lat1);
+		double lonDistance = Math.toRadians(lon2 - lon1);
+		double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + Math.cos(Math.toRadians(lat1))
+				* Math.cos(Math.toRadians(lat2)) * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		double distance = R * c * 1000; // convert to meters
 
-	    return Math.sqrt(distance) / 1000;
+		distance = Math.pow(distance, 2);
+
+		return Math.sqrt(distance) / 1000;
 	}
-	
-	public static List<Personne> filtreDistance(String adresse, int distance) {
+
+	public int distanceRoute(double lat1, double lon1, double lat2, double lon2) {
+		StringBuffer query = new StringBuffer();
+		query.append(
+				"https://api.openrouteservice.org/directions?api_key=5b3ce3597851110001cf62486e202f9025104ba4a1316768741fa03b&profile=driving-car&units=km&language=fr&geometry=false&instructions=false&roundabout_exits=false&maneuvers=false&optimized=false&continue_straight=false&suppress_warnings=true&format=json");
+		query.append("&coordinates=" + lon1 + "," + lat1 + "|" + lon2 + "," + lat2);
+
+		String result = null;
+		try {
+			result = getRequest(query.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (result != null) {
+			Object obj = JSONValue.parse(result);
+
+			Object distance;
+
+			JSONObject object = (JSONObject) obj;
+
+			JSONArray object2 = (JSONArray) object.get("routes");
+
+			JSONObject object3 = (JSONObject) object2.get(0);
+			JSONObject object4 = (JSONObject) object3.get("summary");
+
+			distance = object4.get("distance");
+			Object temps = object4.get("duration");
+
+			Double valeur = new Double(distance.toString());
+
+			return valeur.intValue();
+		}
+		return 999;
+	}
+
+	public List<Personne> filtreDistance(String adresse, int distance) {
 		List<Personne> listePersonneFiltre = new ArrayList<>();
-		
+
 		Coordonnee c = App.gestionnaireCoordonne.getCoordonnee(adresse);
-		
-		for(Personne p : App.gestionnairePersonne.getListePersonne()) {
+
+		for (Personne p : App.gestionnairePersonne.getListePersonne()) {
 			Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(p.getVille());
-			if(distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+			if (distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
 				System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
 				listePersonneFiltre.add(p);
 			}
 		}
-		
+
 		return listePersonneFiltre;
 	}
 }
