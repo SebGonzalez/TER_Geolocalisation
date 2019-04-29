@@ -135,7 +135,7 @@ public class ExtractionExcel
 
 				}
 			}
-			System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
+			//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			//System.out.println(p.infoComplementaires.get("Score ISF"));
 
 			if(p.getNumClient()!=null)
@@ -151,7 +151,7 @@ public class ExtractionExcel
 	public static void main(String[] args) throws IOException
 	{		
 		ExtractionExcel ec = new ExtractionExcel();
-		File f = new File("Exple-mouvements-BDD-Grands-Mécènes.xlsx");
+		File f = new File("Exple-mouvements-BDD-Grands-Mécènes2.xlsx");
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		ec.readFile(f,gestP);
 	}
