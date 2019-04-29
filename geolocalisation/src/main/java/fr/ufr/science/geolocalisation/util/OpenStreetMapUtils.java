@@ -31,7 +31,7 @@ public class OpenStreetMapUtils {
 
 	private String getRequest(String url) throws Exception {
 
-		//System.out.println(url);
+		System.out.println(url);
 
 		final URL obj = new URL(url);
 		final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -53,7 +53,7 @@ public class OpenStreetMapUtils {
 		}
 		in.close();
 
-		//System.out.println("Reponse " + response);
+		System.out.println("Reponse " + response);
 
 		return response.toString();
 	}
