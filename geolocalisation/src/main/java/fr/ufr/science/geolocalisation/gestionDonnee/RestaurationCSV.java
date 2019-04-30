@@ -1,6 +1,7 @@
 package fr.ufr.science.geolocalisation.gestionDonnee;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,7 +14,14 @@ public class RestaurationCSV
 {
 	public void restauration(GestionnairePersonne g) throws IOException
 	{
-		FileReader fr = new FileReader("SauvegardePersonne.csv");
+		File f = new File("SauvegardePersonne.csv");
+		
+		if(!f.exists())
+		{
+			System.out.println("Pas de fichier CSV, donc pas de données a recuperer");
+			return;
+		}
+		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
 		String[] tabChaine;		//POUR SEPARATION DES LIGNES EN ELLEMENT SEPARE PARS ;
