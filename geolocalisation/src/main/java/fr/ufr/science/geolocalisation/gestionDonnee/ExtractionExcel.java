@@ -143,12 +143,9 @@ public class ExtractionExcel
 
 	public static void main(String[] args) throws IOException
 	{		
-		ExtractionExcel ec = new ExtractionExcel();
-<<<<<<< HEAD
-		File f = new File("/Users/sebgonzalez/Desktop/Exple-BDD-Grands-Mécènes-copie.xlsx");
-=======
+		ExtractionExcel ec = new ExtractionExcel(); 
+
 		File f = new File("Exple-mouvements-BDD-Grands-Mécènes2.xlsx");
->>>>>>> 1bdc61465bfa6805737442d2741ea7d41b6b3ca4
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		ec.readFile(f,gestP);
 	}
