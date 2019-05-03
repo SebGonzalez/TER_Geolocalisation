@@ -61,7 +61,13 @@ public class SauvegardeCSV
 
 	public void initListeNumclient(ArrayList<String> numclient) throws IOException
 	{
-		FileReader fr = new FileReader("SauvegardePersonne.csv");
+		File f = new File("SauvegardePersonne.csv");
+		if(!f.exists())
+		{
+			f.createNewFile();
+		}
+		//FileReader fr = new FileReader("SauvegardePersonne.csv");
+		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
 

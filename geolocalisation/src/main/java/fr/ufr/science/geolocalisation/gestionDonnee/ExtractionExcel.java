@@ -1,26 +1,19 @@
 package fr.ufr.science.geolocalisation.gestionDonnee;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
-
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 public class ExtractionExcel 
 {
@@ -135,7 +128,7 @@ public class ExtractionExcel
 
 				}
 			}
-			System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
+			//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			//System.out.println(p.infoComplementaires.get("Score ISF"));
 
 			if(p.getNumClient()!=null)
@@ -151,7 +144,11 @@ public class ExtractionExcel
 	public static void main(String[] args) throws IOException
 	{		
 		ExtractionExcel ec = new ExtractionExcel();
-		File f = new File("Exple-mouvements-BDD-Grands-Mécènes.xlsx");
+<<<<<<< HEAD
+		File f = new File("/Users/sebgonzalez/Desktop/Exple-BDD-Grands-Mécènes-copie.xlsx");
+=======
+		File f = new File("Exple-mouvements-BDD-Grands-Mécènes2.xlsx");
+>>>>>>> 1bdc61465bfa6805737442d2741ea7d41b6b3ca4
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		ec.readFile(f,gestP);
 	}

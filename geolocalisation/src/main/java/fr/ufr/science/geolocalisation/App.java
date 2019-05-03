@@ -12,9 +12,13 @@ import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
  *
  */
 
-// sauvegarde dernier lieu
-// ajout menu à gauche
-// distance par rapport à un lieu
+//selection multiple de points
+//bdd avec import/export
+//Ajouter note sur donateur
+//Gérer plusieurs filtres
+//api route
+//marqueur en fonction du type
+//export en jar
 public class App {
 	public static GestionnairePersonne gestionnairePersonne = new GestionnairePersonne();
 	public static GestionnaireCoordonnee gestionnaireCoordonne = new GestionnaireCoordonnee();
