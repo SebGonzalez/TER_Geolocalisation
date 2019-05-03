@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -56,6 +58,7 @@ import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
+import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
@@ -97,7 +100,7 @@ public class MainWindow extends JFrame {
 		this.gestionnairePersonne = gestionnairePersonne;
 		this.gestionnaireCoordonne = gestionnaireCoordonne;
 
-		this.setSize(800, 600);
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -176,11 +179,11 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
-		for (Personne p : gestionnairePersonne.getListePersonne()) {
+		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 
-			Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
+			Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
 			GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-			waypoints.add(new SwingWaypoint(geo, p.getNumClient()));
+			waypoints.add(new SwingWaypoint(this, geo, entry.getValue()));
 		}
 
 		// Set the overlay painter
@@ -192,6 +195,17 @@ public class MainWindow extends JFrame {
 		for (SwingWaypoint w : waypoints) {
 			mapViewer.add(w.getButton());
 		}
+		
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				saveSettings();
+				saveCoordonne();
+				System.exit(0);
+			}
+		});
+
 
 		// OpenStreetMapUtils.getInstance().filtreDistance("Marseille", 19);
 
@@ -447,16 +461,6 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 1.0;
 		this.add(mapViewer, gridBagConstraints);
-
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				saveSettings();
-				System.exit(0);
-			}
-		});
-
 	}
 
 	public void setZoom(int zoom) {
@@ -589,16 +593,21 @@ public class MainWindow extends JFrame {
 
 		System.out.println("Paramètres sauvegardés");
 	}
+	
+	private void saveCoordonne() {
+		Memoire.save(gestionnaireCoordonne, "coordonnee.cfg");
+		System.out.println("coordonnees sauvegardés");
+	}
 
 	private void printWaypoints() {
 		mapViewer.removeAll();
 		initComponentsMap();
 		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
-		for (Personne p : gestionnairePersonne.getListePersonne()) {
-			System.out.println(p.getVille());
-			Coordonnee c = gestionnaireCoordonne.getCoordonnee(p.getVille());
+		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
+
+			Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
 			GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-			waypoints.add(new SwingWaypoint(geo, p.getNumClient()));
+			waypoints.add(new SwingWaypoint(this, geo, entry.getValue()));
 		}
 
 		// Set the overlay painter
@@ -610,6 +619,7 @@ public class MainWindow extends JFrame {
 		for (SwingWaypoint w : waypoints) {
 			mapViewer.add(w.getButton());
 		}
+
 
 	}
 }

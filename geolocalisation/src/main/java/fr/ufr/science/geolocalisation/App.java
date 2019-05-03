@@ -3,6 +3,7 @@ package fr.ufr.science.geolocalisation;
 import javax.swing.UIManager;
 
 import fr.ufr.science.geolocalisation.IHM.MainWindow;
+import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.RestaurationCSV;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
@@ -21,7 +22,7 @@ import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 //export en jar
 public class App {
 	public static GestionnairePersonne gestionnairePersonne = new GestionnairePersonne();
-	public static GestionnaireCoordonnee gestionnaireCoordonne = new GestionnaireCoordonnee();
+	public static GestionnaireCoordonnee gestionnaireCoordonne;
 
 
 	public static void main(String[] args) {
@@ -35,6 +36,14 @@ public class App {
 			e.printStackTrace();
 		}
 
+		gestionnaireCoordonne = loadCoordonne();
 		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne);
+	}
+	
+	private static GestionnaireCoordonnee loadCoordonne() {
+		GestionnaireCoordonnee gestionnaireCoordonnee = (GestionnaireCoordonnee) Memoire.read("coordonnee.cfg");
+		if(gestionnaireCoordonnee != null)
+			return gestionnaireCoordonnee;
+		return new GestionnaireCoordonnee();
 	}
 }

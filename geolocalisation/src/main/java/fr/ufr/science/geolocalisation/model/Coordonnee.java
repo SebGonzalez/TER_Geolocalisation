@@ -1,6 +1,10 @@
 package fr.ufr.science.geolocalisation.model;
 
-public class Coordonnee {
+import java.io.Serializable;
+
+public class Coordonnee implements Serializable {
+	
+	private static final long serialVersionUID = -1445172941609914879L;
 
     private double lat;
     private double lng;

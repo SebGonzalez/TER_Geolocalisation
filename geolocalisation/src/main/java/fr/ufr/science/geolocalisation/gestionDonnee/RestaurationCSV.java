@@ -10,36 +10,32 @@ import java.util.ArrayList;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
-public class RestaurationCSV 
-{
-	public void restauration(GestionnairePersonne g) throws IOException
-	{
+public class RestaurationCSV {
+	public void restauration(GestionnairePersonne g) throws IOException {
 		File f = new File("SauvegardePersonne.csv");
-		
-		if(!f.exists())
-		{
+
+		if (!f.exists()) {
 			System.out.println("Pas de fichier CSV, donc pas de données a recuperer");
 			return;
 		}
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
-		String[] tabChaine;		//POUR SEPARATION DES LIGNES EN ELLEMENT SEPARE PARS ;
+		String[] tabChaine; // POUR SEPARATION DES LIGNES EN ELLEMENT SEPARE PARS ;
 
-		while(line!=null)	//READLINE RENV NULL SI FICHIER LUE EN ENTIER
+		while (line != null) // READLINE RENV NULL SI FICHIER LUE EN ENTIER
 		{
-			tabChaine = line.split(";");	//SEPARATION DANS NOTRE FICHIER
-			if(tabChaine.length>=5)
-			{
-				Personne p = new Personne(tabChaine[0],tabChaine[1],tabChaine[2],tabChaine[4],tabChaine[3]);
-				for(int j=5;j<tabChaine.length-1;j++)
-				{
-					p.getInfoComplementaires().put(tabChaine[j],tabChaine[j+1]);
+			tabChaine = line.split(";"); // SEPARATION DANS NOTRE FICHIER
+			if (tabChaine.length >= 5) {
+				Personne p = new Personne(tabChaine[0], tabChaine[1], tabChaine[2], tabChaine[4], tabChaine[3]);
+				for (int j = 5; j < tabChaine.length - 1; j++) {
+					p.getInfoComplementaires().put(tabChaine[j], tabChaine[j + 1]);
 				}
 				g.addPersonne(p);
-				//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
+				// System.out.println(p.getNom()+ " " + p.getPrenom()+ " " + p.getNumClient() +"
+				// " + p.getPays()+ " " + p.getVille());
 			}
-			line = br.readLine();	
+			line = br.readLine();
 		}
 
 		br.close();
@@ -47,13 +43,11 @@ public class RestaurationCSV
 
 	}
 
-	public static void main(String[] args) throws IOException
-	{
+	public static void main(String[] args) throws IOException {
 		RestaurationCSV r = new RestaurationCSV();
 		GestionnairePersonne gestP = new GestionnairePersonne();
-		if(gestP.getListePersonne().isEmpty())
-		{
-		System.out.println("vide");
+		if (gestP.getGestionnairePersonne().isEmpty()) {
+			System.out.println("vide");
 		}
 		r.restauration(gestP);
 	}

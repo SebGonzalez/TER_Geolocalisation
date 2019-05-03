@@ -1,13 +1,16 @@
 package fr.ufr.science.geolocalisation.util;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 
-public class GestionnaireCoordonnee {
+public class GestionnaireCoordonnee implements Serializable {
 	
-	Map<String, Coordonnee> coordonnee;
+	private static final long serialVersionUID = -1445172941609914879L;
+	
+	private Map<String, Coordonnee> coordonnee;
 	
 	public GestionnaireCoordonnee() {
 		this.coordonnee = new HashMap<>();

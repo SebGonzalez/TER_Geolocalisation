@@ -1,7 +1,8 @@
 package fr.ufr.science.geolocalisation.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 //serialiser
 public class Personne 
@@ -80,6 +81,14 @@ public class Personne
 	@Override
 	public String toString() {
 		return this.getPrenom() + " " + this.getNom();
+	}
+	
+	public String toStringInfoComplementaire() {
+		String chaine = "";
+		for (Entry<String, String> entry : infoComplementaires.entrySet()) {
+			chaine += entry.getKey() + " : " + entry.getValue() + "\n";
+		}
+		return chaine;
 	}
 
 }

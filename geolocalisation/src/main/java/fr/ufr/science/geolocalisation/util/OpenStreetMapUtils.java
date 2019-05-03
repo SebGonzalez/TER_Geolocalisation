@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -167,11 +168,13 @@ public class OpenStreetMapUtils {
 
 		Coordonnee c = App.gestionnaireCoordonne.getCoordonnee(adresse);
 
-		for (Personne p : App.gestionnairePersonne.getListePersonne()) {
-			Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(p.getVille());
+		for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
+			Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(entry.getKey());
 			if (distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
-				System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
-				listePersonneFiltre.add(p);
+				for (Personne p : entry.getValue()) {
+					System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
+					listePersonneFiltre.add(p);
+				}
 			}
 		}
 
