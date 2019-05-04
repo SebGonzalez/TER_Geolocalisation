@@ -11,6 +11,7 @@ import fr.ufr.science.geolocalisation.model.Personne;
 public class GestionnairePersonne {
 	//private List<Personne> listePersonne;
 	private Map<String, List<Personne>> dictionnairePersonne;
+	private int nbPersonne = 0;
 	RestaurationCSV rest = new RestaurationCSV();
 	
 	
@@ -34,6 +35,7 @@ public class GestionnairePersonne {
 			
 			dictionnairePersonne.put(p.getVille(), listePersonnes);
 		}
+		nbPersonne++;
 	}
 	
 	public Map<String, List<Personne>> getGestionnairePersonne() {
@@ -47,5 +49,15 @@ public class GestionnairePersonne {
 		}*/
 		return null;
 	}
+
+	public int getNbPersonne() {
+		return nbPersonne;
+	}
+
+	public void setNbPersonne(int nbPersonne) {
+		this.nbPersonne = nbPersonne;
+	}
+	
+	
 	
 }

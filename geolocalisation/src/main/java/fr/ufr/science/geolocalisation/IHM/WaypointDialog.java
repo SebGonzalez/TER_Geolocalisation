@@ -27,7 +27,7 @@ public class WaypointDialog extends JDialog {
 		this.setLocationRelativeTo(null);
 		this.listePersonnes = listePersonnes;
 		
-		tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		for(Personne p : listePersonnes) {
 			JPanel panel = new JPanel();
@@ -42,16 +42,17 @@ public class WaypointDialog extends JDialog {
 			JTextArea textArea = new JTextArea();
 			textArea.setText(toPrint);
 			textArea.setEditable(false);
+			textArea.setCaretPosition(0);
 			
 			JScrollPane scrollPane = new JScrollPane(textArea);
 			
 			panel.add(scrollPane);
 			
-			tabbedPane.add(p.getNom() + " " + p.getPrenom(), panel);
+			tabbedPane.add(p.getNom() + " " + p.getPrenom(), scrollPane);
 			System.out.println(p.toStringInfoComplementaire());
 			
 		}
-		this.add(tabbedPane, BorderLayout.CENTER);
+		this.add(tabbedPane);
 	}
 	
 	

@@ -89,6 +89,7 @@ public class MainWindow extends JFrame {
 	private JMenuBar menuBar;
 	private JMenuItem importExcel;
 	private JFileChooser chooseExcel;
+	public JList<Personne> displayList;
 
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
@@ -327,7 +328,7 @@ public class MainWindow extends JFrame {
 		JLabel labelDistance = new JLabel("Distance (km) : ");
 		JButton filtre = new JButton("Lancer le filtre");
 
-		final JList<Personne> displayList = new JList<>();
+		displayList = new JList<>();
 		JScrollPane scrollPane = new JScrollPane(displayList);
 
 		menuBar = new JMenuBar();
@@ -422,11 +423,9 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<Personne> listePersonne = OpenStreetMapUtils.getInstance().filtreDistance(
+				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this,
 						distanceCheckCityName.getText(), Integer.parseInt(distanceCheckRange.getText()));
-				Personne[] array = new Personne[listePersonne.size()];
-				listePersonne.toArray(array);
-				displayList.setListData(array);
+				
 			}
 		});
 		gridBagConstraints = new GridBagConstraints();

@@ -1,5 +1,6 @@
 package fr.ufr.science.geolocalisation.util;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -8,13 +9,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.Map.Entry;
+
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import fr.ufr.science.geolocalisation.App;
+import fr.ufr.science.geolocalisation.IHM.MainWindow;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 
@@ -163,21 +172,56 @@ public class OpenStreetMapUtils {
 		return 999;
 	}
 
-	public List<Personne> filtreDistance(String adresse, int distance) {
+	public void filtreDistance(JFrame frame, String adresse, int distance) {
+		
+		Task task = new Task(frame, adresse, distance);
+		task.execute();
+	}
+
+	class Task extends SwingWorker<List<Personne>, Void> {
+		ProgressMonitor progressMonitor;
+		JList<Personne> list;
+		String adresse;
+		int distance;
+		int progress = 0;
 		List<Personne> listePersonneFiltre = new ArrayList<>();
 
-		Coordonnee c = App.gestionnaireCoordonne.getCoordonnee(adresse);
-
-		for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
-			Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(entry.getKey());
-			if (distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
-				for (Personne p : entry.getValue()) {
-					System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
-					listePersonneFiltre.add(p);
-				}
-			}
+		public Task(JFrame frame, String adresse, int distance) {
+			progressMonitor = new ProgressMonitor(frame, "Calcul en cours", "Initialisation...", 0,
+					App.gestionnairePersonne.getGestionnairePersonne().size());
+			list = ((MainWindow)frame).displayList;
+			this.adresse = adresse;
+			this.distance = distance;
 		}
 
-		return listePersonneFiltre;
+		@Override
+		public List<Personne> doInBackground() { 
+
+			Coordonnee c = App.gestionnaireCoordonne.getCoordonnee(adresse);
+
+			for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
+				Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(entry.getKey());
+				if (distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+					for (Personne p : entry.getValue()) {
+						System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
+						listePersonneFiltre.add(p);
+					}
+				}
+				progress++;
+				progressMonitor.setProgress(progress);
+				progressMonitor.setNote("Avancement de " + progress + "/" + progressMonitor.getMaximum());
+			}
+			
+			return listePersonneFiltre;
+		}
+
+		@Override
+		public void done() {
+			Personne[] array = new Personne[listePersonneFiltre.size()];
+			listePersonneFiltre.toArray(array);
+			list.setListData(array);
+			Toolkit.getDefaultToolkit().beep();
+			progressMonitor.close();
+		}
 	}
 }
