@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
@@ -26,11 +28,16 @@ public class RestaurationCSV {
 		while (line != null) // READLINE RENV NULL SI FICHIER LUE EN ENTIER
 		{
 			tabChaine = line.split(";"); // SEPARATION DANS NOTRE FICHIER
+			//System.out.println(tabChaine);
 			if (tabChaine.length >= 5) {
 				Personne p = new Personne(tabChaine[0], tabChaine[1], tabChaine[2], tabChaine[4], tabChaine[3]);
-				for (int j = 5; j < tabChaine.length - 1; j++) {
+				for (int j = 5; j < tabChaine.length - 1; j+=2) 
+				{
+					//System.out.println(tabChaine[j] +" : "+ tabChaine[j + 1]);
 					p.getInfoComplementaires().put(tabChaine[j], tabChaine[j + 1]);
 				}
+				
+				
 				g.addPersonne(p);
 				// System.out.println(p.getNom()+ " " + p.getPrenom()+ " " + p.getNumClient() +"
 				// " + p.getPays()+ " " + p.getVille());

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -123,6 +124,13 @@ public class ExtractionExcel
 						}
 
 					}
+					else
+					{
+						if (idNomColonne.containsKey(i))
+						{
+							p.getInfoComplementaires().put(idNomColonne.get(i),"Inconnue");	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
+						}
+					}
 					i++;
 
 
@@ -135,6 +143,17 @@ public class ExtractionExcel
 			{
 				g.addPersonne(p);
 				save.sauvegarde(p,tabNumclient);
+				
+				/*Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
+			    while (it2.hasNext()) 
+			    {
+			        Map.Entry pair = (Map.Entry)it2.next();
+			        //fw.write(";");
+			        //fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+			        System.out.println(pair.getKey()+";"+pair.getValue());
+			        //System.out.println("A");
+			        it2.remove(); // avoids a ConcurrentModificationException
+			    }*/
 			}
 
 		}
@@ -145,7 +164,7 @@ public class ExtractionExcel
 	{		
 		ExtractionExcel ec = new ExtractionExcel(); 
 
-		File f = new File("Exple-mouvements-BDD-Grands-Mécènes2.xlsx");
+		File f = new File("test.xlsx");
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		ec.readFile(f,gestP);
 	}

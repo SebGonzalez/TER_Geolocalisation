@@ -39,7 +39,6 @@ public class SauvegardeCSV
 		//System.out.println("A");
 		if(dejaPresent==false)
 		{
-			//System.out.println("A");
 			//SAUV INFO BASE
 			numClient.add(p.getNumClient());	//AJOUTE NOUVEAU NUMCLIENT A LA LISTE DES DEJA PRESENT
 			fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille());
@@ -66,7 +65,7 @@ public class SauvegardeCSV
 		{
 			f.createNewFile();
 		}
-		//FileReader fr = new FileReader("SauvegardePersonne.csv");
+		
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
@@ -84,6 +83,16 @@ public class SauvegardeCSV
 
 		br.close();
 		fr.close();
+	}
+	
+	public void resetSauvegarde()	//RESET DU CSV 
+	{
+		File f = new File("SauvegardePersonne.csv");
+		if(!f.exists())
+		{
+			return;
+		}
+		f.delete();
 	}
 
 	public static void main(String[] args) throws IOException
