@@ -13,13 +13,17 @@ import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 public class RestaurationCSV {
-	public void restauration(GestionnairePersonne g) throws IOException {
+	
+	public void restauration(GestionnairePersonne g) throws IOException 
+	{
 		File f = new File("SauvegardePersonne.csv");
 
-		if (!f.exists()) {
+		if (!f.exists()) 
+		{
 			System.out.println("Pas de fichier CSV, donc pas de données a recuperer");
 			return;
 		}
+		
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
@@ -28,12 +32,12 @@ public class RestaurationCSV {
 		while (line != null) // READLINE RENV NULL SI FICHIER LUE EN ENTIER
 		{
 			tabChaine = line.split(";"); // SEPARATION DANS NOTRE FICHIER
-			//System.out.println(tabChaine);
+			
 			if (tabChaine.length >= 5) {
 				Personne p = new Personne(tabChaine[0], tabChaine[1], tabChaine[2], tabChaine[4], tabChaine[3]);
-				for (int j = 5; j < tabChaine.length - 1; j+=2) 
+				
+				for (int j = 5; j < tabChaine.length - 1; j+=2) //INFO COMP SE LISENT 2 PARS 2
 				{
-					//System.out.println(tabChaine[j] +" : "+ tabChaine[j + 1]);
 					p.getInfoComplementaires().put(tabChaine[j], tabChaine[j + 1]);
 				}
 				
@@ -50,9 +54,11 @@ public class RestaurationCSV {
 
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException 
+	{
 		RestaurationCSV r = new RestaurationCSV();
 		GestionnairePersonne gestP = new GestionnairePersonne();
+		
 		if (gestP.getGestionnairePersonne().isEmpty()) {
 			System.out.println("vide");
 		}

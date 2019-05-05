@@ -38,7 +38,6 @@ public class ExtractionExcel
 		int[] tab = new int[5];
 
 		HashMap<Integer, String> idNomColonne = new HashMap<Integer, String>();		//STOCKE "ID DE LA COLONNE" "NOM DE LA COLONNE"
-		//HashMap<String, String> infoComp = new HashMap<String, String>();
 
 		while(rowIt.hasNext())	//TANT QUE LIGNES SUIVANTES EXISTE
 		{
@@ -80,7 +79,7 @@ public class ExtractionExcel
 						idNomColonne.put(i, cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE L'ID DE LA COLONNE AVEC LE NOM DE LA COLONNE
 					}
 					i++;
-					
+
 				}
 				prem=false;
 
@@ -117,7 +116,7 @@ public class ExtractionExcel
 						}
 						else
 						{
-							if (idNomColonne.containsKey(i))
+							if (idNomColonne.containsKey(i))	//ON SUPPRIME LES RETOURS A LA LIGNE DANS LES CELLULES
 							{
 								p.getInfoComplementaires().put(idNomColonne.get(i),cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
 							}
@@ -136,6 +135,7 @@ public class ExtractionExcel
 
 				}
 			}
+			//POUR TEST
 			//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			//System.out.println(p.infoComplementaires.get("Score ISF"));
 
@@ -143,17 +143,6 @@ public class ExtractionExcel
 			{
 				g.addPersonne(p);
 				save.sauvegarde(p,tabNumclient);
-				
-				/*Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
-			    while (it2.hasNext()) 
-			    {
-			        Map.Entry pair = (Map.Entry)it2.next();
-			        //fw.write(";");
-			        //fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
-			        System.out.println(pair.getKey()+";"+pair.getValue());
-			        //System.out.println("A");
-			        it2.remove(); // avoids a ConcurrentModificationException
-			    }*/
 			}
 
 		}
@@ -166,6 +155,8 @@ public class ExtractionExcel
 
 		File f = new File("test.xlsx");
 		GestionnairePersonne gestP = new GestionnairePersonne();
+		RestaurationCSV r = new RestaurationCSV();
+		r.restauration(gestP);
 		ec.readFile(f,gestP);
 	}
 

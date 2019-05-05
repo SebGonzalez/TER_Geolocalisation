@@ -23,10 +23,11 @@ public class SauvegardeCSV
 		boolean dejaPresent=false;
 		FileWriter fw = new FileWriter("SauvegardePersonne.csv",true);
 
+		//REGARDE SI LA PERSONNE EST DEJA STOCKÉ DANS LE FICHIER CSV
 		while (it.hasNext()) 
 		{
 			String s = it.next();
-			if(p.getNumClient()==null)
+			if(p.getNumClient()==null)	//NUMCLIENT DOIT EXISTER, JUSTE UNE SECURITÉE
 			{
 				dejaPresent=true;
 			}
@@ -77,7 +78,7 @@ public class SauvegardeCSV
 		{
 			tabChaine = line.split(";");	//SEPARATION DANS NOTRE FICHIER
 			numclient.add(tabChaine[0]);//PREMIER ELEM LUE EST LE NUMCLIENT
-			//System.out.println(tabChaine[0]);
+			
 			line = br.readLine();
 		}
 
