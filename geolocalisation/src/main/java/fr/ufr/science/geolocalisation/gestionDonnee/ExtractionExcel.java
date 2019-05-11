@@ -43,6 +43,7 @@ public class ExtractionExcel
 		{
 
 			Personne p = new Personne(); //CREATION NOUVELLE PERSONNE
+			p.setFichier(file.getName());
 			Row row = rowIt.next();
 
 			Iterator<Cell> cellIterator = row.cellIterator();	//ITERATION SUR CELLULE DE LA LIGNE

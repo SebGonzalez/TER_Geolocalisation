@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -29,6 +28,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,6 +41,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -57,11 +59,13 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
+import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
 
@@ -70,6 +74,7 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private GestionnairePersonne gestionnairePersonne;
 	private GestionnaireCoordonnee gestionnaireCoordonne;
+	private GestionnaireFichier gestionnaireFichier;
 
 	final JXMapViewer mapViewer;
 
@@ -80,7 +85,6 @@ public class MainWindow extends JFrame {
 	private JSlider zoomSlider;
 	private JTextField distanceCheckCityName;
 	private JTextField distanceCheckRange;
-	private JLabel distanceCheckResult;
 	private GeoPosition currentPosition;
 	private int currentZoom;
 
@@ -94,14 +98,16 @@ public class MainWindow extends JFrame {
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
-	
+
 	DefaultTileFactory tileFactory;
 
-	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne) {
+	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne,
+			GestionnaireFichier gestionnaireFichier) {
 		this.gestionnairePersonne = gestionnairePersonne;
 		this.gestionnaireCoordonne = gestionnaireCoordonne;
+		this.gestionnaireFichier = gestionnaireFichier;
 
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -116,6 +122,11 @@ public class MainWindow extends JFrame {
 		mapViewer.setTileFactory(tileFactory);
 
 		initComponents();
+
+		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		printWaypoints();
 
 		zoomSlider.setOpaque(false);
 
@@ -176,37 +187,15 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
-		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
-
-			Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
-			GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-			waypoints.add(new SwingWaypoint(this, geo, entry.getValue()));
-		}
-
-		// Set the overlay painter
-		WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
-		swingWaypointPainter.setWaypoints(waypoints);
-		mapViewer.setOverlayPainter(swingWaypointPainter);
-
-		// Add the JButtons to the map viewer
-		for (SwingWaypoint w : waypoints) {
-			mapViewer.add(w.getButton());
-		}
-		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				saveSettings();
-				saveCoordonne();
+				saveFile();
 				System.exit(0);
 			}
 		});
-
 
 		// OpenStreetMapUtils.getInstance().filtreDistance("Marseille", 19);
 
@@ -218,13 +207,13 @@ public class MainWindow extends JFrame {
 		zoomOutButton = new JButton();
 		hideMenu = new JButton();
 		zoomSlider = new JSlider();
-		
+
 		GridBagConstraints gridBagConstraints;
 		mapViewer.setLayout(new GridBagLayout());
 
 		jPanel1.setOpaque(false);
 		jPanel1.setLayout(new GridBagLayout());
-		
+
 		zoomInButton.setAction(getZoomOutAction());
 		zoomInButton.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/plus.png")));
 		zoomInButton.setMargin(new Insets(2, 2, 10, 2));
@@ -313,7 +302,7 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.weighty = 1.0;
 		gridBagConstraints.insets = new Insets(4, 4, 4, 4);
 		mapViewer.add(jPanel1, gridBagConstraints);
-		
+
 		mapViewer.revalidate();
 	}
 
@@ -359,6 +348,10 @@ public class MainWindow extends JFrame {
 
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						File selectedFile = chooseExcel.getSelectedFile();
+						gestionnaireFichier.ajoutFichier(selectedFile.getName());
+						menu.removeAll();
+						mapViewer.removeAll();
+						initComponents();
 						ExtractionExcel extracteur = new ExtractionExcel();
 						try {
 							extracteur.readFile(selectedFile, gestionnairePersonne);
@@ -423,9 +416,9 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this,
-						distanceCheckCityName.getText(), Integer.parseInt(distanceCheckRange.getText()));
-				
+				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this, distanceCheckCityName.getText(),
+						Integer.parseInt(distanceCheckRange.getText()));
+
 			}
 		});
 		gridBagConstraints = new GridBagConstraints();
@@ -449,12 +442,44 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.weighty = 10;
 		menu.add(scrollPane, gridBagConstraints);
 
+		int compteur = 0;
+		for (Entry<String, Boolean> entry : gestionnaireFichier.getDictionnaire().entrySet()) {
+			JLabel label = new JLabel(entry.getKey());
+			gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 0;
+			gridBagConstraints.gridy = 7 + compteur;
+			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+			gridBagConstraints.weightx = 1;
+			gridBagConstraints.weighty = 1;
+			menu.add(label, gridBagConstraints);
+
+			JCheckBox checkBox = new JCheckBox();
+			checkBox.setSelected(entry.getValue());
+			checkBox.addChangeListener(new ChangeListener() {
+				
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					gestionnaireFichier.setVisibilityFile(label.getText(),checkBox.isSelected());
+					printWaypoints();
+				}
+			});
+			gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 1;
+			gridBagConstraints.gridy = 7 + compteur;
+			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+			gridBagConstraints.weightx = 1;
+			gridBagConstraints.weighty = 1;
+			menu.add(checkBox, gridBagConstraints);
+
+			compteur++;
+		}
+
 		/*
 		 * 
 		 */
 
-		initComponentsMap();
-		
+		// initComponentsMap();
+
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
@@ -592,9 +617,10 @@ public class MainWindow extends JFrame {
 
 		System.out.println("Paramètres sauvegardés");
 	}
-	
-	private void saveCoordonne() {
+
+	private void saveFile() {
 		Memoire.save(gestionnaireCoordonne, "coordonnee.cfg");
+		Memoire.save(gestionnaireFichier, "fichiers.cfg");
 		System.out.println("coordonnees sauvegardés");
 	}
 
@@ -603,10 +629,13 @@ public class MainWindow extends JFrame {
 		initComponentsMap();
 		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
 		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
+			String fichier = entry.getValue().get(0).getFichier();
 
-			Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
-			GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-			waypoints.add(new SwingWaypoint(this, geo, entry.getValue()));
+			if (gestionnaireFichier.getVisibilityFile(fichier)) {
+				Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
+				GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
+				waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));
+			}
 		}
 
 		// Set the overlay painter
@@ -618,7 +647,6 @@ public class MainWindow extends JFrame {
 		for (SwingWaypoint w : waypoints) {
 			mapViewer.add(w.getButton());
 		}
-
 
 	}
 }

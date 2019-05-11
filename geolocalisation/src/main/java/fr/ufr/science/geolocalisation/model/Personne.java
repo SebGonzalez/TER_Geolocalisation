@@ -16,17 +16,22 @@ public class Personne
 	
 	public HashMap<String, String> infoComplementaires;
 	
+	private boolean filtre = true;
+	
+	private String fichier;
+	
 	public Personne() 
 	{
 		this.infoComplementaires  = new HashMap<String, String>();
 	}
 
-	public Personne(String numClient, String nom, String prenom, String ville, String pays) {
+	public Personne(String numClient, String nom, String prenom, String ville, String pays, String fichier) {
 		this.numClient = numClient;
 		this.nom = nom;
 		this.prenom = prenom;
 		this.ville = ville;
 		this.pays = pays;
+		this.fichier = fichier;
 		this.infoComplementaires  = new HashMap<String, String>();
 	}
 
@@ -78,6 +83,14 @@ public class Personne
 		this.infoComplementaires = infoComplementaires;
 	}
 	
+	public String getFichier() {
+		return fichier;
+	}
+
+	public void setFichier(String fichier) {
+		this.fichier = fichier;
+	}
+
 	@Override
 	public String toString() {
 		return this.getPrenom() + " " + this.getNom();

@@ -1,13 +1,11 @@
 package fr.ufr.science.geolocalisation.IHM;
 
 import java.awt.Dialog;
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -26,7 +24,7 @@ public class SwingWaypoint extends DefaultWaypoint {
 	private List<Personne> listePersonnes; // Pour afficher les infos de la personne
 	private JFrame frame;
 
-	public SwingWaypoint(JFrame frame, GeoPosition coord) {
+	public SwingWaypoint(JFrame frame, GeoPosition coord, Icon icon) {
 		super(coord);
 		this.frame = frame;
 		button = new JButton();
@@ -34,17 +32,12 @@ public class SwingWaypoint extends DefaultWaypoint {
 		button.setContentAreaFilled(false);
 		button.setBorder(null);
 		button.addMouseListener(new SwingWaypointMouseListener());
-		try {
-			Image img = ImageIO.read(getClass().getResource("/fr/ufr/science/geolocalisation/marker2.png"));
-			button.setIcon(new ImageIcon(img));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		button.setIcon(icon);
 		button.setVisible(true);
 	}
 
-	public SwingWaypoint(JFrame frame, GeoPosition coord, List<Personne> listePersonnes) { // Constructeur avec num Personne
-		this(frame, coord);
+	public SwingWaypoint(JFrame frame, GeoPosition coord, List<Personne> listePersonnes, Icon icon) { // Constructeur avec num Personne
+		this(frame, coord, icon);
 		this.listePersonnes = listePersonnes;
 	}
 

@@ -6,6 +6,7 @@ import fr.ufr.science.geolocalisation.IHM.MainWindow;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.RestaurationCSV;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
+import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 /**
@@ -22,6 +23,7 @@ import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 //export en jar
 public class App {
 	public static GestionnairePersonne gestionnairePersonne = new GestionnairePersonne();
+	public static GestionnaireFichier gestionnaireFichier;
 	public static GestionnaireCoordonnee gestionnaireCoordonne;
 
 
@@ -37,7 +39,10 @@ public class App {
 		}
 
 		gestionnaireCoordonne = loadCoordonne();
-		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne);
+		gestionnaireFichier = loadFichier();
+		gestionnaireFichier.loadMarker();
+		System.out.println(gestionnaireFichier.getDictionnaire().size());
+		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne, gestionnaireFichier);
 	}
 	
 	private static GestionnaireCoordonnee loadCoordonne() {
@@ -45,5 +50,12 @@ public class App {
 		if(gestionnaireCoordonnee != null)
 			return gestionnaireCoordonnee;
 		return new GestionnaireCoordonnee();
+	}
+	
+	private static GestionnaireFichier loadFichier() {
+		GestionnaireFichier gestionnaireFichier = (GestionnaireFichier) Memoire.read("fichiers.cfg");
+		if(gestionnaireFichier != null)
+			return gestionnaireFichier;
+		return new GestionnaireFichier();
 	}
 }
