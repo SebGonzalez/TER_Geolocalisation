@@ -45,4 +45,8 @@ public class GestionnaireFichier implements Serializable {
 	public Icon getIcon(String nomFichier) {
 		return gestionnaireMarker.getIcon(nomFichier);
 	}
+
+	public Icon getIconFiltre() {
+		return gestionnaireMarker.getIconFiltre();
+	}
 }

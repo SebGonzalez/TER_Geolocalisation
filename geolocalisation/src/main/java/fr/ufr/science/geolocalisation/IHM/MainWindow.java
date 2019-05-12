@@ -715,10 +715,15 @@ public class MainWindow extends JFrame {
 		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 			String fichier = entry.getValue().get(0).getFichier();
 			
-			if (gestionnaireFichier.getVisibilityFile(fichier) && gestionnaireFiltre.showPersonne(entry.getValue().get(0))) {
+			String valeur = gestionnaireFiltre.showPersonne(entry.getValue().get(0));
+			if (gestionnaireFichier.getVisibilityFile(fichier) && !valeur.equals("false")) {
 				Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
 				GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-				waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));
+				if(valeur.equals("others"))
+					waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));
+				else {
+					waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIconFiltre()));
+				}
 			}
 		}
 

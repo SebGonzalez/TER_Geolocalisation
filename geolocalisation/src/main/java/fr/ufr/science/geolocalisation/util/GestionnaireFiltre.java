@@ -47,15 +47,15 @@ public class GestionnaireFiltre {
 		dictionnaireFiltres.put(nomFiltre, visibility);
 	}
 
-	public boolean showPersonne(Personne personne) {
-		if(showOthers)
-			return true;
-		
+	public String showPersonne(Personne personne) {		
 		for (Entry<String, Boolean> entry : dictionnaireFiltres.entrySet()) {
-			if(entry.getValue() && personne.containsFiltre(entry.getKey())) return true;
+			if(entry.getValue() && personne.containsFiltre(entry.getKey())) return "filtre";
 		}
 		
-		return false;
+		if(showOthers)
+			return "others";
+		
+		return "false";
 	}
 	
 	public void setShowOthers(boolean visibility) {
