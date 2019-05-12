@@ -86,7 +86,7 @@ public class SauvegardeCSV
 		fr.close();
 	}
 	
-	public void resetSauvegarde()	//RESET DU CSV 
+	public static void resetSauvegarde()	//RESET DU CSV 
 	{
 		File f = new File("SauvegardePersonne.csv");
 		if(!f.exists())

@@ -63,6 +63,7 @@ import org.jxmapviewer.viewer.WaypointPainter;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExportExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
+import fr.ufr.science.geolocalisation.gestionDonnee.SauvegardeCSV;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.model.Route;
@@ -95,9 +96,11 @@ public class MainWindow extends JFrame {
 
 	private JButton hideMenu;
 	private JMenu menuFichier;
+	private JMenu menuAffichage;
 	private JMenuBar menuBar;
 	private JMenuItem importExcel;
 	private JMenuItem exportExcel;
+	private JMenuItem clearMap;
 	private JFileChooser chooseExcelImport;
 	private JFileChooser chooseExcelExport;
 	public JList<Personne> displayList;
@@ -338,8 +341,10 @@ public class MainWindow extends JFrame {
 
 		menuBar = new JMenuBar();
 		menuFichier = new JMenu("Fichier");
+		menuAffichage = new JMenu("Affichage");
 		importExcel = new JMenuItem("Importer Excel");
 		exportExcel = new JMenuItem("Exporter Excel");
+		clearMap = new JMenuItem("Nettoyer la carte");
 		chooseExcelImport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		chooseExcelExport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
@@ -349,7 +354,9 @@ public class MainWindow extends JFrame {
 		menu.setLayout(new GridBagLayout());
 		menuFichier.add(importExcel);
 		menuFichier.add(exportExcel);
+		menuAffichage.add(clearMap);
 		menuBar.add(menuFichier);
+		menuBar.add(menuAffichage);
 		this.setJMenuBar(menuBar);
 
 		importExcel.addActionListener(new ActionListener() {
@@ -402,6 +409,17 @@ public class MainWindow extends JFrame {
 						initComponents();
 						ExportExcel.exportation(selectedFile, gestionnairePersonne);
 					}
+				}
+			}
+			
+		});
+		
+		menuAffichage.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == clearMap) {
+					SauvegardeCSV.resetSauvegarde();
 				}
 			}
 			
