@@ -64,11 +64,13 @@ import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.model.Route;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
+import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class MainWindow extends JFrame {
 
@@ -100,6 +102,9 @@ public class MainWindow extends JFrame {
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
+	
+	private String graphHopperPath = "A://"; // DEFAULT
+	private boolean isMapImported = false;
 
 	DefaultTileFactory tileFactory;
 
@@ -112,6 +117,10 @@ public class MainWindow extends JFrame {
 
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+		//Initialisation GraphHopper pour le routing. 
+		//TODO Vérifier si la map est importée
+		RoutingOffline.init(graphHopperPath);
+		
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
 		tileFactory = new DefaultTileFactory(info);
@@ -119,6 +128,7 @@ public class MainWindow extends JFrame {
 		// Setup local file cache
 		File cacheDir = new File(System.getProperty("user.home") + File.separator + ".jxmapviewer2");
 		tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, false));
+		
 
 		// Setup JXMapViewer
 		mapViewer = new JXMapViewer();
@@ -645,6 +655,10 @@ public class MainWindow extends JFrame {
 		double lon = Double.parseDouble(settings.getProperty("lon"));
 		currentPosition = new GeoPosition(lat, lon);
 		currentZoom = Integer.parseInt(settings.getProperty("currentZoom"));
+		
+		if(settings.getProperty("isMapImported", "false").compareTo("false") == 0)
+			isMapImported = false;
+		else isMapImported = true;
 
 		System.out.println("Paramètres chargés");
 	}
@@ -656,6 +670,7 @@ public class MainWindow extends JFrame {
 		settings.setProperty("currentZoom", "13");
 		settings.setProperty("lat", "46.227638");
 		settings.setProperty("lon", "2.213749");
+		settings.setProperty("isMapImported", "false");
 
 		try {
 			OutputStream out = new FileOutputStream(f);
@@ -683,6 +698,9 @@ public class MainWindow extends JFrame {
 			settings.setProperty("currentZoom", Integer.toString(currentZoom));
 			settings.setProperty("lat", Double.toString(currentPosition.getLatitude()));
 			settings.setProperty("lon", Double.toString(currentPosition.getLongitude()));
+			if(isMapImported)
+				settings.setProperty("isMapImported", "true");
+			else settings.setProperty("isMapImported", "false");
 
 			File f = new File("settings.cfg");
 

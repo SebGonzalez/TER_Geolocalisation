@@ -9,6 +9,7 @@ import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
+import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 /**
  * Hello world!

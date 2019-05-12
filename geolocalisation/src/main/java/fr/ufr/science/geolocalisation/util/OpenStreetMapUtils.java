@@ -204,7 +204,16 @@ public class OpenStreetMapUtils {
 
 			for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 				Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(entry.getKey());
-				if (distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance && distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+				
+				if(RoutingOffline.getRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()).getDistance() == -1) {
+					if (distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance && distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+						for (Personne p : entry.getValue()) {
+							System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
+							listePersonneFiltre.add(p);
+							p.addFiltre("distance_" + adresse + "_" + distance);
+						}
+					}
+				}else if (RoutingOffline.getRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()).getDistance()/1000 <= distance) {
 					for (Personne p : entry.getValue()) {
 						System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
 						listePersonneFiltre.add(p);
