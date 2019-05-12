@@ -7,6 +7,7 @@ import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.RestaurationCSV;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
+import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 /**
@@ -25,6 +26,7 @@ public class App {
 	public static GestionnairePersonne gestionnairePersonne = new GestionnairePersonne();
 	public static GestionnaireFichier gestionnaireFichier;
 	public static GestionnaireCoordonnee gestionnaireCoordonne;
+	public static GestionnaireFiltre gestionnaireFiltre;
 
 
 	public static void main(String[] args) {
@@ -38,11 +40,12 @@ public class App {
 			e.printStackTrace();
 		}
 
+		gestionnaireFiltre = new GestionnaireFiltre(gestionnairePersonne);
 		gestionnaireCoordonne = loadCoordonne();
 		gestionnaireFichier = loadFichier();
 		gestionnaireFichier.loadMarker();
 		System.out.println(gestionnaireFichier.getDictionnaire().size());
-		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne, gestionnaireFichier);
+		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne, gestionnaireFichier, gestionnaireFiltre);
 	}
 	
 	private static GestionnaireCoordonnee loadCoordonne() {

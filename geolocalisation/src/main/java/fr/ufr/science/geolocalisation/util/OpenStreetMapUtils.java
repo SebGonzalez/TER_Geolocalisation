@@ -185,6 +185,8 @@ public class OpenStreetMapUtils {
 		int distance;
 		int progress = 0;
 		List<Personne> listePersonneFiltre = new ArrayList<>();
+		
+		MainWindow frame;
 
 		public Task(JFrame frame, String adresse, int distance) {
 			progressMonitor = new ProgressMonitor(frame, "Calcul en cours", "Initialisation...", 0,
@@ -192,6 +194,7 @@ public class OpenStreetMapUtils {
 			list = ((MainWindow)frame).displayList;
 			this.adresse = adresse;
 			this.distance = distance;
+			this.frame = (MainWindow) frame;
 		}
 
 		@Override
@@ -201,12 +204,14 @@ public class OpenStreetMapUtils {
 
 			for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 				Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(entry.getKey());
-				if (distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+				if (distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance && distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
 					for (Personne p : entry.getValue()) {
 						System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
 						listePersonneFiltre.add(p);
+						p.addFiltre("distance_" + adresse + "_" + distance);
 					}
 				}
+				
 				progress++;
 				progressMonitor.setProgress(progress);
 				progressMonitor.setNote("Avancement de " + progress + "/" + progressMonitor.getMaximum());
@@ -217,6 +222,10 @@ public class OpenStreetMapUtils {
 
 		@Override
 		public void done() {
+			frame.menu.removeAll();
+			frame.initComponents();
+			frame.printWaypoints();
+			
 			Personne[] array = new Personne[listePersonneFiltre.size()];
 			listePersonneFiltre.toArray(array);
 			list.setListData(array);

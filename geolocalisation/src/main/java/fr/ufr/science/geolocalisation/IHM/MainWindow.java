@@ -38,6 +38,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -59,13 +60,13 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
-import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
+import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
 
@@ -75,11 +76,12 @@ public class MainWindow extends JFrame {
 	private GestionnairePersonne gestionnairePersonne;
 	private GestionnaireCoordonnee gestionnaireCoordonne;
 	private GestionnaireFichier gestionnaireFichier;
+	private GestionnaireFiltre gestionnaireFiltre;
 
 	final JXMapViewer mapViewer;
 
 	private JPanel jPanel1;
-	private JPanel menu;
+	public JPanel menu;
 	private JButton zoomInButton;
 	private JButton zoomOutButton;
 	private JSlider zoomSlider;
@@ -102,10 +104,11 @@ public class MainWindow extends JFrame {
 	DefaultTileFactory tileFactory;
 
 	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne,
-			GestionnaireFichier gestionnaireFichier) {
+			GestionnaireFichier gestionnaireFichier, GestionnaireFiltre gestionnaireFiltre) {
 		this.gestionnairePersonne = gestionnairePersonne;
 		this.gestionnaireCoordonne = gestionnaireCoordonne;
 		this.gestionnaireFichier = gestionnaireFichier;
+		this.gestionnaireFiltre = gestionnaireFiltre;
 
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -306,7 +309,7 @@ public class MainWindow extends JFrame {
 		mapViewer.revalidate();
 	}
 
-	private void initComponents() {
+	public void initComponents() {
 		GridBagConstraints gridBagConstraints;
 
 		menu = new JPanel();
@@ -418,6 +421,8 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this, distanceCheckCityName.getText(),
 						Integer.parseInt(distanceCheckRange.getText()));
+				
+				gestionnaireFiltre.ajoutFiltre("distance_" + distanceCheckCityName.getText() + "_" + distanceCheckRange.getText());
 
 			}
 		});
@@ -473,12 +478,91 @@ public class MainWindow extends JFrame {
 
 			compteur++;
 		}
+		
+		JSeparator sep = new JSeparator(JSeparator.HORIZONTAL);
+		sep.setPreferredSize(new Dimension(1, 5));
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 8 + compteur;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.insets = new Insets(10, 0, 10, 0);
+		menu.add(sep, gridBagConstraints);
+		
+		
+		JLabel labelFiltre = new JLabel("Filtres : ");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 9 + compteur;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(labelFiltre, gridBagConstraints);
+		
+		int compteurFiltre = 0;
+		for (Entry<String, Boolean> entry : gestionnaireFiltre.getFiltre().entrySet()) {
+			JLabel label = new JLabel(entry.getKey());
+			gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 0;
+			gridBagConstraints.gridy = 10 + compteur + compteurFiltre;
+			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+			gridBagConstraints.weightx = 1;
+			gridBagConstraints.weighty = 1;
+			menu.add(label, gridBagConstraints);
 
+			JCheckBox checkBox = new JCheckBox();
+			checkBox.setSelected(entry.getValue());
+			checkBox.addChangeListener(new ChangeListener() {
+				
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					gestionnaireFiltre.setVisibilityFile(label.getText(),checkBox.isSelected());
+					printWaypoints();
+				}
+			});
+			gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 1;
+			gridBagConstraints.gridy = 10 + compteur + compteurFiltre;
+			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+			gridBagConstraints.weightx = 1;
+			gridBagConstraints.weighty = 1;
+			menu.add(checkBox, gridBagConstraints);
+			
+			compteurFiltre++;
+		}
+
+		JLabel label = new JLabel("Autre");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 11 + compteur + compteurFiltre;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(label, gridBagConstraints);
+
+		JCheckBox checkBox = new JCheckBox();
+		checkBox.setSelected(gestionnaireFiltre.showOthers());
+		checkBox.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				gestionnaireFiltre.setShowOthers(checkBox.isSelected());
+				printWaypoints();
+			}
+		});
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 11 + compteur + compteurFiltre;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(checkBox, gridBagConstraints);
+		
 		/*
 		 * 
 		 */
-
-		// initComponentsMap();
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
@@ -624,14 +708,14 @@ public class MainWindow extends JFrame {
 		System.out.println("coordonnees sauvegardés");
 	}
 
-	private void printWaypoints() {
+	public void printWaypoints() {
 		mapViewer.removeAll();
 		initComponentsMap();
 		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
 		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 			String fichier = entry.getValue().get(0).getFichier();
-
-			if (gestionnaireFichier.getVisibilityFile(fichier)) {
+			
+			if (gestionnaireFichier.getVisibilityFile(fichier) && gestionnaireFiltre.showPersonne(entry.getValue().get(0))) {
 				Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
 				GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
 				waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));

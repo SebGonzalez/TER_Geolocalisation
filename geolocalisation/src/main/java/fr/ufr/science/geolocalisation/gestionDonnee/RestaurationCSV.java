@@ -36,7 +36,7 @@ public class RestaurationCSV {
 			if (tabChaine.length >= 6) {
 				Personne p = new Personne(tabChaine[0], tabChaine[1], tabChaine[2], tabChaine[4], tabChaine[3], tabChaine[5]);
 				
-				for (int j = 5; j < tabChaine.length - 1; j+=2) //INFO COMP SE LISENT 2 PARS 2
+				for (int j = 6; j < tabChaine.length - 1; j+=2) //INFO COMP SE LISENT 2 PARS 2
 				{
 					p.getInfoComplementaires().put(tabChaine[j], tabChaine[j + 1]);
 				}

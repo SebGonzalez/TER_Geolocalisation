@@ -1,5 +1,6 @@
 package fr.ufr.science.geolocalisation.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -16,13 +17,14 @@ public class Personne
 	
 	public HashMap<String, String> infoComplementaires;
 	
-	private boolean filtre = true;
+	private List<String> filtre;
 	
 	private String fichier;
 	
 	public Personne() 
 	{
 		this.infoComplementaires  = new HashMap<String, String>();
+		filtre = new ArrayList<>();
 	}
 
 	public Personne(String numClient, String nom, String prenom, String ville, String pays, String fichier) {
@@ -33,6 +35,7 @@ public class Personne
 		this.pays = pays;
 		this.fichier = fichier;
 		this.infoComplementaires  = new HashMap<String, String>();
+		filtre = new ArrayList<>();
 	}
 
 	public String getNumClient() {
@@ -90,6 +93,18 @@ public class Personne
 	public void setFichier(String fichier) {
 		this.fichier = fichier;
 	}
+	
+	public void addFiltre(String nomFiltre) {
+		this.filtre.add(nomFiltre);
+	}
+	
+	public void removeFiltre(String nomFiltre) {
+		this.filtre.remove(nomFiltre);
+	}
+	
+	public boolean containsFiltre(String nomFiltre) {
+		return filtre.contains(nomFiltre);
+	}
 
 	@Override
 	public String toString() {
@@ -103,5 +118,4 @@ public class Personne
 		}
 		return chaine;
 	}
-
 }
