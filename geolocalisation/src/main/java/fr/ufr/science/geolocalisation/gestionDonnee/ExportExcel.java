@@ -25,7 +25,7 @@ import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 public class ExportExcel 
 {
-	public void exportation(File file, GestionnairePersonne g)
+	public static void exportation(File file, GestionnairePersonne g)
 	{
 		int cptLigne=1;
 		int cptColonne=5;
@@ -153,6 +153,7 @@ public class ExportExcel
 		}
 		try {
 			FileOutputStream out = new FileOutputStream(file);
+			//System.out.println("Exporté: " + file);
 			workbook.write(out);
 			out.close();
 		}

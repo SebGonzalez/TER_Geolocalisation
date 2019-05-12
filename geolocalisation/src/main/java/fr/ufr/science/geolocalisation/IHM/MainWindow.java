@@ -60,6 +60,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.gestionDonnee.ExportExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
@@ -96,7 +97,9 @@ public class MainWindow extends JFrame {
 	private JMenu menuFichier;
 	private JMenuBar menuBar;
 	private JMenuItem importExcel;
-	private JFileChooser chooseExcel;
+	private JMenuItem exportExcel;
+	private JFileChooser chooseExcelImport;
+	private JFileChooser chooseExcelExport;
 	public JList<Personne> displayList;
 
 	private boolean sliderReversed = false;
@@ -336,13 +339,16 @@ public class MainWindow extends JFrame {
 		menuBar = new JMenuBar();
 		menuFichier = new JMenu("Fichier");
 		importExcel = new JMenuItem("Importer Excel");
-		chooseExcel = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		exportExcel = new JMenuItem("Exporter Excel");
+		chooseExcelImport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		chooseExcelExport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
 		setLayout(new GridBagLayout());
 
 		menu.setOpaque(true);
 		menu.setLayout(new GridBagLayout());
 		menuFichier.add(importExcel);
+		menuFichier.add(exportExcel);
 		menuBar.add(menuFichier);
 		this.setJMenuBar(menuBar);
 
@@ -352,15 +358,15 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int returnValue;
 				if (e.getSource() == importExcel) {
-					chooseExcel.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					chooseExcel.setMultiSelectionEnabled(false);
+					chooseExcelImport.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooseExcelImport.setMultiSelectionEnabled(false);
 					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
-					chooseExcel.setAcceptAllFileFilterUsed(false);
-					chooseExcel.addChoosableFileFilter(filter);
-					returnValue = chooseExcel.showOpenDialog(null);
+					chooseExcelImport.setAcceptAllFileFilterUsed(false);
+					chooseExcelImport.addChoosableFileFilter(filter);
+					returnValue = chooseExcelImport.showOpenDialog(null);
 
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
-						File selectedFile = chooseExcel.getSelectedFile();
+						File selectedFile = chooseExcelImport.getSelectedFile();
 						gestionnaireFichier.ajoutFichier(selectedFile.getName());
 						menu.removeAll();
 						mapViewer.removeAll();
@@ -377,6 +383,28 @@ public class MainWindow extends JFrame {
 
 			}
 
+		});
+		
+		exportExcel.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnValue;
+				if (e.getSource() == exportExcel) {
+					chooseExcelExport.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					chooseExcelExport.setMultiSelectionEnabled(false);
+					returnValue = chooseExcelExport.showOpenDialog(null);
+
+					if (returnValue == JFileChooser.APPROVE_OPTION) {
+						File selectedFile = new File(chooseExcelExport.getSelectedFile() + "//export.xlsx");
+						menu.removeAll();
+						mapViewer.removeAll();
+						initComponents();
+						ExportExcel.exportation(selectedFile, gestionnairePersonne);
+					}
+				}
+			}
+			
 		});
 
 		/*
