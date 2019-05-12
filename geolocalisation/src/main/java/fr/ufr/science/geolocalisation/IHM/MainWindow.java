@@ -414,11 +414,12 @@ public class MainWindow extends JFrame {
 			
 		});
 		
-		menuAffichage.addActionListener(new ActionListener() {
+		clearMap.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == clearMap) {
+					System.out.println("Reset CSV");
 					SauvegardeCSV.resetSauvegarde();
 				}
 			}
