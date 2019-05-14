@@ -66,13 +66,12 @@ import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.SauvegardeCSV;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
-import fr.ufr.science.geolocalisation.model.Route;
+
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
-import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class MainWindow extends JFrame {
 
