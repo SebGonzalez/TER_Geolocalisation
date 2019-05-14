@@ -48,6 +48,7 @@ import javax.swing.event.MouseInputListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.cache.FileBasedLocalCache;
@@ -66,13 +67,11 @@ import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.SauvegardeCSV;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
-import fr.ufr.science.geolocalisation.model.Route;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
-import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class MainWindow extends JFrame {
 
@@ -398,12 +397,22 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int returnValue;
 				if (e.getSource() == exportExcel) {
-					chooseExcelExport.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					chooseExcelExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooseExcelExport.setMultiSelectionEnabled(false);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
+					chooseExcelExport.setAcceptAllFileFilterUsed(false);
+					chooseExcelExport.addChoosableFileFilter(filter);
 					chooseExcelExport.setMultiSelectionEnabled(false);
 					returnValue = chooseExcelExport.showOpenDialog(null);
 
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
-						File selectedFile = new File(chooseExcelExport.getSelectedFile() + "//export.xlsx");
+						System.out.println(chooseExcelExport.getSelectedFile().getPath());
+						String path = chooseExcelExport.getSelectedFile().getPath();
+						if(FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath()).compareTo("xlsx") !=0)
+							path += ".xlsx";
+						File selectedFile = new File(path);
+
+							
 						menu.removeAll();
 						mapViewer.removeAll();
 						initComponents();
