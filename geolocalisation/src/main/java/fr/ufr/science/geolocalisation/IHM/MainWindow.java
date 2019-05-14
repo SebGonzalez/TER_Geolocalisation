@@ -125,7 +125,7 @@ public class MainWindow extends JFrame {
 
 		//Initialisation GraphHopper pour le routing. 
 		//TODO Vérifier si la map est importée
-		RoutingOffline.init(graphHopperPath);
+		//RoutingOffline.init(graphHopperPath);
 		
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
