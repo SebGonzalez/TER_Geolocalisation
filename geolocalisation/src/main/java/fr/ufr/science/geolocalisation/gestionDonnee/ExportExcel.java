@@ -87,7 +87,7 @@ public class ExportExcel
 						initCell.setCellValue(pair.getKey().toString());
 						
 						cptColonne++;
-						it2.remove(); // avoids a ConcurrentModificationException
+						//it2.remove(); // avoids a ConcurrentModificationException
 					}
 					init=true;
 					//cptLigne--;
@@ -124,12 +124,12 @@ public class ExportExcel
 					cell.setCellValue(pair.getValue().toString());
 					cptColonne++;
 					
-					it2.remove(); // avoids a ConcurrentModificationException
+					//it2.remove(); // avoids a ConcurrentModificationException
 				}
 
 				//GESTION INFO COMPLEMENTAIRES
 				//System.out.println("A");
-				//System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
+				//System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille() +" " + p.getInfoComplementaires().get("CP"));
 			}
 			
 			//System.out.println("A");

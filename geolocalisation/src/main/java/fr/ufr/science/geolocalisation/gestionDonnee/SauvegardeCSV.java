@@ -51,7 +51,7 @@ public class SauvegardeCSV
 		        Map.Entry pair = (Map.Entry)it2.next();
 		        fw.write(";");
 		        fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
-		        it2.remove(); // avoids a ConcurrentModificationException
+		        //it2.remove(); // avoids a ConcurrentModificationException
 		    }
 		}
 

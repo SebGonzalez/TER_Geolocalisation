@@ -49,7 +49,7 @@ public class WaypointDialog extends JDialog {
 			panel.add(scrollPane);
 			
 			tabbedPane.add(p.getNom() + " " + p.getPrenom(), scrollPane);
-			System.out.println(p.toStringInfoComplementaire());
+			//System.out.println(p.toStringInfoComplementaire());
 			
 		}
 		this.add(tabbedPane);

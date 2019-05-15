@@ -144,6 +144,7 @@ public class ExtractionExcel
 			{
 				g.addPersonne(p);
 				save.sauvegarde(p,tabNumclient);
+				//System.out.println(p.infoComplementaires.get("Score ISF"));
 			}
 
 		}
