@@ -89,6 +89,7 @@ public class ExportExcel
 						cptColonne++;
 						//it2.remove(); // avoids a ConcurrentModificationException
 					}
+					cptColonne=5;
 					init=true;
 					//cptLigne--;
 				}
