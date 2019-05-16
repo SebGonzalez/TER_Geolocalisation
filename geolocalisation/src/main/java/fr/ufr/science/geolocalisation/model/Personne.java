@@ -15,7 +15,7 @@ public class Personne
 	private String ville;
 	private String pays;
 	
-	public HashMap<String, String> infoComplementaires;
+	private HashMap<String, String> infoComplementaires;
 	
 	private List<String> filtre;
 	

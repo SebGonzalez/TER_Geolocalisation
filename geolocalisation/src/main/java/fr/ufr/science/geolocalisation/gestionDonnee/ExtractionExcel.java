@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,14 +17,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 public class ExtractionExcel 
 {
-	//TODO : EMPECHER LES DOUBLONS ?
 
-	public void readFile(File file,GestionnairePersonne g) throws IOException
+	public void readFile(File file) throws IOException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);	//ENTITE POUR LECTURE FICHIER EXCEL
@@ -124,6 +125,7 @@ public class ExtractionExcel
 							{
 								//System.out.println(idNomColonne.get(i));
 								p.getInfoComplementaires().put(idNomColonne.get(i),cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
+								App.gestionnaireFichier.ajoutInfo(file.getName(), idNomColonne.get(i), cell.toString().replaceAll("[\r\n]+", ""));
 							}
 						}
 
@@ -146,22 +148,26 @@ public class ExtractionExcel
 
 			if(p.getNumClient()!=null)
 			{
+
 				if(!exist(p,tabNumclient))
 				{
-					g.addPersonne(p);
+					App.gestionnairePersonne.addPersonne(p);
+					save.sauvegarde(p,tabNumclient);
+					//g.addPersonne(p);
 				}
 				else
 				{
-					miseAJour(g,p);
+					miseAJour(App.gestionnairePersonne,p);
 				}
-				
-			}
 
+
+				//System.out.println(p.infoComplementaires.get("Score ISF"));
+			}
 		}
-		save.sauvegardeAll(g);
+		save.sauvegardeAll(App.gestionnairePersonne);
 
 	}
-	
+
 	public boolean exist(Personne p, ArrayList<String> numClient)
 	{
 		Iterator<String> it = numClient.iterator();
@@ -176,12 +182,12 @@ public class ExtractionExcel
 			}
 		}
 		return false;
-		
+
 	}
-	
+
 	public void miseAJour(GestionnairePersonne g,Personne pImport)
 	{
-		
+
 		for (Entry<String, List<Personne>> entry : g.getGestionnairePersonne().entrySet()) 
 		{
 
@@ -195,12 +201,13 @@ public class ExtractionExcel
 					pDejaPres.setVille(pDejaPres.getVille());
 					pDejaPres.setInfoComplementaires(pDejaPres.getInfoComplementaires());
 					//REMOVE OU UPDATE VRAIMENT LA PERSONNE DANS LE GESTIONNAIRE
-					
+
 				}
-				
+
 			}
-			
+
 		}
+
 	}
 
 	public static void main(String[] args) throws IOException
@@ -211,7 +218,7 @@ public class ExtractionExcel
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		RestaurationCSV r = new RestaurationCSV();
 		r.restauration(gestP);
-		ec.readFile(f,gestP);
+		//ec.readFile(f,gestP);
 	}
 
 

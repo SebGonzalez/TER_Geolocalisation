@@ -34,11 +34,12 @@ public class WaypointDialog extends JDialog {
 			
 			String toPrint = "Num. Client: " + p.getNumClient() + "\nNom: " + p.getNom() + "\nPrénom: "
 					+ p.getPrenom() + "\nVille: " + p.getVille() + "\nPays: " + p.getPays();
-			if (!p.getInfoComplementaires().isEmpty()) {
+			//if (!p.getInfoComplementaires().isEmpty()) {
 				for (Map.Entry<String, String> entry : p.getInfoComplementaires().entrySet()) {
 					toPrint += "\n" + entry.getKey() + ": " + entry.getValue();
 				}
-			}
+			//}
+
 			JTextArea textArea = new JTextArea();
 			textArea.setText(toPrint);
 			textArea.setEditable(false);

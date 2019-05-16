@@ -1,11 +1,15 @@
 package fr.ufr.science.geolocalisation.IHM;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -66,8 +70,9 @@ import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.SauvegardeCSV;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
+import fr.ufr.science.geolocalisation.model.Fichier;
 import fr.ufr.science.geolocalisation.model.Personne;
-
+import fr.ufr.science.geolocalisation.util.AutoSuggestor;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
@@ -216,6 +221,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 
+		
 		// OpenStreetMapUtils.getInstance().filtreDistance("Marseille", 19);
 
 	}
@@ -334,7 +340,7 @@ public class MainWindow extends JFrame {
 
 		JLabel labelAdresse = new JLabel("Adresse : ");
 		JLabel labelDistance = new JLabel("Distance (km) : ");
-		JButton filtre = new JButton("Lancer le filtre");
+		JButton filtre = new JButton("Lancer le filtre distance");
 
 		displayList = new JList<>();
 		JScrollPane scrollPane = new JScrollPane(displayList);
@@ -375,16 +381,18 @@ public class MainWindow extends JFrame {
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						File selectedFile = chooseExcelImport.getSelectedFile();
 						gestionnaireFichier.ajoutFichier(selectedFile.getName());
-						menu.removeAll();
-						mapViewer.removeAll();
-						initComponents();
+						
 						ExtractionExcel extracteur = new ExtractionExcel();
 						try {
-							extracteur.readFile(selectedFile, gestionnairePersonne);
-							printWaypoints();
+							extracteur.readFile(selectedFile);
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
+						
+						menu.removeAll();
+						mapViewer.removeAll();
+						initComponents();
+						printWaypoints();
 					}
 				}
 
@@ -526,29 +534,86 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.insets = new Insets(10, 0, 10, 0);
 		menu.add(sep1, gridBagConstraints);
 		
-		
-		JLabel labelFichier = new JLabel("Fichier : ");
+		JLabel labelAjoutFiltre = new JLabel("Ajouter un filtre : ");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 8;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
+		menu.add(labelAjoutFiltre, gridBagConstraints);
+		
+		JTextField fieldAjout = new JTextField();
+		fieldAjout.setPreferredSize(new Dimension(150, 30));
+		
+		
+		AutoSuggestor as = new AutoSuggestor(fieldAjout, (Window)this, menu, gestionnaireFichier.getAllTypeInfos(), Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f);
+		
+		fieldAjout.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				System.out.println("lost");
+				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				System.out.println("ok");
+			}
+		});
+
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 9;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(fieldAjout, gridBagConstraints);
+		
+		JButton buttonAjout = new JButton("Ajouter");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 9;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(buttonAjout, gridBagConstraints);
+		
+		JSeparator sep2 = new JSeparator(JSeparator.HORIZONTAL);
+		sep1.setPreferredSize(new Dimension(1, 5));
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 10;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.insets = new Insets(10, 0, 10, 0);
+		menu.add(sep2, gridBagConstraints);
+		
+		JLabel labelFichier = new JLabel("Fichier : ");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 11;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
 		menu.add(labelFichier, gridBagConstraints);
 		
 		int compteur = 0;
-		for (Entry<String, Boolean> entry : gestionnaireFichier.getDictionnaire().entrySet()) {
-			JLabel label = new JLabel(entry.getKey());
+		for (Fichier f : gestionnaireFichier.getListFichier()) {
+			JLabel label = new JLabel(f.getNom());
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
-			gridBagConstraints.gridy = 9 + compteur;
+			gridBagConstraints.gridy = 12 + compteur;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
 			menu.add(label, gridBagConstraints);
 
 			JCheckBox checkBox = new JCheckBox();
-			checkBox.setSelected(entry.getValue());
+			checkBox.setSelected(f.isAfficher());
 			checkBox.addChangeListener(new ChangeListener() {
 				
 				@Override
@@ -559,7 +624,7 @@ public class MainWindow extends JFrame {
 			});
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 1;
-			gridBagConstraints.gridy = 9 + compteur;
+			gridBagConstraints.gridy = 12 + compteur;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -572,7 +637,7 @@ public class MainWindow extends JFrame {
 		sep.setPreferredSize(new Dimension(1, 5));
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 10 + compteur;
+		gridBagConstraints.gridy = 13 + compteur;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -584,7 +649,7 @@ public class MainWindow extends JFrame {
 		JLabel labelFiltre = new JLabel("Filtres : ");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 11 + compteur;
+		gridBagConstraints.gridy = 14 + compteur;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -595,7 +660,7 @@ public class MainWindow extends JFrame {
 			JLabel label = new JLabel(entry.getKey());
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
-			gridBagConstraints.gridy = 12 + compteur + compteurFiltre;
+			gridBagConstraints.gridy = 15 + compteur + compteurFiltre;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -613,7 +678,7 @@ public class MainWindow extends JFrame {
 			});
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 1;
-			gridBagConstraints.gridy = 12 + compteur + compteurFiltre;
+			gridBagConstraints.gridy = 15 + compteur + compteurFiltre;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -625,7 +690,7 @@ public class MainWindow extends JFrame {
 		JLabel label = new JLabel("Autre");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 13 + compteur + compteurFiltre;
+		gridBagConstraints.gridy = 16 + compteur + compteurFiltre;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -643,7 +708,7 @@ public class MainWindow extends JFrame {
 		});
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 13 + compteur + compteurFiltre;
+		gridBagConstraints.gridy = 16 + compteur + compteurFiltre;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
