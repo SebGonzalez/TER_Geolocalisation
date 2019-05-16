@@ -40,6 +40,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -78,6 +79,7 @@ import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
+import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class MainWindow extends JFrame {
 
@@ -104,11 +106,14 @@ public class MainWindow extends JFrame {
 	private JMenu menuAffichage;
 	private JMenuBar menuBar;
 	private JMenuItem importExcel;
-	private JMenuItem exportExcel;
+	private JMenuItem exportExcelFull;
+	private JMenuItem exportExcelFilter;
 	private JMenuItem clearMap;
 	private JFileChooser chooseExcelImport;
 	private JFileChooser chooseExcelExport;
 	public JList<Personne> displayList;
+	
+	JOptionPane noMapCache;
 
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
@@ -130,7 +135,10 @@ public class MainWindow extends JFrame {
 
 		//Initialisation GraphHopper pour le routing. 
 		//TODO Vérifier si la map est importée
-		//RoutingOffline.init(graphHopperPath);
+		if(!RoutingOffline.init(graphHopperPath)) {
+			noMapCache = new JOptionPane();
+			noMapCache.showMessageDialog(this, "Pas de fichiers de carte trouvés, mode en ligne uniquement", "Erreur", JOptionPane.WARNING_MESSAGE);
+		};
 		
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -139,7 +147,6 @@ public class MainWindow extends JFrame {
 		// Setup local file cache
 		File cacheDir = new File(System.getProperty("user.home") + File.separator + ".jxmapviewer2");
 		tileFactory.setLocalCache(new FileBasedLocalCache(cacheDir, false));
-		
 
 		// Setup JXMapViewer
 		mapViewer = new JXMapViewer();
@@ -183,19 +190,19 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
+
 
 			}
 
 			@Override
 			public void mouseEntered(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
+
 
 			}
 
 			@Override
 			public void mouseExited(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
+
 
 			}
 
@@ -349,7 +356,8 @@ public class MainWindow extends JFrame {
 		menuFichier = new JMenu("Fichier");
 		menuAffichage = new JMenu("Affichage");
 		importExcel = new JMenuItem("Importer Excel");
-		exportExcel = new JMenuItem("Exporter Excel");
+		exportExcelFull = new JMenuItem("Exporter");
+		exportExcelFilter = new JMenuItem("Exporter filtre");
 		clearMap = new JMenuItem("Nettoyer la carte");
 		chooseExcelImport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		chooseExcelExport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -359,7 +367,8 @@ public class MainWindow extends JFrame {
 		menu.setOpaque(true);
 		menu.setLayout(new GridBagLayout());
 		menuFichier.add(importExcel);
-		menuFichier.add(exportExcel);
+		menuFichier.add(exportExcelFull);
+		menuFichier.add(exportExcelFilter);
 		menuAffichage.add(clearMap);
 		menuBar.add(menuFichier);
 		menuBar.add(menuAffichage);
@@ -400,12 +409,12 @@ public class MainWindow extends JFrame {
 
 		});
 		
-		exportExcel.addActionListener(new ActionListener() {
+		exportExcelFull.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int returnValue;
-				if (e.getSource() == exportExcel) {
+				if (e.getSource() == exportExcelFull) {
 					chooseExcelExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					chooseExcelExport.setMultiSelectionEnabled(false);
 					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
@@ -430,6 +439,17 @@ public class MainWindow extends JFrame {
 				}
 			}
 			
+		});
+		
+		exportExcelFilter.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if(e.getSource() == exportExcelFilter) {
+					//TODO
+				}
+			}
 		});
 		
 		clearMap.addActionListener(new ActionListener() {

@@ -1,6 +1,9 @@
 package fr.ufr.science.geolocalisation.util;
 
+import java.io.File;
 import java.util.Locale;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
@@ -14,17 +17,41 @@ import fr.ufr.science.geolocalisation.model.Route;
 public class RoutingOffline {
 	
 	private static GraphHopper hopper;
+	static final String[] cacheFileNames = {"edges", "geometry", "location_index", "names", "nodes", "nodes_ch_fastest_car_node", "properties", "shortcuts_fastest_car_node"} ; 
 	
-	public static void init(String graphHopperPath) {
-		hopper = new GraphHopperOSM().forDesktop();
-		hopper.setGraphHopperLocation(graphHopperPath);
-		hopper.setEncodingManager(EncodingManager.create("car"));
-		
-		hopper.importOrLoad();
-		System.out.println("Routing Initialisé");
-		/*System.out.print("Petit test: ");
-		Route r = RoutingOffline.getRoute(43.2961743,5.3699525, 43.5283, 5.44973);
-		System.out.println(r.toStringFormat());*/
+	public static boolean init(String graphHopperPath) {
+		if(checkIfCached(graphHopperPath)) {
+			hopper = new GraphHopperOSM().forDesktop();
+			hopper.setGraphHopperLocation(graphHopperPath);
+			hopper.setEncodingManager(EncodingManager.create("car"));
+			
+			hopper.importOrLoad();
+			System.out.println("Routing Initialisé");
+			return true;
+		} else return false;
+	}
+	
+	public static boolean checkIfCached(String path) {
+		for(String fileName : cacheFileNames) {
+			if(!new File(path + fileName).exists()) {
+				System.out.println("Fichiers de carte en cache manquant(s)");
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static boolean isOsmFile(String path) {
+		return isOsmFile(new File(path));
+	}
+	
+	public static boolean isOsmFile(File f) {
+		if(!f.exists())
+			return false;
+		String ext = f.getPath().substring(f.getPath().indexOf("."));
+		if(ext.compareTo(".osm.pbf") == 0 || ext.compareTo(".osm.bz2") == 0)
+			return true;
+		return false;
 	}
 	
 	public static Route getRoute(double fromLat, double fromLon, double toLat, double toLon) {
