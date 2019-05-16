@@ -60,6 +60,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExportExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
@@ -334,7 +335,7 @@ public class MainWindow extends JFrame {
 
 		JLabel labelAdresse = new JLabel("Adresse : ");
 		JLabel labelDistance = new JLabel("Distance (km) : ");
-		JButton filtre = new JButton("Lancer le filtre");
+		JButton filtre = new JButton("Lancer le filtre distance");
 
 		displayList = new JList<>();
 		JScrollPane scrollPane = new JScrollPane(displayList);
@@ -380,11 +381,15 @@ public class MainWindow extends JFrame {
 						initComponents();
 						ExtractionExcel extracteur = new ExtractionExcel();
 						try {
-							extracteur.readFile(selectedFile, gestionnairePersonne);
-							printWaypoints();
+							extracteur.readFile(selectedFile);
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
+						
+						for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
+							System.out.println("AAAAAAAA : " + entry.getValue().get(0).toString() + " " + entry.getValue().get(0).toStringInfoComplementaire());
+						}
+						printWaypoints();
 					}
 				}
 
@@ -516,11 +521,50 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.insets = new Insets(10, 0, 10, 0);
 		menu.add(sep1, gridBagConstraints);
 		
+		JLabel labelAjoutFiltre = new JLabel("Ajouter un filtre : ");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 8;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(labelAjoutFiltre, gridBagConstraints);
+		
+		JTextField fieldAjout = new JTextField();
+		fieldAjout.setPreferredSize(new Dimension(150, 30));
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 9;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(fieldAjout, gridBagConstraints);
+		
+		JButton buttonAjout = new JButton("Ajouter");
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 9;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		menu.add(buttonAjout, gridBagConstraints);
+		
+		JSeparator sep2 = new JSeparator(JSeparator.HORIZONTAL);
+		sep1.setPreferredSize(new Dimension(1, 5));
+		gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 10;
+		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.insets = new Insets(10, 0, 10, 0);
+		menu.add(sep2, gridBagConstraints);
 		
 		JLabel labelFichier = new JLabel("Fichier : ");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 8;
+		gridBagConstraints.gridy = 11;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -531,7 +575,7 @@ public class MainWindow extends JFrame {
 			JLabel label = new JLabel(entry.getKey());
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
-			gridBagConstraints.gridy = 9 + compteur;
+			gridBagConstraints.gridy = 12 + compteur;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -549,7 +593,7 @@ public class MainWindow extends JFrame {
 			});
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 1;
-			gridBagConstraints.gridy = 9 + compteur;
+			gridBagConstraints.gridy = 12 + compteur;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -562,7 +606,7 @@ public class MainWindow extends JFrame {
 		sep.setPreferredSize(new Dimension(1, 5));
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 10 + compteur;
+		gridBagConstraints.gridy = 13 + compteur;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -574,7 +618,7 @@ public class MainWindow extends JFrame {
 		JLabel labelFiltre = new JLabel("Filtres : ");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 11 + compteur;
+		gridBagConstraints.gridy = 14 + compteur;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -585,7 +629,7 @@ public class MainWindow extends JFrame {
 			JLabel label = new JLabel(entry.getKey());
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
-			gridBagConstraints.gridy = 12 + compteur + compteurFiltre;
+			gridBagConstraints.gridy = 15 + compteur + compteurFiltre;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -603,7 +647,7 @@ public class MainWindow extends JFrame {
 			});
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 1;
-			gridBagConstraints.gridy = 12 + compteur + compteurFiltre;
+			gridBagConstraints.gridy = 15 + compteur + compteurFiltre;
 			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
@@ -615,7 +659,7 @@ public class MainWindow extends JFrame {
 		JLabel label = new JLabel("Autre");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 13 + compteur + compteurFiltre;
+		gridBagConstraints.gridy = 16 + compteur + compteurFiltre;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -633,7 +677,7 @@ public class MainWindow extends JFrame {
 		});
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 13 + compteur + compteurFiltre;
+		gridBagConstraints.gridy = 16 + compteur + compteurFiltre;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;

@@ -6,13 +6,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.model.Personne;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
@@ -20,7 +22,7 @@ public class ExtractionExcel
 {
 	//TODO : EMPECHER LES DOUBLONS ?
 
-	public void readFile(File file,GestionnairePersonne g) throws IOException
+	public void readFile(File file) throws IOException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);	//ENTITE POUR LECTURE FICHIER EXCEL
@@ -142,12 +144,10 @@ public class ExtractionExcel
 
 			if(p.getNumClient()!=null)
 			{
-				g.addPersonne(p);
+				App.gestionnairePersonne.addPersonne(p);
 				save.sauvegarde(p,tabNumclient);
 			}
-
 		}
-
 	}
 
 	public static void main(String[] args) throws IOException
@@ -158,7 +158,7 @@ public class ExtractionExcel
 		GestionnairePersonne gestP = new GestionnairePersonne();
 		RestaurationCSV r = new RestaurationCSV();
 		r.restauration(gestP);
-		ec.readFile(f,gestP);
+		//ec.readFile(f,gestP);
 	}
 
 
