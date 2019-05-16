@@ -2,11 +2,14 @@ package fr.ufr.science.geolocalisation.gestionDonnee;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -143,13 +146,61 @@ public class ExtractionExcel
 
 			if(p.getNumClient()!=null)
 			{
-				g.addPersonne(p);
-				save.sauvegarde(p,tabNumclient);
-				//System.out.println(p.infoComplementaires.get("Score ISF"));
+				if(!exist(p,tabNumclient))
+				{
+					g.addPersonne(p);
+				}
+				else
+				{
+					miseAJour(g,p);
+				}
+				
 			}
 
 		}
+		save.sauvegardeAll(g);
 
+	}
+	
+	public boolean exist(Personne p, ArrayList<String> numClient)
+	{
+		Iterator<String> it = numClient.iterator();
+
+		//REGARDE SI LA PERSONNE EST DEJA STOCKÉ DANS LE FICHIER CSV
+		while (it.hasNext()) 
+		{
+			String s = it.next();
+			if(s.compareTo(p.getNumClient())==0)	//NUMCLIENT DEJA PRESENT
+			{
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	
+	public void miseAJour(GestionnairePersonne g,Personne pImport)
+	{
+		
+		for (Entry<String, List<Personne>> entry : g.getGestionnairePersonne().entrySet()) 
+		{
+
+			for (Personne pDejaPres : entry.getValue()) 
+			{
+				if(pImport.getNumClient()==pDejaPres.getNumClient())	//PERSONNE A MODIFIER
+				{
+					pDejaPres.setNom(pImport.getNom());
+					pDejaPres.setPays(pDejaPres.getPays());
+					pDejaPres.setPrenom(pDejaPres.getPrenom());
+					pDejaPres.setVille(pDejaPres.getVille());
+					pDejaPres.setInfoComplementaires(pDejaPres.getInfoComplementaires());
+					//REMOVE OU UPDATE VRAIMENT LA PERSONNE DANS LE GESTIONNAIRE
+					
+				}
+				
+			}
+			
+		}
 	}
 
 	public static void main(String[] args) throws IOException
