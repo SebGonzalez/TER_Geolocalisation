@@ -123,6 +123,7 @@ public class ExtractionExcel
 							{
 								//System.out.println(idNomColonne.get(i));
 								p.getInfoComplementaires().put(idNomColonne.get(i),cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
+								App.gestionnaireFichier.ajoutInfo(file.getName(), idNomColonne.get(i), cell.toString().replaceAll("[\r\n]+", ""));
 							}
 						}
 

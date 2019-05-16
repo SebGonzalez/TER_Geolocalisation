@@ -1,13 +1,14 @@
 package fr.ufr.science.geolocalisation.model;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Fichier {
+public class Fichier implements Serializable {
+
+	private static final long serialVersionUID = -6996640519456668314L;
 
 	private static int compteurId = 1;
 	
@@ -41,13 +42,29 @@ public class Fichier {
 	}
 	
 	public void ajouterInfo(String nom, String valeur) {
-		if(dictionnaireInfos.get(nom) != null) {
+		if(dictionnaireInfos.get(nom) == null) {
 			Set<String> listeInfos = new HashSet<>();
 			listeInfos.add(valeur);
 			dictionnaireInfos.put(nom, listeInfos);
 		} else {
 			dictionnaireInfos.get(nom).add(valeur);
 		}
+	}
+	
+	public Set<String> listeInfos(String nom) {
+		return dictionnaireInfos.get(nom);
+	}
+	
+	public Set<String> getAllTypeInfos() {
+		Set<String> typeInfos = new HashSet<>();
+		
+		System.out.println("ZZZZ");
+		for(String s : dictionnaireInfos.keySet()) {
+			System.out.println("ZZZZZ : " + s);
+			typeInfos.add(s);
+		}
+		
+		return typeInfos;
 	}
 
 }

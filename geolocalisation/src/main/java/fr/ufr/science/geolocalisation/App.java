@@ -45,7 +45,7 @@ public class App {
 		gestionnaireCoordonne = loadCoordonne();
 		gestionnaireFichier = loadFichier();
 		gestionnaireFichier.loadMarker();
-		System.out.println(gestionnaireFichier.getDictionnaire().size());
+
 		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne, gestionnaireFichier, gestionnaireFiltre);
 	}
 	

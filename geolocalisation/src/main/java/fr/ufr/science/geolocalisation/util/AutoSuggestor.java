@@ -9,10 +9,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -22,53 +22,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-//public App() {
-//
-//    JFrame frame = new JFrame();
-//    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//
-//    JTextField f = new JTextField(10);
-//
-//    AutoSuggestor autoSuggestor = new AutoSuggestor(f, frame, null, Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f) {
-//        @Override
-//        boolean wordTyped(String typedWord) {
-//
-//            //create list for dictionary this in your case might be done via calling a method which queries db and returns results as arraylist
-//            ArrayList<String> words = new ArrayList<>();
-//            words.add("hello");
-//            words.add("heritage");
-//            words.add("happiness");
-//            words.add("goodbye");
-//            words.add("cruel");
-//            words.add("car");
-//            words.add("war");
-//            words.add("will");
-//            words.add("world");
-//            words.add("wall");
-//
-//
-//            setDictionary(words);
-//            //addToDictionary("bye");//adds a single word
-//
-//            return super.wordTyped(typedWord);//now call super to check for any matches against newest dictionary
-//        }
-//    };
-//
-//    JPanel p = new JPanel();
-//
-//    p.add(f);
-//
-//    frame.add(p);
-//
-//    frame.pack();
-//    frame.setVisible(true);
-//}
-
 public class AutoSuggestor {
 
     private final JTextField textField;
-    private final Window container;
+    private final JPanel container;
     private JPanel suggestionsPanel;
     private JWindow autoSuggestionPopUpWindow;
     private String typedWord;
@@ -93,10 +50,10 @@ public class AutoSuggestor {
     private final Color suggestionsTextColor;
     private final Color suggestionFocusedColor;
 
-    public AutoSuggestor(JTextField textField, Window mainWindow, ArrayList<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
+    public AutoSuggestor(JTextField textField, Window mainWindow, JPanel container, List<String> words, Color popUpBackground, Color textColor, Color suggestionFocusedColor, float opacity) {
         this.textField = textField;
         this.suggestionsTextColor = textColor;
-        this.container = mainWindow;
+        this.container = container;
         this.suggestionFocusedColor = suggestionFocusedColor;
         this.textField.getDocument().addDocumentListener(documentListener);
 
@@ -181,7 +138,7 @@ public class AutoSuggestor {
     }
 
     private void setFocusToTextField() {
-        container.toFront();
+        //container.toFront();
         container.requestFocusInWindow();
         textField.requestFocusInWindow();
     }
@@ -264,6 +221,7 @@ public class AutoSuggestor {
         } else {
             windowY = container.getY() + textField.getY() + textField.getHeight() + autoSuggestionPopUpWindow.getHeight();
         }
+        windowY += 30;
 
         autoSuggestionPopUpWindow.setLocation(windowX, windowY);
         autoSuggestionPopUpWindow.setMinimumSize(new Dimension(textField.getWidth(), 30));
@@ -272,7 +230,7 @@ public class AutoSuggestor {
 
     }
 
-    public void setDictionary(ArrayList<String> words) {
+    public void setDictionary(List<String> words) {
         dictionary.clear();
         if (words == null) {
             return;//so we can call constructor with null value for dictionary without exception thrown
@@ -281,12 +239,16 @@ public class AutoSuggestor {
             dictionary.add(word);
         }
     }
+    
+    public List<String> getDictionnary() {
+    		return dictionary;
+    }
 
     public JWindow getAutoSuggestionPopUpWindow() {
         return autoSuggestionPopUpWindow;
     }
 
-    public Window getContainer() {
+    public JPanel getContainer() {
         return container;
     }
 
@@ -298,7 +260,7 @@ public class AutoSuggestor {
         dictionary.add(word);
     }
 
-    boolean wordTyped(String typedWord) {
+    protected boolean wordTyped(String typedWord) {
 
         if (typedWord.isEmpty()) {
             return false;

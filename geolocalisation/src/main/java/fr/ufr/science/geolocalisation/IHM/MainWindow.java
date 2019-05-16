@@ -1,11 +1,15 @@
 package fr.ufr.science.geolocalisation.IHM;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -61,14 +65,14 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
-import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExportExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
 import fr.ufr.science.geolocalisation.gestionDonnee.SauvegardeCSV;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
+import fr.ufr.science.geolocalisation.model.Fichier;
 import fr.ufr.science.geolocalisation.model.Personne;
-
+import fr.ufr.science.geolocalisation.util.AutoSuggestor;
 import fr.ufr.science.geolocalisation.util.GestionnaireCoordonnee;
 import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
@@ -217,6 +221,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 
+		
 		// OpenStreetMapUtils.getInstance().filtreDistance("Marseille", 19);
 
 	}
@@ -376,9 +381,7 @@ public class MainWindow extends JFrame {
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						File selectedFile = chooseExcelImport.getSelectedFile();
 						gestionnaireFichier.ajoutFichier(selectedFile.getName());
-						menu.removeAll();
-						mapViewer.removeAll();
-						initComponents();
+						
 						ExtractionExcel extracteur = new ExtractionExcel();
 						try {
 							extracteur.readFile(selectedFile);
@@ -386,9 +389,9 @@ public class MainWindow extends JFrame {
 							e1.printStackTrace();
 						}
 						
-						for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
-							System.out.println("AAAAAAAA : " + entry.getValue().get(0).toString() + " " + entry.getValue().get(0).toStringInfoComplementaire());
-						}
+						menu.removeAll();
+						mapViewer.removeAll();
+						initComponents();
 						printWaypoints();
 					}
 				}
@@ -542,6 +545,24 @@ public class MainWindow extends JFrame {
 		
 		JTextField fieldAjout = new JTextField();
 		fieldAjout.setPreferredSize(new Dimension(150, 30));
+		
+		
+		AutoSuggestor as = new AutoSuggestor(fieldAjout, (Window)this, menu, gestionnaireFichier.getAllTypeInfos(), Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f);
+		
+		fieldAjout.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				System.out.println("lost");
+				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				System.out.println("ok");
+			}
+		});
+
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 9;
@@ -581,8 +602,8 @@ public class MainWindow extends JFrame {
 		menu.add(labelFichier, gridBagConstraints);
 		
 		int compteur = 0;
-		for (Entry<String, Boolean> entry : gestionnaireFichier.getDictionnaire().entrySet()) {
-			JLabel label = new JLabel(entry.getKey());
+		for (Fichier f : gestionnaireFichier.getListFichier()) {
+			JLabel label = new JLabel(f.getNom());
 			gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 12 + compteur;
@@ -592,7 +613,7 @@ public class MainWindow extends JFrame {
 			menu.add(label, gridBagConstraints);
 
 			JCheckBox checkBox = new JCheckBox();
-			checkBox.setSelected(entry.getValue());
+			checkBox.setSelected(f.isAfficher());
 			checkBox.addChangeListener(new ChangeListener() {
 				
 				@Override
