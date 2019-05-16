@@ -27,16 +27,22 @@ import fr.ufr.science.geolocalisation.IHM.MainWindow;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
 
+
 //Possibilité d'ajouter une hashmap qui stocke les adresse-->coord
 public class OpenStreetMapUtils {
 
 	private static OpenStreetMapUtils instance = null;
-
+	private static boolean offlineRoutingInitialized = false;
+	
 	public static OpenStreetMapUtils getInstance() {
 		if (instance == null) {
 			instance = new OpenStreetMapUtils();
 		}
 		return instance;
+	}
+
+	public static void setOfflineRoutingInitialized(boolean offlineRoutingInitialized) {
+		OpenStreetMapUtils.offlineRoutingInitialized = offlineRoutingInitialized;
 	}
 
 	private String getRequest(String url) throws Exception {
@@ -205,21 +211,21 @@ public class OpenStreetMapUtils {
 			for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 				Coordonnee c2 = App.gestionnaireCoordonne.getCoordonnee(entry.getKey());
 				
-				/*if(RoutingOffline.getRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()).getDistance() == -1) {
-					*/if (distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance && distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
+				if(!offlineRoutingInitialized || RoutingOffline.getRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()).getDistance() == -1) {
+					if (distance(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance && distanceRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()) <= distance) {
 						for (Personne p : entry.getValue()) {
 							System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
 							listePersonneFiltre.add(p);
 							p.addFiltre("distance_" + adresse + "_" + distance);
 						}
-					}/*
+					}
 				}else if (RoutingOffline.getRoute(c.getLat(), c.getLon(), c2.getLat(), c2.getLon()).getDistance()/1000 <= distance) {
 					for (Personne p : entry.getValue()) {
 						System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
 						listePersonneFiltre.add(p);
 						p.addFiltre("distance_" + adresse + "_" + distance);
 					}
-				}*/
+				}
 				
 				progress++;
 				progressMonitor.setProgress(progress);

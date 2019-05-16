@@ -91,6 +91,10 @@ public class MainWindow extends JFrame {
 
 	final JXMapViewer mapViewer;
 
+	/*
+	 * Base IHM
+	 */
+	
 	private JPanel jPanel1;
 	public JPanel menu;
 	private JButton zoomInButton;
@@ -100,7 +104,12 @@ public class MainWindow extends JFrame {
 	private JTextField distanceCheckRange;
 	private GeoPosition currentPosition;
 	private int currentZoom;
-
+	//
+	
+	/*
+	 * Barre de menu
+	 */
+	
 	private JButton hideMenu;
 	private JMenu menuFichier;
 	private JMenu menuAffichage;
@@ -111,10 +120,10 @@ public class MainWindow extends JFrame {
 	private JMenuItem clearMap;
 	private JFileChooser chooseExcelImport;
 	private JFileChooser chooseExcelExport;
+	//
+	
 	public JList<Personne> displayList;
 	
-	JOptionPane noMapCache;
-
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
@@ -134,11 +143,10 @@ public class MainWindow extends JFrame {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 		//Initialisation GraphHopper pour le routing. 
-		//TODO Vérifier si la map est importée
 		if(!RoutingOffline.init(graphHopperPath)) {
-			noMapCache = new JOptionPane();
-			noMapCache.showMessageDialog(this, "Pas de fichiers de carte trouvés, mode en ligne uniquement", "Erreur", JOptionPane.WARNING_MESSAGE);
-		};
+			JOptionPane.showMessageDialog(this, "Pas de fichiers de carte trouvés, mode en ligne uniquement", "Erreur", JOptionPane.WARNING_MESSAGE);
+		} else OpenStreetMapUtils.setOfflineRoutingInitialized(true);
+
 		
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -163,12 +171,15 @@ public class MainWindow extends JFrame {
 
 		loadSettings();
 
-		// Set the focus
+		// Zoom de focus initial
 		mapViewer.setZoom(currentZoom);
 		zoomSlider.setValue(currentZoom);
 		mapViewer.setAddressLocation(currentPosition);
 
-		// Add interactions
+		/*
+		 *  Ajout des listeners
+		 */
+		
 		MouseInputListener mia = new PanMouseInputListener(mapViewer);
 		mapViewer.addMouseListener(mia);
 		mapViewer.addMouseMotionListener(mia);
@@ -186,38 +197,22 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		mapViewer.addMouseListener(new MouseListener() { // C'est pas beau, mais?...
-
-			@Override
-			public void mouseClicked(java.awt.event.MouseEvent e) {
-
-
-			}
-
-			@Override
-			public void mouseEntered(java.awt.event.MouseEvent e) {
-
-
-			}
-
-			@Override
-			public void mouseExited(java.awt.event.MouseEvent e) {
-
-
-			}
-
-			@Override
-			public void mousePressed(java.awt.event.MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(java.awt.event.MouseEvent e) {
+		mapViewer.addMouseListener(new MouseListener() {
+			public void mouseClicked(java.awt.event.MouseEvent e) {}
+			public void mouseEntered(java.awt.event.MouseEvent e) {}
+			public void mouseExited(java.awt.event.MouseEvent e) {}
+			public void mousePressed(java.awt.event.MouseEvent e) {}
+			
+			public void mouseReleased(java.awt.event.MouseEvent e) {		// Pour sauver position approximative de la fenetre quand on relance l'app
 				java.awt.Point p = e.getPoint();
 				currentPosition = mapViewer.convertPointToGeoPosition(p);
 			}
 		});
 
+		/*
+		 * Pour sauvegarde des paramètres avant la fermeture
+		 */
+		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -227,13 +222,15 @@ public class MainWindow extends JFrame {
 				System.exit(0);
 			}
 		});
-
-		
-		// OpenStreetMapUtils.getInstance().filtreDistance("Marseille", 19);
-
 	}
 
-	private void initComponentsMap() {
+	
+	/*
+	 * Initialisation de l'interface principale (Panel de menu gauche + carte + zoom)
+	 */
+	
+	private void initComponentsMap() {	
+
 		jPanel1 = new JPanel();
 		zoomInButton = new JButton();
 		zoomOutButton = new JButton();
@@ -245,7 +242,11 @@ public class MainWindow extends JFrame {
 
 		jPanel1.setOpaque(false);
 		jPanel1.setLayout(new GridBagLayout());
-
+		
+		/*
+		 * Boutons de zoom
+		 */
+		
 		zoomInButton.setAction(getZoomOutAction());
 		zoomInButton.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/plus.png")));
 		zoomInButton.setMargin(new Insets(2, 2, 10, 2));
@@ -299,6 +300,10 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.anchor = GridBagConstraints.SOUTH;
 		jPanel1.add(zoomSlider, gridBagConstraints);
 
+		/*
+		 * Cacher/afficher le menu de gauche
+		 */
+		
 		hideMenu.setPreferredSize(new Dimension(32, 32));
 		hideMenu.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/hideMenu.png")));
 		hideMenu.setContentAreaFilled(false);
@@ -315,7 +320,6 @@ public class MainWindow extends JFrame {
 					hideMenu.setIcon(
 							new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/showMenu.png")));
 				}
-
 			}
 		});
 		gridBagConstraints = new GridBagConstraints();
@@ -338,9 +342,18 @@ public class MainWindow extends JFrame {
 		mapViewer.revalidate();
 	}
 
+	
+	/*
+	 * Initialisation de la barre de menu et des composants du menu de gauche
+	 */
+	
 	public void initComponents() {
 		GridBagConstraints gridBagConstraints;
 
+		/*
+		 * Composants menu gauche
+		 */
+		
 		menu = new JPanel();
 		distanceCheckCityName = new JTextField();
 		distanceCheckRange = new JTextField();
@@ -351,7 +364,11 @@ public class MainWindow extends JFrame {
 
 		displayList = new JList<>();
 		JScrollPane scrollPane = new JScrollPane(displayList);
-
+		
+		/*
+		 * Composants menu de fichier
+		 */
+		
 		menuBar = new JMenuBar();
 		menuFichier = new JMenu("Fichier");
 		menuAffichage = new JMenu("Affichage");
@@ -374,6 +391,12 @@ public class MainWindow extends JFrame {
 		menuBar.add(menuAffichage);
 		this.setJMenuBar(menuBar);
 
+		/*
+		 * Listeners menu fichier
+		 */
+		
+		//Fichiers
+		
 		importExcel.addActionListener(new ActionListener() {
 
 			@Override
@@ -452,6 +475,8 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
+		//Affichage
+		
 		clearMap.addActionListener(new ActionListener() {
 
 			@Override
@@ -465,7 +490,7 @@ public class MainWindow extends JFrame {
 		});
 
 		/*
-		 * MENU
+		 * Arrangement menu gauche + listeners
 		 */
 
 		gridBagConstraints = new GridBagConstraints();

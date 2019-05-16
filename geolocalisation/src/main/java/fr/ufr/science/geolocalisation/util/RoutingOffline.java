@@ -26,7 +26,7 @@ public class RoutingOffline {
 			hopper.setEncodingManager(EncodingManager.create("car"));
 			
 			hopper.importOrLoad();
-			System.out.println("Routing Initialisé");
+			System.out.println("Routing offline Initialisé");
 			return true;
 		} else return false;
 	}
