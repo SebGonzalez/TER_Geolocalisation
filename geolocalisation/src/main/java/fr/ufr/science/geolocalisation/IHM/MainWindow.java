@@ -128,7 +128,7 @@ public class MainWindow extends JFrame {
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
 	
-	private String graphHopperPath = "A://"; // DEFAULT
+	private String graphHopperPath = "A://GraphHopperCachePACARoussillon//"; // DEFAULT
 	private boolean isMapImported = false;
 
 	DefaultTileFactory tileFactory;

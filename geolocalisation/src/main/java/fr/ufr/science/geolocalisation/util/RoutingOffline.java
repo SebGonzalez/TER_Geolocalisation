@@ -41,19 +41,6 @@ public class RoutingOffline {
 		return true;
 	}
 	
-	public static boolean isOsmFile(String path) {
-		return isOsmFile(new File(path));
-	}
-	
-	public static boolean isOsmFile(File f) {
-		if(!f.exists())
-			return false;
-		String ext = f.getPath().substring(f.getPath().indexOf("."));
-		if(ext.compareTo(".osm.pbf") == 0 || ext.compareTo(".osm.bz2") == 0)
-			return true;
-		return false;
-	}
-	
 	public static Route getRoute(double fromLat, double fromLon, double toLat, double toLon) {
 		GHRequest req = new GHRequest(fromLat, fromLon, toLat, toLon).
 				setWeighting("fastest").
