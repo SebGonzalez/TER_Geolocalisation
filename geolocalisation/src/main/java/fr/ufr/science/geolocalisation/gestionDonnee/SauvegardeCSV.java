@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
 
-//TODO : SAUVEGARDE AUSSI DES INFO COMP
+//TODO : MISE A JOUR DES PERSONNES SAUVEGARDÉE
 public class SauvegardeCSV 
 {
 	public void sauvegarde(Personne p, ArrayList<String> numClient) throws IOException
@@ -43,19 +46,49 @@ public class SauvegardeCSV
 			//SAUV INFO BASE
 			numClient.add(p.getNumClient());	//AJOUTE NOUVEAU NUMCLIENT A LA LISTE DES DEJA PRESENT
 			fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille() + ";" + p.getFichier());
-			
+
 			//SAUV INFO COMP
 			Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
-		    while (it2.hasNext()) 
-		    {
-		        Map.Entry pair = (Map.Entry)it2.next();
-		        fw.write(";");
-		        fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
-		        //it2.remove(); // avoids a ConcurrentModificationException
-		    }
+			while (it2.hasNext()) 
+			{
+				Map.Entry pair = (Map.Entry)it2.next();
+				fw.write(";");
+				fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+				//it2.remove(); // avoids a ConcurrentModificationException
+			}
 		}
 
 		fw.write("\r");
+		fw.close();
+	}
+
+	public void sauvegardeAll(GestionnairePersonne g) throws IOException
+	{
+		SauvegardeCSV.resetSauvegarde();
+		
+		FileWriter fw = new FileWriter("SauvegardePersonne.csv",true);
+		for (Entry<String, List<Personne>> entry : g.getGestionnairePersonne().entrySet()) 
+		{
+
+			for (Personne p : entry.getValue()) 
+			{
+				
+				fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille() + ";" + p.getFichier());
+
+				//SAUV INFO COMP
+				Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
+				
+				while (it2.hasNext()) 
+				{
+					Map.Entry pair = (Map.Entry)it2.next();
+					fw.write(";");
+					fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+				}
+			}
+			fw.write("\r");
+		}
+
+
 		fw.close();
 	}
 
@@ -66,7 +99,7 @@ public class SauvegardeCSV
 		{
 			f.createNewFile();
 		}
-		
+
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 		String line = br.readLine();
@@ -78,14 +111,14 @@ public class SauvegardeCSV
 		{
 			tabChaine = line.split(";");	//SEPARATION DANS NOTRE FICHIER
 			numclient.add(tabChaine[0]);//PREMIER ELEM LUE EST LE NUMCLIENT
-			
+
 			line = br.readLine();
 		}
 
 		br.close();
 		fr.close();
 	}
-	
+
 	public static void resetSauvegarde()	//RESET DU CSV 
 	{
 		File f = new File("SauvegardePersonne.csv");
