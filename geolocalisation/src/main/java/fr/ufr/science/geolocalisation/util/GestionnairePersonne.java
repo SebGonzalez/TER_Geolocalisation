@@ -21,6 +21,7 @@ public class GestionnairePersonne {
 	}
 	
 	public void addPersonne(Personne p) {
+		//System.out.println(p.getInfoComplementaires().get("Score ISF"));
 		if(dictionnairePersonne.get(p.getVille()) != null)
 			dictionnairePersonne.get(p.getVille()).add(p);
 		else {

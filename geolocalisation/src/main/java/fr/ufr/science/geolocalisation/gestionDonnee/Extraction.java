@@ -107,7 +107,7 @@ public class Extraction
 			}
 			line = br.readLine();
 
-			System.out.println(p.getNom()+ " " + p.getPays()+ " " + p.getPrenom()+ " " + p.getVille());
+			//System.out.println(p.getNom()+ " " + p.getPays()+ " " + p.getPrenom()+ " " + p.getVille());
 
 		}
 		br.close();

@@ -121,6 +121,7 @@ public class ExtractionExcel
 						{
 							if (idNomColonne.containsKey(i))	//ON SUPPRIME LES RETOURS A LA LIGNE DANS LES CELLULES
 							{
+								//System.out.println(idNomColonne.get(i));
 								p.getInfoComplementaires().put(idNomColonne.get(i),cell.toString().replaceAll("[\r\n]+", ""));	//STOCKE LE NOM DE LA COLONNE AVEC SA VALEURS
 							}
 						}
@@ -146,6 +147,7 @@ public class ExtractionExcel
 			{
 				App.gestionnairePersonne.addPersonne(p);
 				save.sauvegarde(p,tabNumclient);
+				//System.out.println(p.infoComplementaires.get("Score ISF"));
 			}
 		}
 	}

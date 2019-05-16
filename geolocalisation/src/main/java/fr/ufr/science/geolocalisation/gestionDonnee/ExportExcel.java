@@ -29,7 +29,6 @@ public class ExportExcel
 	{
 		int cptLigne=1;
 		int cptColonne=5;
-		//int cptInitColonne=4;
 		boolean init=false;
 
 		if(!file.exists())	//VERIF EXISTANCE FILE
@@ -42,21 +41,11 @@ public class ExportExcel
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			//System.out.println("A");
 		}
-		//System.out.println("A");
-
-		//XSSFWorkbook workbook = new XSSFWorkbook(); 
 		XSSFWorkbook workbook = new XSSFWorkbook();
-
-		//FileOutputStream out = new FileOutputStream(file);
-		//workbook.write(out);
 
 		//Create a blank spreadsheet
 		XSSFSheet spreadsheet = workbook.createSheet("test");
-		//int j;
-		//Sheet feuille = wb.createSheet("new sheet");	//CREATION FEUILLE
-		//Row row = feuille.createRow(0);
 
 		//j=0;
 		//INITIALISATION CNOM COLONNES
@@ -85,25 +74,22 @@ public class ExportExcel
 			for (Personne p : entry.getValue()) 
 			{
 				cptColonne=5;
-				//System.out.println("A");
 				//
 				//INITIALISATION NOM COLONNES INFO COMP
 				if(init==false)
 				{
-					//System.out.println("A");
 					Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
 					while (it2.hasNext()) 
 					{
 						Map.Entry pair = (Map.Entry)it2.next();
-						//System.out.println("A");
-						//fw.write(";");
+						
 						initCell = initRow.createCell(cptColonne);
 						initCell.setCellValue(pair.getKey().toString());
 						
 						cptColonne++;
-						//fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
-						it2.remove(); // avoids a ConcurrentModificationException
+						//it2.remove(); // avoids a ConcurrentModificationException
 					}
+					cptColonne=5;
 					init=true;
 					//cptLigne--;
 				}
@@ -113,6 +99,7 @@ public class ExportExcel
 				}
 				
 				Row row = spreadsheet.createRow(cptLigne);
+				
 				//GESTION ATTRIBUT FIXE
 				Cell cell = row.createCell(0);
 				cell.setCellValue(p.getNumClient());
@@ -136,31 +123,28 @@ public class ExportExcel
 					
 					cell = row.createCell(cptColonne);
 					cell.setCellValue(pair.getValue().toString());
-					//System.out.println(pair.getValue().toString());
 					cptColonne++;
-					//fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
-					it2.remove(); // avoids a ConcurrentModificationException
+					
+					//it2.remove(); // avoids a ConcurrentModificationException
 				}
 
 				//GESTION INFO COMPLEMENTAIRES
-
-				//row.add
 				//System.out.println("A");
-				//System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille());
+				//System.out.println("Ajout de : " + p.getNom() + " " + p.getPrenom() + " " + p.getVille() +" " + p.getInfoComplementaires().get("CP"));
 			}
 			
 			//System.out.println("A");
 		}
 		try {
 			FileOutputStream out = new FileOutputStream(file);
-			//System.out.println("Exporté: " + file);
+		
 			workbook.write(out);
 			out.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		//System.out.println("A");
+		
 	}
 
 	public static void main(String[] args) throws IOException, InvalidFormatException
@@ -169,7 +153,6 @@ public class ExportExcel
 		ExportExcel ec = new ExportExcel();
 
 		File f = new File("test.xslx");
-		//ec.exportation(f, g);
 	}
 
 }
