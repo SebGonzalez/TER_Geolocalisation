@@ -202,20 +202,13 @@ public class MainWindow extends JFrame {
 		});
 
 		mapViewer.addMouseListener(new MouseListener() {
-			public void mouseClicked(java.awt.event.MouseEvent e) {
-			}
+			
+			public void mouseClicked(java.awt.event.MouseEvent e) {}
+			public void mouseEntered(java.awt.event.MouseEvent e) {}
+			public void mouseExited(java.awt.event.MouseEvent e) {}
+			public void mousePressed(java.awt.event.MouseEvent e) {}
 
-			public void mouseEntered(java.awt.event.MouseEvent e) {
-			}
-
-			public void mouseExited(java.awt.event.MouseEvent e) {
-			}
-
-			public void mousePressed(java.awt.event.MouseEvent e) {
-			}
-
-			public void mouseReleased(java.awt.event.MouseEvent e) { // Pour sauver position approximative de la fenetre
-																		// quand on relance l'app
+			public void mouseReleased(java.awt.event.MouseEvent e) {		// Pour sauver position approximative de la fenetre quand on relance l'app
 				java.awt.Point p = e.getPoint();
 				currentPosition = mapViewer.convertPointToGeoPosition(p);
 			}
@@ -241,7 +234,7 @@ public class MainWindow extends JFrame {
 	 * zoom)
 	 */
 
-	private void initComponentsMap() {
+	private void initComponentsMap() {	
 
 		jPanel1 = new JPanel();
 		zoomInButton = new JButton();
@@ -407,7 +400,6 @@ public class MainWindow extends JFrame {
 		 */
 
 		// Fichiers
-
 		importExcel.addActionListener(new ActionListener() {
 
 			@Override
@@ -479,14 +471,36 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (e.getSource() == exportExcelFilter) {
-					// TODO
+				if(e.getSource() == exportExcelFilter) {
+					int returnValue;
+
+					chooseExcelExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooseExcelExport.setMultiSelectionEnabled(false);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
+					chooseExcelExport.setAcceptAllFileFilterUsed(false);
+					chooseExcelExport.addChoosableFileFilter(filter);
+					chooseExcelExport.setMultiSelectionEnabled(false);
+					returnValue = chooseExcelExport.showOpenDialog(null);
+
+					if (returnValue == JFileChooser.APPROVE_OPTION) {
+						System.out.println(chooseExcelExport.getSelectedFile().getPath());
+						String path = chooseExcelExport.getSelectedFile().getPath();
+						if(FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath()).compareTo("xlsx") !=0)
+							path += ".xlsx";
+						File selectedFile = new File(path);
+
+
+						menu.removeAll();
+						mapViewer.removeAll();
+						initComponents();
+						ExportExcel.exportationFiltre(selectedFile, gestionnairePersonne, gestionnaireFiltre, gestionnaireFichier);
+					}
 				}
 			}
+
 		});
 
 		// Affichage
-
 		clearMap.addActionListener(new ActionListener() {
 
 			@Override
@@ -544,9 +558,7 @@ public class MainWindow extends JFrame {
 				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this, distanceCheckCityName.getText(),
 						Integer.parseInt(distanceCheckRange.getText()));
 
-				gestionnaireFiltre.ajoutFiltre(
-						"distance_" + distanceCheckCityName.getText() + "_" + distanceCheckRange.getText());
-
+				gestionnaireFiltre.ajoutFiltre("distance_" + distanceCheckCityName.getText() + "_" + distanceCheckRange.getText());
 			}
 		});
 		gridBagConstraints = new GridBagConstraints();
@@ -594,8 +606,7 @@ public class MainWindow extends JFrame {
 		JTextField fieldAjout = new JTextField();
 		fieldAjout.setPreferredSize(new Dimension(150, 30));
 
-		AutoSuggestor as = new AutoSuggestor(fieldAjout, (Window) this, menu, gestionnaireFichier.getAllTypeInfos(),
-				Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f);
+		AutoSuggestor as = new AutoSuggestor(fieldAjout, (Window)this, menu, gestionnaireFichier.getAllTypeInfos(), Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f);
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -761,14 +772,16 @@ public class MainWindow extends JFrame {
 			}
 		}
 
-		JLabel labelFiltres = new JLabel("Filtres : ");
+
+
+		JLabel labelFiltre = new JLabel("Filtres : ");
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 17 + compteur + compteurFiltre2;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
-		menu.add(labelFiltres, gridBagConstraints);
+		menu.add(labelFiltre, gridBagConstraints);
 
 		int compteurFiltre = 0;
 		for (Filtre f : gestionnaireFiltre.getFiltre()) {
@@ -930,6 +943,7 @@ public class MainWindow extends JFrame {
 		currentZoom = Integer.parseInt(settings.getProperty("currentZoom"));
 
 		if (settings.getProperty("isMapImported", "false").compareTo("false") == 0)
+
 			isMapImported = false;
 		else
 			isMapImported = true;

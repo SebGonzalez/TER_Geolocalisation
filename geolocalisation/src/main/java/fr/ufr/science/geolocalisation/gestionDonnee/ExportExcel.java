@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
@@ -71,6 +72,7 @@ public class ExportExcel
 
 		for (Entry<String, List<Personne>> entry : g.getGestionnairePersonne().entrySet()) 
 		{
+			
 
 			for (Personne p : entry.getValue()) 
 			{
@@ -148,7 +150,7 @@ public class ExportExcel
 
 	}
 
-	public static void exportationFiltre(File file, GestionnairePersonne g, GestionnaireFiltre gestionnaireFiltre)
+	public static void exportationFiltre(File file, GestionnairePersonne g, GestionnaireFiltre gestionnaireFiltre, GestionnaireFichier gestionnaireFichier)
 	{
 		int cptLigne=1;
 		int cptColonne=5;
@@ -193,7 +195,9 @@ public class ExportExcel
 
 		for (Entry<String, List<Personne>> entry : g.getGestionnairePersonne().entrySet()) 
 		{
-
+			String fichier = entry.getValue().get(0).getFichier();
+			String valeur = gestionnaireFiltre.showPersonne(entry.getValue().get(0));
+			
 			for (Personne p : entry.getValue()) 
 			{
 				cptColonne=5;
@@ -210,50 +214,48 @@ public class ExportExcel
 						initCell.setCellValue(pair.getKey().toString());
 
 						cptColonne++;
+						//it2.remove(); // avoids a ConcurrentModificationException
 					}
 					cptColonne=5;
 					init=true;
+					//cptLigne--;
 				}
 				else
 				{
 					cptLigne++;
 				}
 
-				String fichier = entry.getValue().get(0).getFichier();
-				String valeur = gestionnaireFiltre.showPersonne(entry.getValue().get(0));
-				if ( /*gestionnaireFichier.getVisibilityFile(fichier) &&*/ !valeur.equals("false")) 
+				Row row = spreadsheet.createRow(cptLigne);
+
+				if ( gestionnaireFichier.getVisibilityFile(fichier) && !valeur.equals("false")) 
 				{
+				//GESTION ATTRIBUT FIXE
+				Cell cell = row.createCell(0);
+				cell.setCellValue(p.getNumClient());
 
-					Row row = spreadsheet.createRow(cptLigne);
+				cell = row.createCell(1);
+				cell.setCellValue(p.getNom());
 
-					//GESTION ATTRIBUT FIXE
-					Cell cell = row.createCell(0);
-					cell.setCellValue(p.getNumClient());
+				cell = row.createCell(2);
+				cell.setCellValue(p.getPrenom());
 
-					cell = row.createCell(1);
-					cell.setCellValue(p.getNom());
+				cell = row.createCell(3);
+				cell.setCellValue(p.getVille());
 
-					cell = row.createCell(2);
-					cell.setCellValue(p.getPrenom());
+				cell = row.createCell(4);
+				cell.setCellValue(p.getPays());
 
-					cell = row.createCell(3);
-					cell.setCellValue(p.getVille());
+				Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
+				while (it2.hasNext()) 
+				{
+					Map.Entry pair = (Map.Entry)it2.next();
 
-					cell = row.createCell(4);
-					cell.setCellValue(p.getPays());
+					cell = row.createCell(cptColonne);
+					cell.setCellValue(pair.getValue().toString());
+					cptColonne++;
 
-					Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
-					while (it2.hasNext()) 
-					{
-						Map.Entry pair = (Map.Entry)it2.next();
-
-						cell = row.createCell(cptColonne);
-						cell.setCellValue(pair.getValue().toString());
-						cptColonne++;
-
-						//it2.remove(); // avoids a ConcurrentModificationException
-					}
-
+					//it2.remove(); // avoids a ConcurrentModificationException
+				}
 				}
 
 				//GESTION INFO COMPLEMENTAIRES
@@ -272,7 +274,6 @@ public class ExportExcel
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void main(String[] args) throws IOException, InvalidFormatException
