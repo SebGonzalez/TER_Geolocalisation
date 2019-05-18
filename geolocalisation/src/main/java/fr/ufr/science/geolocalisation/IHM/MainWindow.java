@@ -470,7 +470,30 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				if(e.getSource() == exportExcelFilter) {
-					//TODO
+					int returnValue;
+					if (e.getSource() == exportExcelFull) {
+						chooseExcelExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						chooseExcelExport.setMultiSelectionEnabled(false);
+						FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
+						chooseExcelExport.setAcceptAllFileFilterUsed(false);
+						chooseExcelExport.addChoosableFileFilter(filter);
+						chooseExcelExport.setMultiSelectionEnabled(false);
+						returnValue = chooseExcelExport.showOpenDialog(null);
+
+						if (returnValue == JFileChooser.APPROVE_OPTION) {
+							System.out.println(chooseExcelExport.getSelectedFile().getPath());
+							String path = chooseExcelExport.getSelectedFile().getPath();
+							if(FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath()).compareTo("xlsx") !=0)
+								path += ".xlsx";
+							File selectedFile = new File(path);
+
+								
+							menu.removeAll();
+							mapViewer.removeAll();
+							initComponents();
+							ExportExcel.exportationFiltre(selectedFile, gestionnairePersonne, gestionnaireFiltre, gestionnaireFichier);
+						}
+					}
 				}
 			}
 		});

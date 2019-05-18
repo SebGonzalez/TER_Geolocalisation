@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.model.Coordonnee;
 import fr.ufr.science.geolocalisation.model.Personne;
+import fr.ufr.science.geolocalisation.util.GestionnaireFichier;
 import fr.ufr.science.geolocalisation.util.GestionnaireFiltre;
 import fr.ufr.science.geolocalisation.util.GestionnairePersonne;
 
@@ -148,7 +149,7 @@ public class ExportExcel
 
 	}
 
-	public static void exportationFiltre(File file, GestionnairePersonne g, GestionnaireFiltre gestionnaireFiltre)
+	public static void exportationFiltre(File file, GestionnairePersonne g, GestionnaireFiltre gestionnaireFiltre, GestionnaireFichier gestionnaireFichier)
 	{
 		int cptLigne=1;
 		int cptColonne=5;
@@ -221,7 +222,7 @@ public class ExportExcel
 
 				String fichier = entry.getValue().get(0).getFichier();
 				String valeur = gestionnaireFiltre.showPersonne(entry.getValue().get(0));
-				if ( /*gestionnaireFichier.getVisibilityFile(fichier) &&*/ !valeur.equals("false")) 
+				if ( gestionnaireFichier.getVisibilityFile(fichier) && !valeur.equals("false")) 
 				{
 
 					Row row = spreadsheet.createRow(cptLigne);
