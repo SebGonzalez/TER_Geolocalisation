@@ -1,32 +1,42 @@
 package fr.ufr.science.geolocalisation.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import fr.ufr.science.geolocalisation.model.Filtre;
 import fr.ufr.science.geolocalisation.model.Personne;
 
-public class GestionnaireFiltre {
+public class GestionnaireFiltre implements Serializable {
 
-	GestionnairePersonne gestionnairePersonne;
+	private static final long serialVersionUID = 2396783057182306173L;
+
+	private transient GestionnairePersonne gestionnairePersonne;
 	
-	private Map<String, Boolean> dictionnaireFiltres;
+	private List<Filtre> listeFiltre;
 	private boolean showOthers = true;
 
 	public GestionnaireFiltre(GestionnairePersonne gestionnairePersonne) {
 		this.gestionnairePersonne = gestionnairePersonne;
 		
-		dictionnaireFiltres = new HashMap<>();
+		listeFiltre = new ArrayList<>();
 	}
 	
 	public void ajoutFiltre(String nomFiltre) {
-		dictionnaireFiltres.put(nomFiltre, true);
+		Filtre filtre = new Filtre(nomFiltre);
+		listeFiltre.add(filtre);
 	}
 	
 	public void removeFiltre(String nomFiltre) {
-		dictionnaireFiltres.remove(nomFiltre);
+		for(Filtre f : listeFiltre) {
+			if(f.getNom().equals(nomFiltre)) {
+				listeFiltre.remove(f);
+				break;
+			}
+		}
 		
 		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 			for(Personne p : entry.getValue()) {
@@ -35,21 +45,53 @@ public class GestionnaireFiltre {
 		}
 	}
 	
-	public int nbFiltres() {
-		return dictionnaireFiltres.size();
+	public void ajoutFiltrePersonne(String nomFiltre, String value, boolean ajout) {
+		for(Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
+			for(Personne p : entry.getValue()) {
+				p.checkFiltre(nomFiltre, value, ajout);
+			}
+		}
 	}
 	
-	public Map<String, Boolean> getFiltre() {
-		return dictionnaireFiltres;
+	public void ajoutInfosFiltre(String nomFiltre, List<String> infosFiltre) {
+		for(Filtre f : listeFiltre) {
+			if(f.getNom().equals(nomFiltre)) {
+				for(String s : infosFiltre) {
+					f.addInfos(s);
+				}
+			}
+		}
+	}
+	
+	public Map<String, Boolean> getInfosFiltre(String nomFiltre) {
+		for(Filtre f : listeFiltre) {
+			if(f.getNom().equals(nomFiltre)) {
+				return f.getDictionnaireInfos();
+			}
+		}
+		return null;
+	}
+	
+	public int nbFiltres() {
+		return listeFiltre.size();
+	}
+	
+	public List<Filtre> getFiltre() {
+		return listeFiltre;
 	}
 
 	public void setVisibilityFile(String nomFiltre, boolean visibility) {
-		dictionnaireFiltres.put(nomFiltre, visibility);
+		for(Filtre f : listeFiltre) {
+			if(f.getNom().equals(nomFiltre)) {
+				f.setAfficher(visibility);
+				return;
+			}
+		}
 	}
 
 	public String showPersonne(Personne personne) {		
-		for (Entry<String, Boolean> entry : dictionnaireFiltres.entrySet()) {
-			if(entry.getValue() && personne.containsFiltre(entry.getKey())) return "filtre";
+		for (Filtre f : listeFiltre) {
+			if(f.isAfficher() && personne.containsFiltre(f.getNom())) return "filtre";
 		}
 		
 		if(showOthers)

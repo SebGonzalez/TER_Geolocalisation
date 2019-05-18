@@ -73,18 +73,18 @@ public class GestionnaireFichier implements Serializable {
 		}
 	}
 	
+	public List<String> getAllInfos(String nomInfo) {	
+		Set<String> valeursInfo = new HashSet<>();
+		for(Fichier f : listeFichier) {
+			valeursInfo.addAll(f.listeInfos(nomInfo));
+		}
+		return new ArrayList<>(valeursInfo);
+	}
+	
 	public List<String> getAllTypeInfos() {
 		Set<String> typeInfos = new HashSet<>();
 		for(Fichier f : listeFichier) {
 			typeInfos.addAll(f.getAllTypeInfos());
-		}
-		
-		for(String s : typeInfos) {
-			System.out.println("CCCC : " + s);
-		}
-		List<String> liste = new ArrayList<>(typeInfos);
-		for(String s : liste) {
-			System.out.println("BBBB : " + s);
 		}
 		
 		return new ArrayList<>(typeInfos);
