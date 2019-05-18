@@ -106,9 +106,22 @@ public class Personne
 		return filtre.contains(nomFiltre);
 	}
 	
+
 	public List<String> getFiltre()
 	{
 		return this.filtre;
+	}
+
+	public void checkFiltre(String nomFiltre, String value, boolean ajout) {
+		if(infoComplementaires.get(nomFiltre).equals(value)) {
+			if(ajout) {
+				this.addFiltre(nomFiltre);
+			}
+			else {
+				this.removeFiltre(nomFiltre);
+			}
+		}
+
 	}
 
 	@Override
