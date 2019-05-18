@@ -105,6 +105,11 @@ public class Personne
 	public boolean containsFiltre(String nomFiltre) {
 		return filtre.contains(nomFiltre);
 	}
+	
+	public List<String> getFiltre()
+	{
+		return this.filtre;
+	}
 
 	@Override
 	public String toString() {
