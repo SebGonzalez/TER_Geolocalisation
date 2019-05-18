@@ -222,6 +222,11 @@ public class ExportExcel
 
 				String fichier = entry.getValue().get(0).getFichier();
 				String valeur = gestionnaireFiltre.showPersonne(entry.getValue().get(0));
+				System.out.println("AAAAAAAAAAAAAAAAAAA");
+				System.out.println("AAAAAAAAAAAAAAAAAAA");
+				System.out.println("AAAAAAAAAAAAAAAAAAA");
+				System.out.println("AAAAAAAAAAAAAAAAAAA");
+				System.out.println("AAAAAAAAAAAAAAAAAAA");
 				if ( gestionnaireFichier.getVisibilityFile(fichier) && !valeur.equals("false")) 
 				{
 
