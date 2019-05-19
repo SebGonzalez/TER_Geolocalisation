@@ -1016,10 +1016,11 @@ public class MainWindow extends JFrame {
 		System.out.println("coordonnees sauvegardés");
 	}
 
-	public void printWaypoints() {
+	public Set<GeoPosition> printWaypoints() {
 		mapViewer.removeAll();
 		initComponentsMap();
 		Set<SwingWaypoint> waypoints = new HashSet<SwingWaypoint>();
+		Set<GeoPosition> pos = new HashSet<>();
 		for (Entry<String, List<Personne>> entry : gestionnairePersonne.getGestionnairePersonne().entrySet()) {
 			String fichier = entry.getValue().get(0).getFichier();
 
@@ -1027,6 +1028,7 @@ public class MainWindow extends JFrame {
 			if (gestionnaireFichier.getVisibilityFile(fichier) && !valeur.equals("false")) {
 				Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
 				GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
+				pos.add(geo);
 				if (valeur.equals("others"))
 					waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));
 				else {
@@ -1035,6 +1037,9 @@ public class MainWindow extends JFrame {
 			}
 		}
 
+		mapViewer.zoomToBestFit(pos, 0.7);
+		
+		waypoints.add(new SwingWaypoint(this, mapViewer.getCenterPosition(), gestionnaireFichier.getIconFiltre()));
 		// Set the overlay painter
 		WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
 		swingWaypointPainter.setWaypoints(waypoints);
@@ -1044,6 +1049,11 @@ public class MainWindow extends JFrame {
 		for (SwingWaypoint w : waypoints) {
 			mapViewer.add(w.getButton());
 		}
-
+		
+		return pos;
+	}
+	
+	public void autoZoom(Set<GeoPosition> pos) {
+		 mapViewer.zoomToBestFit(pos, 0.7);
 	}
 }
