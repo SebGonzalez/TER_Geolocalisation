@@ -2,6 +2,7 @@ package fr.ufr.science.geolocalisation.IHM;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -13,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -29,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -68,6 +71,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExportExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
@@ -86,14 +90,24 @@ import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class MainWindow extends JFrame {
 
+	private String graphHopperPath = "C://Users//Alex//TER//"; // DEFAULT
+	
 	private static final long serialVersionUID = 1L;
 	private GestionnairePersonne gestionnairePersonne;
 	private GestionnaireCoordonnee gestionnaireCoordonne;
 	private GestionnaireFichier gestionnaireFichier;
 	private GestionnaireFiltre gestionnaireFiltre;
+	
+	private String loadedMapPack;
+
+	public void setLoadedMapPack(String loadedMapPack) {
+		this.loadedMapPack = loadedMapPack;
+	}
 
 	final JXMapViewer mapViewer;
 
+	private ImportMapWindow importMapWindow;
+	
 	/*
 	 * Base IHM
 	 */
@@ -121,8 +135,10 @@ public class MainWindow extends JFrame {
 	private JMenuItem exportExcelFull;
 	private JMenuItem exportExcelFilter;
 	private JMenuItem clearMap;
+	private JMenuItem exportImage;
 	private JFileChooser chooseExcelImport;
 	private JFileChooser chooseExcelExport;
+	private JFileChooser chooseImageExport;
 	//
 
 	public JList<Personne> displayList;
@@ -131,8 +147,11 @@ public class MainWindow extends JFrame {
 	private boolean zoomChanging = false;
 	private boolean menuShow = true;
 
-	private String graphHopperPath = "A://GraphHopperCachePACARoussillon//"; // DEFAULT
 	private boolean isMapImported = false;
+
+	public void setMapImported(boolean isMapImported) {
+		this.isMapImported = isMapImported;
+	}
 
 	DefaultTileFactory tileFactory;
 
@@ -143,14 +162,19 @@ public class MainWindow extends JFrame {
 		this.gestionnaireFichier = gestionnaireFichier;
 		this.gestionnaireFiltre = gestionnaireFiltre;
 
+		this.setPreferredSize(new Dimension(1280,1024));
+		this.pack();
+		
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-		// Initialisation GraphHopper pour le routing.
-		if (!RoutingOffline.init(graphHopperPath)) {
-			JOptionPane.showMessageDialog(this, "Pas de fichiers de carte trouvés, mode en ligne uniquement", "Erreur",
-					JOptionPane.WARNING_MESSAGE);
-		} else
-			OpenStreetMapUtils.setOfflineRoutingInitialized(true);
+		//Initialisation GraphHopper pour le routing. 
+		if(!RoutingOffline.init(graphHopperPath)) {
+			importMapWindow = new ImportMapWindow(this);
+			this.setEnabled(false);
+			if(isMapImported)
+				RoutingOffline.init(graphHopperPath);
+		} else OpenStreetMapUtils.setOfflineRoutingInitialized(true);
+
 
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -224,6 +248,15 @@ public class MainWindow extends JFrame {
 			public void windowClosing(WindowEvent event) {
 				saveSettings();
 				saveFile();
+				try
+				{
+					SauvegardeCSV save= new SauvegardeCSV();
+					save.sauvegardeAll(App.gestionnairePersonne);
+				}
+				catch (IOException e)
+				{
+					
+				}
 				System.exit(0);
 			}
 		});
@@ -380,8 +413,10 @@ public class MainWindow extends JFrame {
 		exportExcelFull = new JMenuItem("Exporter");
 		exportExcelFilter = new JMenuItem("Exporter filtre");
 		clearMap = new JMenuItem("Nettoyer la carte");
+		exportImage = new JMenuItem("Exporter en png");
 		chooseExcelImport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		chooseExcelExport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		chooseImageExport = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
 		setLayout(new GridBagLayout());
 
@@ -391,6 +426,7 @@ public class MainWindow extends JFrame {
 		menuFichier.add(exportExcelFull);
 		menuFichier.add(exportExcelFilter);
 		menuAffichage.add(clearMap);
+		menuAffichage.add(exportImage);
 		menuBar.add(menuFichier);
 		menuBar.add(menuAffichage);
 		this.setJMenuBar(menuBar);
@@ -497,7 +533,39 @@ public class MainWindow extends JFrame {
 					}
 				}
 			}
+		});
+		
+		exportImage.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == exportImage) {
+					int returnValue;
+					
+					chooseImageExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooseImageExport.setMultiSelectionEnabled(false);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier png", "png");
+					chooseImageExport.setAcceptAllFileFilterUsed(false);
+					chooseImageExport.addChoosableFileFilter(filter);
+					returnValue = chooseImageExport.showOpenDialog(null);					
+					
+					if(returnValue == JFileChooser.APPROVE_OPTION) {
+						String path = chooseImageExport.getSelectedFile().getPath();
+						if(FilenameUtils.getExtension(chooseImageExport.getSelectedFile().getPath()).compareTo("png") !=0)
+							path += ".png";
+						BufferedImage img = new BufferedImage(mapViewer.getWidth(), mapViewer.getHeight(), BufferedImage.TYPE_INT_RGB);
+						Graphics2D g2 = img.createGraphics();
+						mapViewer.update(g2);
+						try {
+							ImageIO.write(img, "png", new File(path));
+						} catch (Exception exc) {
+							exc.printStackTrace();
+						}
+					}
+				}
+				
+			}
+			
 		});
 
 		// Affichage
@@ -922,20 +990,18 @@ public class MainWindow extends JFrame {
 		Properties settings = new Properties();
 		InputStream iS = null;
 
-		if (settingsFileExists("settings.cfg")) {
-			try {
-				File f = new File("settings.cfg");
-				iS = new FileInputStream(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				settings.load(iS);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
+		if (!settingsFileExists("settings.cfg"))
 			createSettingsFile();
+		try {
+			File f = new File("settings.cfg");
+			iS = new FileInputStream(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			settings.load(iS);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		double lat = Double.parseDouble(settings.getProperty("lat"));
 		double lon = Double.parseDouble(settings.getProperty("lon"));
@@ -952,6 +1018,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void createSettingsFile() {
+		System.out.println("Création des paramètres");
 		File f = new File("settings.cfg");
 		Properties settings = new Properties();
 
