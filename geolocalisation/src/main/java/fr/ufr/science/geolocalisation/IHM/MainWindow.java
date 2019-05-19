@@ -121,6 +121,7 @@ public class MainWindow extends JFrame {
 	private JTextField distanceCheckRange;
 	private GeoPosition currentPosition;
 	private int currentZoom;
+	private JScrollPane menuScrollPane;
 	//
 
 	/*
@@ -171,8 +172,6 @@ public class MainWindow extends JFrame {
 		if(!RoutingOffline.init(graphHopperPath)) {
 			importMapWindow = new ImportMapWindow(this);
 			this.setEnabled(false);
-			if(isMapImported)
-				RoutingOffline.init(graphHopperPath);
 		} else OpenStreetMapUtils.setOfflineRoutingInitialized(true);
 
 
@@ -429,7 +428,7 @@ public class MainWindow extends JFrame {
 		menuAffichage.add(exportImage);
 		menuBar.add(menuFichier);
 		menuBar.add(menuAffichage);
-		this.setJMenuBar(menuBar);
+		this.setJMenuBar(menuBar);		
 
 		/*
 		 * Listeners menu fichier
@@ -922,7 +921,9 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.weightx = 0.01;
 		gridBagConstraints.weighty = 0.7;
-		this.add(menu, gridBagConstraints);
+		
+		menuScrollPane = new JScrollPane(menu);
+		this.add(menuScrollPane, gridBagConstraints);
 
 		/*
 		 * 
