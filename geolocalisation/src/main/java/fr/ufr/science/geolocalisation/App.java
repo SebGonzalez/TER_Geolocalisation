@@ -41,11 +41,12 @@ public class App {
 			e.printStackTrace();
 		}
 
-		gestionnaireFiltre = new GestionnaireFiltre(gestionnairePersonne);
+		gestionnaireFiltre = loadFiltre();
 		gestionnaireCoordonne = loadCoordonne();
 		gestionnaireFichier = loadFichier();
 		gestionnaireFichier.loadMarker();
 
+		System.out.println(gestionnairePersonne);
 		MainWindow mainWindow = new MainWindow(gestionnairePersonne, gestionnaireCoordonne, gestionnaireFichier, gestionnaireFiltre);
 	}
 	
@@ -54,6 +55,15 @@ public class App {
 		if(gestionnaireCoordonnee != null)
 			return gestionnaireCoordonnee;
 		return new GestionnaireCoordonnee();
+	}
+	
+	private static GestionnaireFiltre loadFiltre() {
+		GestionnaireFiltre gestionnaireFiltre = (GestionnaireFiltre) Memoire.read("filtres.cfg");
+		if(gestionnaireFiltre != null) {
+			gestionnaireFiltre.setGestionnairePersonne(gestionnairePersonne);
+			return gestionnaireFiltre;
+		}
+		return new GestionnaireFiltre(gestionnairePersonne);
 	}
 	
 	private static GestionnaireFichier loadFichier() {

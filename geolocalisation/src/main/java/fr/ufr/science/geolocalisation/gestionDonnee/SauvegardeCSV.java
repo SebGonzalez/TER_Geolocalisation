@@ -65,24 +65,48 @@ public class SauvegardeCSV
 	public void sauvegardeAll(GestionnairePersonne g) throws IOException
 	{
 		SauvegardeCSV.resetSauvegarde();
-		
+
 		FileWriter fw = new FileWriter("SauvegardePersonne.csv",true);
 		for (Entry<String, List<Personne>> entry : g.getGestionnairePersonne().entrySet()) 
 		{
 
 			for (Personne p : entry.getValue()) 
 			{
-				
+
 				fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille() + ";" + p.getFichier());
 
 				//SAUV INFO COMP
-				Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
-				
-				while (it2.hasNext()) 
+				if(p.getInfoComplementaires()!=null)
 				{
-					Map.Entry pair = (Map.Entry)it2.next();
+					Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
+
+					while (it2.hasNext()) 
+					{
+						Map.Entry pair = (Map.Entry)it2.next();
+						fw.write(";");
+						fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+					}
+				}
+				//fw.write(";");
+				//SAUVE FILTRE
+				if(p.getFiltre()!=null)	//MOT CLE POUR DETECTION FIN INFO COMP ET DEBUT FILTRE LORS DE LA RESTAURATION
+				{
+					//MOT CLE POUR RECUP FILTRES
 					fw.write(";");
-					fw.write(pair.getKey()+";"+pair.getValue());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+					fw.write("debFiltre");
+					fw.write(";");
+					fw.write("debFiltre");
+					
+					Iterator it2 = p.getFiltre().iterator();
+
+					while (it2.hasNext()) 
+					{
+						//Map.Entry pair = (Map.Entry)it2.next();
+						//fw.write(";");
+						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
+						//System.out.println(it2.next().toString());
+						fw.write(it2.next().toString());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
+					}
 				}
 			}
 			fw.write("\r");

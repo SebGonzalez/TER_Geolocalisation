@@ -58,9 +58,7 @@ public class Fichier implements Serializable {
 	public Set<String> getAllTypeInfos() {
 		Set<String> typeInfos = new HashSet<>();
 		
-		System.out.println("ZZZZ");
 		for(String s : dictionnaireInfos.keySet()) {
-			System.out.println("ZZZZZ : " + s);
 			typeInfos.add(s);
 		}
 		

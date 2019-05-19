@@ -158,27 +158,7 @@ public class ExtractionExcel
 				else
 				{
 					miseAJour(App.gestionnairePersonne,p);
-					//for (Entry<String, List<Personne>> entry : App.gestionnairePersonne.getGestionnairePersonne().entrySet()) 
-					//{
-
-						//for (Personne pDejaPres : entry.getValue()) 
-						//{
-							//System.out.println("TESTTTTTT : " + pDejaPres.getNom() + " " + pDejaPres.getVille());
-						//}
-							//if(pImport.getNumClient()==pDejaPres.getNumClient())	//PERSONNE A MODIFIER
-							//{
-								/*pDejaPres.setNom(pImport.getNom());
-								pDejaPres.setPays(pDejaPres.getPays());
-								pDejaPres.setPrenom(pDejaPres.getPrenom());
-								pDejaPres.setVille(pDejaPres.getVille());
-								pDejaPres.setInfoComplementaires(pDejaPres.getInfoComplementaires());*/
-								
-								//entry.setValue(pDejaPres);
-								//REMOVE OU UPDATE VRAIMENT LA PERSONNE DANS LE GESTIONNAIRE
-
-							//}
-
-						//}
+					
 				}
 
 
