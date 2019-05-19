@@ -17,9 +17,12 @@ import fr.ufr.science.geolocalisation.model.Route;
 public class RoutingOffline {
 	
 	private static GraphHopper hopper;
+	private static String currentMapPack;
+	private static String graphHopperPath;
 	static final String[] cacheFileNames = {"edges", "geometry", "location_index", "names", "nodes", "nodes_ch_fastest_car_node", "properties", "shortcuts_fastest_car_node"} ; 
 	
-	public static boolean init(String graphHopperPath) {
+	public static boolean init(String graphHopperPathInit) {
+		graphHopperPath = graphHopperPathInit;
 		if(checkIfCached(graphHopperPath)) {
 			hopper = new GraphHopperOSM().forDesktop();
 			hopper.setGraphHopperLocation(graphHopperPath);
