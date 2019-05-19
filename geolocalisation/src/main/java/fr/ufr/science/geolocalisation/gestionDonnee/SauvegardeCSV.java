@@ -104,7 +104,7 @@ public class SauvegardeCSV
 						//Map.Entry pair = (Map.Entry)it2.next();
 						//fw.write(";");
 						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-						System.out.println(it2.next().toString());
+						//System.out.println(it2.next().toString());
 						fw.write(it2.next().toString());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
 					}
 				}

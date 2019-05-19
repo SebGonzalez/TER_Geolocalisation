@@ -25,6 +25,10 @@ public class GestionnaireFiltre implements Serializable {
 		listeFiltre = new ArrayList<>();
 	}
 	
+	public void setGestionnairePersonne(GestionnairePersonne gestionnairePersonne) {
+		this.gestionnairePersonne = gestionnairePersonne;
+	}
+	
 	public void ajoutFiltre(String nomFiltre) {
 		Filtre filtre = new Filtre(nomFiltre);
 		listeFiltre.add(filtre);
