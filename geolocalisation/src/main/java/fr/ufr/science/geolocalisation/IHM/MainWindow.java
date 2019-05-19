@@ -68,6 +68,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExportExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.ExtractionExcel;
 import fr.ufr.science.geolocalisation.gestionDonnee.Memoire;
@@ -224,6 +225,15 @@ public class MainWindow extends JFrame {
 			public void windowClosing(WindowEvent event) {
 				saveSettings();
 				saveFile();
+				try
+				{
+					SauvegardeCSV save= new SauvegardeCSV();
+					save.sauvegardeAll(App.gestionnairePersonne);
+				}
+				catch (IOException e)
+				{
+					
+				}
 				System.exit(0);
 			}
 		});
