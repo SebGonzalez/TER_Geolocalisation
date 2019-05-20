@@ -44,7 +44,7 @@ public class ImportMapWindow extends JFrame{
 	private ArrayList<JRadioButton> radioButtons;
 	private ButtonGroup buttonGroup;
 	
-	String path = "C:/Users/Alex/TER/";
+	String path = "/Users/gonzo/Desktop/test/";
 
 	public ImportMapWindow(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
@@ -267,7 +267,7 @@ public class ImportMapWindow extends JFrame{
 
 				while((nRead = pmis.read(buffer)) != -1) {
 					progress+=1;
-					//System.out.println("Progress: " + Math.round(progress/size * 100));
+					System.out.println("Progress: " + Math.round(progress/size * 100));
 					baos.write(buffer, 0, nRead);
 				}
 
@@ -314,4 +314,6 @@ public class ImportMapWindow extends JFrame{
 		File file = new File(path + "PACA-LR.zip");
 		file.delete();
 	}
+	
+	
 }
