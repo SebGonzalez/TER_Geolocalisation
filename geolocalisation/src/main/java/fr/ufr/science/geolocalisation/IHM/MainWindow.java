@@ -90,7 +90,7 @@ import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class MainWindow extends JFrame {
 
-	private String graphHopperPath = "C://Users//Alex//TER//"; // DEFAULT
+	private String graphHopperPath = "/Users/gonzo/Desktop/test/"; // DEFAULT
 	
 	private static final long serialVersionUID = 1L;
 	private GestionnairePersonne gestionnairePersonne;
@@ -140,9 +140,6 @@ public class MainWindow extends JFrame {
 	private JFileChooser chooseExcelImport;
 	private JFileChooser chooseExcelExport;
 	private JFileChooser chooseImageExport;
-	//
-
-	public JList<Personne> displayList;
 
 	private boolean sliderReversed = false;
 	private boolean zoomChanging = false;
@@ -398,9 +395,6 @@ public class MainWindow extends JFrame {
 		JLabel labelDistance = new JLabel("Distance (km) : ");
 		JButton filtre = new JButton("Lancer le filtre distance");
 
-		displayList = new JList<>();
-		JScrollPane scrollPane = new JScrollPane(displayList);
-
 		/*
 		 * Composants menu de fichier
 		 */
@@ -635,19 +629,6 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		menu.add(filtre, gridBagConstraints);
-
-		displayList.setOpaque(false);
-		scrollPane.setOpaque(false);
-		scrollPane.setBorder(null);
-		scrollPane.getViewport().setOpaque(false);
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 6;
-		gridBagConstraints.anchor = GridBagConstraints.CENTER;
-		gridBagConstraints.fill = GridBagConstraints.VERTICAL;
-		gridBagConstraints.weightx = 1;
-		gridBagConstraints.weighty = 10;
-		menu.add(scrollPane, gridBagConstraints);
 
 		JSeparator sep1 = new JSeparator(JSeparator.HORIZONTAL);
 		sep1.setPreferredSize(new Dimension(1, 5));

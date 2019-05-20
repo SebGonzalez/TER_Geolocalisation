@@ -152,8 +152,6 @@ public class ExtractionExcel
 				if(!exist(p,tabNumclient))
 				{
 					App.gestionnairePersonne.addPersonne(p);
-					save.sauvegarde(p,tabNumclient);
-					//g.addPersonne(p);
 				}
 				else
 				{
@@ -165,8 +163,6 @@ public class ExtractionExcel
 				//System.out.println(p.infoComplementaires.get("Score ISF"));
 			}
 		}
-		save.sauvegardeAll(App.gestionnairePersonne);
-
 	}
 
 	public boolean exist(Personne p, ArrayList<String> numClient)

@@ -186,7 +186,6 @@ public class OpenStreetMapUtils {
 
 	class Task extends SwingWorker<List<Personne>, Void> {
 		ProgressMonitor progressMonitor;
-		JList<Personne> list;
 		String adresse;
 		int distance;
 		int progress = 0;
@@ -197,7 +196,6 @@ public class OpenStreetMapUtils {
 		public Task(JFrame frame, String adresse, int distance) {
 			progressMonitor = new ProgressMonitor(frame, "Calcul en cours", "Initialisation...", 0,
 					App.gestionnairePersonne.getGestionnairePersonne().size());
-			list = ((MainWindow)frame).displayList;
 			this.adresse = adresse;
 			this.distance = distance;
 			this.frame = (MainWindow) frame;
@@ -243,7 +241,6 @@ public class OpenStreetMapUtils {
 			
 			Personne[] array = new Personne[listePersonneFiltre.size()];
 			listePersonneFiltre.toArray(array);
-			list.setListData(array);
 			Toolkit.getDefaultToolkit().beep();
 			progressMonitor.close();
 		}

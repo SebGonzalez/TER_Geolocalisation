@@ -28,9 +28,6 @@ import javax.swing.JRadioButton;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingConstants;
 
-import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
-import fr.ufr.science.geolocalisation.util.RoutingOffline;
-
 public class ImportMapWindow extends JFrame{
 	private MainWindow mainWindow;
 
@@ -47,7 +44,7 @@ public class ImportMapWindow extends JFrame{
 	private ArrayList<JRadioButton> radioButtons;
 	private ButtonGroup buttonGroup;
 	
-	String path = "C:/Users/Alex/TER/";
+	String path = "/Users/gonzo/Desktop/test/";
 
 	public ImportMapWindow(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
@@ -178,8 +175,6 @@ public class ImportMapWindow extends JFrame{
 				if(e.getSource() == buttonDownload) {
 					downloadMap(buttonGroup.getSelection().getActionCommand());
 					dispose();
-					RoutingOffline.init(path);
-					OpenStreetMapUtils.setOfflineRoutingInitialized(true);
 					mainWindow.setMapImported(true);
 					mainWindow.setEnabled(true);
 				}
