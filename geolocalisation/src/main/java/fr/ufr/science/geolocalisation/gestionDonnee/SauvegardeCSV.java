@@ -105,6 +105,7 @@ public class SauvegardeCSV
 						//fw.write(";");
 						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
 						//System.out.println(it2.next().toString());
+						fw.write(";");
 						fw.write(it2.next().toString());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
 					}
 				}

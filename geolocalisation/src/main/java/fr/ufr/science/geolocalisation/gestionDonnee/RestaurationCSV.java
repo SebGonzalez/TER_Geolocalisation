@@ -32,36 +32,49 @@ public class RestaurationCSV {
 
 		while (line != null) // READLINE RENV NULL SI FICHIER LUE EN ENTIER
 		{
+			int j;
 			traitementFiltre=false; //INITIALISATION
 			tabChaine = line.split(";"); // SEPARATION DANS NOTRE FICHIER
 
 			if (tabChaine.length >= 6) {
 				Personne p = new Personne(tabChaine[0], tabChaine[1], tabChaine[2], tabChaine[4], tabChaine[3], tabChaine[5]);
 
-				for (int j = 6; j < tabChaine.length - 1; j+=2) //INFO COMP SE LISENT 2 PARS 2
+				for (j = 6; j < tabChaine.length - 1; j+=2) //INFO COMP SE LISENT 2 PARS 2
 				{
 					if(tabChaine[j].compareTo("debFiltre")==0)	//LUE LE MOT CLE DE TRAITEMENT DES FILTRES
 					{
-						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
 						traitementFiltre=true;
 
 					}
-					else if(traitementFiltre==true)
+					/*else if(traitementFiltre==true)
 					{
-						p.addFiltre(tabChaine[j]);
-						p.addFiltre(tabChaine[j+1]);
-					}
+						if(tabChaine[j]!=null)
+						{
+							p.addFiltre(tabChaine[j]);
+						}
+						if(tabChaine[j+1]!=null)
+						{
+							p.addFiltre(tabChaine[j+1]);
+						}
+					}*/
 					else
 					{
-						//System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-						//System.out.println(tabChaine[j] + " : " + tabChaine[j + 1]);
 						p.getInfoComplementaires().put(tabChaine[j], tabChaine[j + 1]);
 					}
 
+				}
+				while(j<tabChaine.length)
+				{
+					if(tabChaine[j]!=null)
+					{
+						p.addFiltre(tabChaine[j]);
+					}
+					/*if(tabChaine[j+1]!=null)
+					{
+						p.addFiltre(tabChaine[j+1]);
+					}*/
+					
+					j++;
 				}
 
 
