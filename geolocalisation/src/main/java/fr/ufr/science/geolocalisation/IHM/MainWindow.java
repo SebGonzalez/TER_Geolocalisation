@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -44,7 +46,6 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -146,6 +147,8 @@ public class MainWindow extends JFrame {
 	private boolean menuShow = true;
 
 	private boolean isMapImported = false;
+	
+	private Icon iconCross;
 
 	public void setMapImported(boolean isMapImported) {
 		this.isMapImported = isMapImported;
@@ -183,6 +186,13 @@ public class MainWindow extends JFrame {
 		// Setup JXMapViewer
 		mapViewer = new JXMapViewer();
 		mapViewer.setTileFactory(tileFactory);
+		
+		try {
+			Image img1 = ImageIO.read(getClass().getResource("/fr/ufr/science/geolocalisation/cross.png"));
+			iconCross = new ImageIcon(img1);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 
 		initComponents();
 
@@ -859,6 +869,28 @@ public class MainWindow extends JFrame {
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
 			menu.add(checkBox, gridBagConstraints);
+			
+			JButton removeFiltre = new JButton();
+			removeFiltre.setIcon(iconCross);
+			removeFiltre.setOpaque(false);
+			removeFiltre.setBorder(null);
+			removeFiltre.setContentAreaFilled(false);
+			removeFiltre.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionnaireFiltre.removeFiltre(f.getNom());
+					menu.removeAll();
+					initComponents();
+					printWaypoints();
+				}
+			});
+			gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridx = 2;
+			gridBagConstraints.gridy = 18 + compteur + compteurFiltre + compteurFiltre2;
+			gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+			gridBagConstraints.weightx = 1;
+			gridBagConstraints.weighty = 1;
+			menu.add(removeFiltre, gridBagConstraints);
 
 			compteurFiltre++;
 		}
@@ -1088,7 +1120,6 @@ public class MainWindow extends JFrame {
 
 		mapViewer.zoomToBestFit(pos, 0.7);
 		
-		waypoints.add(new SwingWaypoint(this, mapViewer.getCenterPosition(), gestionnaireFichier.getIconFiltre()));
 		// Set the overlay painter
 		WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
 		swingWaypointPainter.setWaypoints(waypoints);
