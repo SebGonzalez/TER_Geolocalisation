@@ -28,9 +28,6 @@ import javax.swing.JRadioButton;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingConstants;
 
-import fr.ufr.science.geolocalisation.util.OpenStreetMapUtils;
-import fr.ufr.science.geolocalisation.util.RoutingOffline;
-
 public class ImportMapWindow extends JFrame{
 	private MainWindow mainWindow;
 
@@ -178,8 +175,6 @@ public class ImportMapWindow extends JFrame{
 				if(e.getSource() == buttonDownload) {
 					downloadMap(buttonGroup.getSelection().getActionCommand());
 					dispose();
-					RoutingOffline.init(path);
-					OpenStreetMapUtils.setOfflineRoutingInitialized(true);
 					mainWindow.setMapImported(true);
 					mainWindow.setEnabled(true);
 				}
@@ -272,7 +267,7 @@ public class ImportMapWindow extends JFrame{
 
 				while((nRead = pmis.read(buffer)) != -1) {
 					progress+=1;
-					System.out.println("Progress: " + Math.round(progress/size * 100));
+					//System.out.println("Progress: " + Math.round(progress/size * 100));
 					baos.write(buffer, 0, nRead);
 				}
 
@@ -319,6 +314,4 @@ public class ImportMapWindow extends JFrame{
 		File file = new File(path + "PACA-LR.zip");
 		file.delete();
 	}
-	
-	
 }
