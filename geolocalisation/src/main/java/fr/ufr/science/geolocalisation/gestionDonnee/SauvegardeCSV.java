@@ -72,9 +72,10 @@ public class SauvegardeCSV
 
 			for (Personne p : entry.getValue()) 
 			{
+				
 
 				fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille() + ";" + p.getFichier());
-
+				//fw.write("\r");
 				//SAUV INFO COMP
 				if(p.getInfoComplementaires()!=null)
 				{
@@ -109,8 +110,9 @@ public class SauvegardeCSV
 						fw.write(it2.next().toString());	//ECRIS NOM INFO COMPLEMENTAIRE PUIS VALEURS DE L'INFO
 					}
 				}
+				fw.write("\r");
 			}
-			fw.write("\r");
+			//fw.write("\r");
 		}
 
 
