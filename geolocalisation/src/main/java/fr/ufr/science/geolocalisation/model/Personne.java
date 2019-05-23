@@ -13,7 +13,7 @@ public class Personne
 	private String prenom;
 	
 	private String ville;
-	private String pays;
+	private String CP;
 	
 	private HashMap<String, String> infoComplementaires;
 	
@@ -27,12 +27,12 @@ public class Personne
 		filtre = new ArrayList<>();
 	}
 
-	public Personne(String numClient, String nom, String prenom, String ville, String pays, String fichier) {
+	public Personne(String numClient, String nom, String prenom, String ville, String cp, String fichier) {
 		this.numClient = numClient;
 		this.nom = nom;
 		this.prenom = prenom;
 		this.ville = ville;
-		this.pays = pays;
+		this.CP = cp;
 		this.fichier = fichier;
 		this.infoComplementaires  = new HashMap<String, String>();
 		filtre = new ArrayList<>();
@@ -70,12 +70,12 @@ public class Personne
 		this.ville = ville;
 	}
 
-	public String getPays() {
-		return pays;
+	public String getCP() {
+		return CP;
 	}
 
-	public void setPays(String pays) {
-		this.pays = pays;
+	public void setCP(String cp) {
+		this.CP = cp;
 	}
 
 	public HashMap<String, String> getInfoComplementaires() {
@@ -136,4 +136,5 @@ public class Personne
 		}
 		return chaine;
 	}
+
 }

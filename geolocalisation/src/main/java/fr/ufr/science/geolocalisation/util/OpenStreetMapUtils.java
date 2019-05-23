@@ -67,10 +67,10 @@ public class OpenStreetMapUtils {
 		}
 		in.close();
 
-		if(response.toString().equals("[]")) {
+		//if(response.toString().equals("[]")) {
 			System.out.println(url);
 			System.out.println("Reponse " + response);
-		}
+		//}
 
 		return response.toString();
 	}
@@ -78,8 +78,11 @@ public class OpenStreetMapUtils {
 	public Map<String, Double> getCoordinates(String address) {
 		
 		String address2 = address.replaceAll(" ", "+");
-		if(address2.toUpperCase().contains("CEDEX"))
-			address2 = address2.split("\\+")[0];
+		if(address2.toUpperCase().contains("CEDEX")) {
+			String[] addressSplit = address2.split("\\+");
+			address2 = addressSplit[0] + "+" + addressSplit[addressSplit.length-1];
+		}
+			
 		
 		Map<String, Double> res;
 		StringBuffer query;

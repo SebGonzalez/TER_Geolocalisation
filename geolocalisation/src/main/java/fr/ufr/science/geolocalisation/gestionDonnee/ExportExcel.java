@@ -117,7 +117,7 @@ public class ExportExcel
 				cell.setCellValue(p.getVille());
 
 				cell = row.createCell(4);
-				cell.setCellValue(p.getPays());
+				cell.setCellValue(p.getCP());
 
 				Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
 				while (it2.hasNext()) 
@@ -243,7 +243,7 @@ public class ExportExcel
 				cell.setCellValue(p.getVille());
 
 				cell = row.createCell(4);
-				cell.setCellValue(p.getPays());
+				cell.setCellValue(p.getCP());
 
 				Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
 				while (it2.hasNext()) 

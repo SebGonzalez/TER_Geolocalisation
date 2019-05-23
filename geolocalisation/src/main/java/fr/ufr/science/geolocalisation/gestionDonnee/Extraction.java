@@ -93,7 +93,7 @@ public class Extraction
 						}
 						else if(i==4)
 						{
-							p.setPays(tabChaine[tab[4]]);
+							p.setCP(tabChaine[tab[4]]);
 						}
 
 					}

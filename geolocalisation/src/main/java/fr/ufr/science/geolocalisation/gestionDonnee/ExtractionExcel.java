@@ -75,7 +75,7 @@ public class ExtractionExcel
 					{
 						tab[3]=i;
 					}
-					else if(cell.toString().compareTo("PAYS")==0)
+					else if(cell.toString().compareTo("CP")==0)
 					{
 						tab[4]=i;
 					}
@@ -117,7 +117,9 @@ public class ExtractionExcel
 						}
 						else if(i==tab[4])
 						{
-							p.setPays(cell.toString());
+							String cp = cell.toString();
+							p.setCP(cp.split("\\.")[0]);
+							System.out.println(p.getCP());
 						}
 						else
 						{
@@ -194,7 +196,7 @@ public class ExtractionExcel
 				if(pDejaPres.getNumClient().compareTo(pImport.getNumClient())==0)	//PERSONNE A MODIFIER
 				{
 					pDejaPres.setNom(pImport.getNom());
-					pDejaPres.setPays(pImport.getPays());
+					pDejaPres.setCP(pImport.getCP());
 					pDejaPres.setPrenom(pImport.getPrenom());
 					pDejaPres.setVille(pImport.getVille());
 					pDejaPres.setInfoComplementaires(pImport.getInfoComplementaires());
@@ -209,17 +211,4 @@ public class ExtractionExcel
 		}
 
 	}
-
-	public static void main(String[] args) throws IOException
-	{		
-		ExtractionExcel ec = new ExtractionExcel(); 
-
-		File f = new File("test.xlsx");
-		GestionnairePersonne gestP = new GestionnairePersonne();
-		RestaurationCSV r = new RestaurationCSV();
-		r.restauration(gestP);
-		//ec.readFile(f,gestP);
-	}
-
-
 }

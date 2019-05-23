@@ -45,7 +45,7 @@ public class SauvegardeCSV
 		{
 			//SAUV INFO BASE
 			numClient.add(p.getNumClient());	//AJOUTE NOUVEAU NUMCLIENT A LA LISTE DES DEJA PRESENT
-			fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille() + ";" + p.getFichier());
+			fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getCP()+";"+p.getVille() + ";" + p.getFichier());
 
 			//SAUV INFO COMP
 			Iterator it2 = p.getInfoComplementaires().entrySet().iterator();
@@ -74,7 +74,7 @@ public class SauvegardeCSV
 			{
 				
 
-				fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getPays()+";"+p.getVille() + ";" + p.getFichier());
+				fw.write(p.getNumClient()+";"+p.getNom()+";"+p.getPrenom()+";"+p.getCP()+";"+p.getVille() + ";" + p.getFichier());
 				//fw.write("\r");
 				//SAUV INFO COMP
 				if(p.getInfoComplementaires()!=null)

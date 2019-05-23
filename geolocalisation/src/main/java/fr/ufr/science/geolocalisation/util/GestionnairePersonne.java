@@ -19,14 +19,15 @@ public class GestionnairePersonne {
 	}
 	
 	public void addPersonne(Personne p) {
+		String adresse = p.getVille() + " " + p.getCP();
 		//System.out.println(p.getInfoComplementaires().get("Score ISF"));
-		if(dictionnairePersonne.get(p.getVille()) != null)
-			dictionnairePersonne.get(p.getVille()).add(p);
+		if(dictionnairePersonne.get(adresse) != null)
+			dictionnairePersonne.get(adresse).add(p);
 		else {
 			List<Personne> listePersonnes = new ArrayList<>();
 			listePersonnes.add(p);
 			
-			dictionnairePersonne.put(p.getVille(), listePersonnes);
+			dictionnairePersonne.put(adresse, listePersonnes);
 		}
 		nbPersonne++;
 	}

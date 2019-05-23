@@ -33,7 +33,7 @@ public class WaypointDialog extends JDialog {
 			JPanel panel = new JPanel();
 			
 			String toPrint = "Num. Client: " + p.getNumClient() + "\nNom: " + p.getNom() + "\nPrénom: "
-					+ p.getPrenom() + "\nVille: " + p.getVille() + "\nPays: " + p.getPays();
+					+ p.getPrenom() + "\nVille: " + p.getVille() + "\nPays: " + p.getCP();
 			//if (!p.getInfoComplementaires().isEmpty()) {
 				for (Map.Entry<String, String> entry : p.getInfoComplementaires().entrySet()) {
 					toPrint += "\n" + entry.getKey() + ": " + entry.getValue();
