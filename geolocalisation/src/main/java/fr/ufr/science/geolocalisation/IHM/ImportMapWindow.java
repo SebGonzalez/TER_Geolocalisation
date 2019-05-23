@@ -43,8 +43,13 @@ public class ImportMapWindow extends JFrame{
 	final String[] regionsID =  {"PACA-LR", "RA-A", "MP-A"};
 	private ArrayList<JRadioButton> radioButtons;
 	private ButtonGroup buttonGroup;
-	
-	String path = "/Users/gonzo/Desktop/test/";
+
+	String path = "A:\\DownloadTest";
+
+	private double progress, size;
+	private JProgressBar pb;
+	private BufferedInputStream bis;
+	private BufferedOutputStream baos;
 
 	public ImportMapWindow(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
@@ -188,29 +193,30 @@ public class ImportMapWindow extends JFrame{
 	}
 
 	private void downloadMap(String mapID) {
-		final JProgressBar pb = new JProgressBar();
+		pb = new JProgressBar();
 		pb.setValue(0);
 		pb.setMaximum(100);
 		pb.setStringPainted(true);
 		pb.setBorder(BorderFactory.createTitledBorder("Téléchargement en cours"));
 		final Object lock = new Object();
 
-		BufferedInputStream bis;
-		BufferedOutputStream baos;
-		double size, progress = 0;
+		/*Thread progressBar = new Thread() {
+			public void run() {
+				JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);		
+			}
+		};*/
 
-		/*if(mapID == "PACA-LR") {
-			filename = "PACA-LanguedocRoussillon.zip";
+		if(mapID == "PACA-LR") {
 			size = 47500;
-			downloadThread = new Thread() {
+			Thread thread = new Thread() {
 				public void run() {
 					try {
-						System.out.println("Début DL");
-						bis = new BufferedInputStream(new URL("https://drive.google.com/uc?export=download&id=12F2ffSYOS1EtXh5rN1XlsRcrJWi75acb").openStream());
+						bis = new BufferedInputStream(new URL("https://drive.google.com/uc?export=download&id=1dAy_ZDsuwRbNK95usf5qKVGbFocIArsl").openStream());
 						ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
+						System.out.println("Début DL");
 
 						pmis.getProgressMonitor().setMillisToPopup(10);
-						baos = new BufferedOutputStream(new FileOutputStream(dir));
+						baos = new BufferedOutputStream(new FileOutputStream(path + "PACA-LR.zip"));
 
 						byte[] buffer = new byte[2048];
 						int nRead = 0;
@@ -218,8 +224,9 @@ public class ImportMapWindow extends JFrame{
 						while((nRead = pmis.read(buffer)) != -1) {
 							synchronized(lock) {
 								progress+=1;
-								//System.out.println("Progress: " + Math.round(progress/size * 100));
+								actualizeProgressBar();
 							}
+							//System.out.println("Progress: " + Math.round(progress/size * 100));
 							baos.write(buffer, 0, nRead);
 						}
 
@@ -229,54 +236,17 @@ public class ImportMapWindow extends JFrame{
 
 						System.out.println("Fin DL");
 					} catch(Exception e) {
-
+						e.printStackTrace();
 					}
 				}
 			};
-			downloadThread.start();
-
-			synchronized(lock) {
-				//JOptionPane.showMessageDialog(this, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
-				//System.out.println("Progress: " + Math.round(progress/size * 100));
-				pb.setValue((int) Math.round(progress/size * 100));
-			}
-		} else return;
-
-
-		try {
-			downloadThread.join();
-			System.out.println("Join");
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}*/
-
-		if(mapID == "PACA-LR") {
-			//filename = "PACA-LanguedocRoussillon.zip";
-			size = 47500;
-
+			thread.run();
+			
+			JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
+			
 			try {
-				bis = new BufferedInputStream(new URL("https://drive.google.com/uc?export=download&id=1dAy_ZDsuwRbNK95usf5qKVGbFocIArsl").openStream());
-				ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
-				System.out.println("Début DL");
-
-				pmis.getProgressMonitor().setMillisToPopup(10);
-				baos = new BufferedOutputStream(new FileOutputStream(path + "PACA-LR.zip"));
-
-				byte[] buffer = new byte[2048];
-				int nRead = 0;
-
-				while((nRead = pmis.read(buffer)) != -1) {
-					progress+=1;
-					//System.out.println("Progress: " + Math.round(progress/size * 100));
-					baos.write(buffer, 0, nRead);
-				}
-
-				pmis.close();
-				baos.flush();
-				baos.close();
-
-				System.out.println("Fin DL");
-			} catch(Exception e) {
+				thread.join();
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}else return;
@@ -284,7 +254,7 @@ public class ImportMapWindow extends JFrame{
 		FileInputStream fis;
 		File dir = new File(path);
 		if(!dir.exists()) dir.mkdirs();
-		
+
 		byte[] buffer = new byte[1024];
 		try {
 			fis = new FileInputStream(path + "PACA-LR.zip");
@@ -310,8 +280,13 @@ public class ImportMapWindow extends JFrame{
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-		
+
 		File file = new File(path + "PACA-LR.zip");
 		file.delete();
+	}
+
+	private synchronized void actualizeProgressBar() {
+		System.out.println("Progress...: " + Math.round(progress/size * 100));
+		pb.setValue((int) Math.round(progress/size * 100));
 	}
 }
