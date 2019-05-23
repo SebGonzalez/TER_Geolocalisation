@@ -146,7 +146,8 @@ public class ExtractionExcel
 			//System.out.println(p.getNom()+  " " + p.getPrenom()+ " " + p.getNumClient() +" " + p.getPays()+ " " + p.getVille());
 			//System.out.println(p.infoComplementaires.get("Score ISF"));
 
-			if(p.getNumClient()!=null)
+			//System.out.println(p.getVille());
+			if( (p.getNumClient()!=null) && (p.getVille()!=null))
 			{
 
 				if(!exist(p,tabNumclient))
