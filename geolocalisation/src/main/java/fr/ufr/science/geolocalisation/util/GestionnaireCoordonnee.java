@@ -24,6 +24,8 @@ public class GestionnaireCoordonnee implements Serializable {
 		Map<String, Double> coords;
         coords = OpenStreetMapUtils.getInstance().getCoordinates(adresse);
         
+        if(coords == null) return null;
+        
         Coordonnee c = new Coordonnee(coords.get("lat"), coords.get("lon"));
         coordonnee.put(adresse, c);
         

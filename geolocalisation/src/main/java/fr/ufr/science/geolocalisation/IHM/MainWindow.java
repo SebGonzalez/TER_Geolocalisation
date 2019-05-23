@@ -92,13 +92,13 @@ import fr.ufr.science.geolocalisation.util.RoutingOffline;
 public class MainWindow extends JFrame {
 
 	private String graphHopperPath = "/Users/gonzo/Desktop/test/"; // DEFAULT
-	
+
 	private static final long serialVersionUID = 1L;
 	private GestionnairePersonne gestionnairePersonne;
 	private GestionnaireCoordonnee gestionnaireCoordonne;
 	private GestionnaireFichier gestionnaireFichier;
 	private GestionnaireFiltre gestionnaireFiltre;
-	
+
 	private String loadedMapPack;
 
 	public void setLoadedMapPack(String loadedMapPack) {
@@ -108,7 +108,7 @@ public class MainWindow extends JFrame {
 	final JXMapViewer mapViewer;
 
 	private ImportMapWindow importMapWindow;
-	
+
 	/*
 	 * Base IHM
 	 */
@@ -147,7 +147,7 @@ public class MainWindow extends JFrame {
 	private boolean menuShow = true;
 
 	private boolean isMapImported = false;
-	
+
 	private Icon iconCross;
 
 	public void setMapImported(boolean isMapImported) {
@@ -156,24 +156,23 @@ public class MainWindow extends JFrame {
 
 	DefaultTileFactory tileFactory;
 
-	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne,
-			GestionnaireFichier gestionnaireFichier, GestionnaireFiltre gestionnaireFiltre) {
+	public MainWindow(GestionnairePersonne gestionnairePersonne, GestionnaireCoordonnee gestionnaireCoordonne, GestionnaireFichier gestionnaireFichier, GestionnaireFiltre gestionnaireFiltre) {
 		this.gestionnairePersonne = gestionnairePersonne;
 		this.gestionnaireCoordonne = gestionnaireCoordonne;
 		this.gestionnaireFichier = gestionnaireFichier;
 		this.gestionnaireFiltre = gestionnaireFiltre;
 
-		this.setPreferredSize(new Dimension(1280,1024));
+		this.setPreferredSize(new Dimension(1280, 1024));
 		this.pack();
-		
+
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-		//Initialisation GraphHopper pour le routing. 
-		if(!RoutingOffline.init(graphHopperPath)) {
+		// Initialisation GraphHopper pour le routing.
+		if (!RoutingOffline.init(graphHopperPath)) {
 			importMapWindow = new ImportMapWindow(this);
 			this.setEnabled(false);
-		} else OpenStreetMapUtils.setOfflineRoutingInitialized(true);
-
+		} else
+			OpenStreetMapUtils.setOfflineRoutingInitialized(true);
 
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -186,11 +185,11 @@ public class MainWindow extends JFrame {
 		// Setup JXMapViewer
 		mapViewer = new JXMapViewer();
 		mapViewer.setTileFactory(tileFactory);
-		
+
 		try {
 			Image img1 = ImageIO.read(getClass().getResource("/fr/ufr/science/geolocalisation/cross.png"));
 			iconCross = new ImageIcon(img1);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -232,13 +231,21 @@ public class MainWindow extends JFrame {
 		});
 
 		mapViewer.addMouseListener(new MouseListener() {
-			
-			public void mouseClicked(java.awt.event.MouseEvent e) {}
-			public void mouseEntered(java.awt.event.MouseEvent e) {}
-			public void mouseExited(java.awt.event.MouseEvent e) {}
-			public void mousePressed(java.awt.event.MouseEvent e) {}
 
-			public void mouseReleased(java.awt.event.MouseEvent e) {		// Pour sauver position approximative de la fenetre quand on relance l'app
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+			}
+
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+			}
+
+			public void mouseExited(java.awt.event.MouseEvent e) {
+			}
+
+			public void mousePressed(java.awt.event.MouseEvent e) {
+			}
+
+			public void mouseReleased(java.awt.event.MouseEvent e) { // Pour sauver position approximative de la fenetre
+																		// quand on relance l'app
 				java.awt.Point p = e.getPoint();
 				currentPosition = mapViewer.convertPointToGeoPosition(p);
 			}
@@ -254,14 +261,11 @@ public class MainWindow extends JFrame {
 			public void windowClosing(WindowEvent event) {
 				saveSettings();
 				saveFile();
-				try
-				{
-					SauvegardeCSV save= new SauvegardeCSV();
+				try {
+					SauvegardeCSV save = new SauvegardeCSV();
 					save.sauvegardeAll(App.gestionnairePersonne);
-				}
-				catch (IOException e)
-				{
-					
+				} catch (IOException e) {
+
 				}
 				System.exit(0);
 			}
@@ -269,11 +273,10 @@ public class MainWindow extends JFrame {
 	}
 
 	/*
-	 * Initialisation de l'interface principale (Panel de menu gauche + carte +
-	 * zoom)
+	 * Initialisation de l'interface principale (Panel de menu gauche + carte + zoom)
 	 */
 
-	private void initComponentsMap() {	
+	private void initComponentsMap() {
 
 		jPanel1 = new JPanel();
 		zoomInButton = new JButton();
@@ -358,11 +361,9 @@ public class MainWindow extends JFrame {
 				menuShow = !menuShow;
 				menu.setVisible(menuShow);
 				if (menuShow) {
-					hideMenu.setIcon(
-							new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/hideMenu.png")));
+					hideMenu.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/hideMenu.png")));
 				} else {
-					hideMenu.setIcon(
-							new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/showMenu.png")));
+					hideMenu.setIcon(new ImageIcon(getClass().getResource("/fr/ufr/science/geolocalisation/showMenu.png")));
 				}
 			}
 		});
@@ -398,7 +399,6 @@ public class MainWindow extends JFrame {
 		 */
 
 		menu = new JPanel();
-		distanceCheckCityName = new JTextField();
 		distanceCheckRange = new JTextField();
 
 		JLabel labelAdresse = new JLabel("Adresse : ");
@@ -432,7 +432,7 @@ public class MainWindow extends JFrame {
 		menuAffichage.add(exportImage);
 		menuBar.add(menuFichier);
 		menuBar.add(menuAffichage);
-		this.setJMenuBar(menuBar);		
+		this.setJMenuBar(menuBar);
 
 		/*
 		 * Listeners menu fichier
@@ -453,6 +453,7 @@ public class MainWindow extends JFrame {
 					returnValue = chooseExcelImport.showOpenDialog(null);
 
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
+						System.out.println("Nombre de fichier : " + gestionnaireFichier.getListFichier().size());
 						File selectedFile = chooseExcelImport.getSelectedFile();
 						gestionnaireFichier.ajoutFichier(selectedFile.getName());
 
@@ -464,7 +465,6 @@ public class MainWindow extends JFrame {
 						}
 
 						menu.removeAll();
-						mapViewer.removeAll();
 						initComponents();
 						printWaypoints();
 					}
@@ -490,8 +490,7 @@ public class MainWindow extends JFrame {
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						System.out.println(chooseExcelExport.getSelectedFile().getPath());
 						String path = chooseExcelExport.getSelectedFile().getPath();
-						if (FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath())
-								.compareTo("xlsx") != 0)
+						if (FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath()).compareTo("xlsx") != 0)
 							path += ".xlsx";
 						File selectedFile = new File(path);
 
@@ -510,7 +509,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if(e.getSource() == exportExcelFilter) {
+				if (e.getSource() == exportExcelFilter) {
 					int returnValue;
 
 					chooseExcelExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -524,10 +523,9 @@ public class MainWindow extends JFrame {
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						System.out.println(chooseExcelExport.getSelectedFile().getPath());
 						String path = chooseExcelExport.getSelectedFile().getPath();
-						if(FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath()).compareTo("xlsx") !=0)
+						if (FilenameUtils.getExtension(chooseExcelExport.getSelectedFile().getPath()).compareTo("xlsx") != 0)
 							path += ".xlsx";
 						File selectedFile = new File(path);
-
 
 						menu.removeAll();
 						mapViewer.removeAll();
@@ -537,24 +535,24 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-		
+
 		exportImage.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(e.getSource() == exportImage) {
+				if (e.getSource() == exportImage) {
 					int returnValue;
-					
+
 					chooseImageExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					chooseImageExport.setMultiSelectionEnabled(false);
 					FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier png", "png");
 					chooseImageExport.setAcceptAllFileFilterUsed(false);
 					chooseImageExport.addChoosableFileFilter(filter);
-					returnValue = chooseImageExport.showOpenDialog(null);					
-					
-					if(returnValue == JFileChooser.APPROVE_OPTION) {
+					returnValue = chooseImageExport.showOpenDialog(null);
+
+					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						String path = chooseImageExport.getSelectedFile().getPath();
-						if(FilenameUtils.getExtension(chooseImageExport.getSelectedFile().getPath()).compareTo("png") !=0)
+						if (FilenameUtils.getExtension(chooseImageExport.getSelectedFile().getPath()).compareTo("png") != 0)
 							path += ".png";
 						BufferedImage img = new BufferedImage(mapViewer.getWidth(), mapViewer.getHeight(), BufferedImage.TYPE_INT_RGB);
 						Graphics2D g2 = img.createGraphics();
@@ -566,9 +564,9 @@ public class MainWindow extends JFrame {
 						}
 					}
 				}
-				
+
 			}
-			
+
 		});
 
 		// Affichage
@@ -576,10 +574,13 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == clearMap) {
-					System.out.println("Reset CSV");
-					SauvegardeCSV.resetSauvegarde();
-				}
+				gestionnairePersonne.clearPersonne();
+				gestionnaireFichier.clearFichier();
+				gestionnaireFiltre.clearFiltre();
+				
+				menu.removeAll();
+				initComponents();
+				printWaypoints();
 			}
 
 		});
@@ -591,34 +592,31 @@ public class MainWindow extends JFrame {
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		menu.add(labelAdresse, gridBagConstraints);
 
-		distanceCheckCityName.setPreferredSize(new Dimension(150, 30));
+		distanceCheckCityName = new JTextField();
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 2;
-		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
-		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weightx = 2;
 		gridBagConstraints.weighty = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		menu.add(distanceCheckCityName, gridBagConstraints);
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 3;
-		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		menu.add(labelDistance, gridBagConstraints);
 
-		distanceCheckRange.setPreferredSize(new Dimension(150, 30));
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 4;
-		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
-		gridBagConstraints.weightx = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.weightx = 2;
 		gridBagConstraints.weighty = 1;
 		menu.add(distanceCheckRange, gridBagConstraints);
 
@@ -626,8 +624,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this, distanceCheckCityName.getText(),
-						Integer.parseInt(distanceCheckRange.getText()));
+				OpenStreetMapUtils.getInstance().filtreDistance(MainWindow.this, distanceCheckCityName.getText(), Integer.parseInt(distanceCheckRange.getText()));
 
 				gestionnaireFiltre.ajoutFiltre("distance_" + distanceCheckCityName.getText() + "_" + distanceCheckRange.getText());
 			}
@@ -662,14 +659,13 @@ public class MainWindow extends JFrame {
 		menu.add(labelAjoutFiltre, gridBagConstraints);
 
 		JTextField fieldAjout = new JTextField();
-		fieldAjout.setPreferredSize(new Dimension(150, 30));
 
-		AutoSuggestor as = new AutoSuggestor(fieldAjout, (Window)this, menu, gestionnaireFichier.getAllTypeInfos(), Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f);
+		AutoSuggestor as = new AutoSuggestor(fieldAjout, (Window) this, menu, gestionnaireFichier.getAllTypeInfos(), Color.WHITE.brighter(), Color.BLUE, Color.RED, 0.75f);
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 9;
-		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		menu.add(fieldAjout, gridBagConstraints);
@@ -780,31 +776,30 @@ public class MainWindow extends JFrame {
 				Map<String, Boolean> infos = f.getDictionnaireInfos();
 				CheckListItem listItem[] = new CheckListItem[infos.size()];
 				int i = 0;
-				for(Entry<String, Boolean> entry : infos.entrySet()) {
+				for (Entry<String, Boolean> entry : infos.entrySet()) {
 					listItem[i] = new CheckListItem(entry.getKey(), entry.getValue());
 					i++;
 				}
 				JList<CheckListItem> list = new JList<>(listItem);
 				list.setCellRenderer(new CheckListRenderer());
-			    list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			    list.addMouseListener(new MouseAdapter() {
-			      @Override
-			      public void mouseClicked(MouseEvent event) {
-			        JList list = (JList) event.getSource();
-			        int index = list.locationToIndex(event.getPoint());// Get index of item
-			                                                           // clicked
-			        CheckListItem item = (CheckListItem) list.getModel()
-			            .getElementAt(index);
-			        item.setSelected(!item.isSelected()); // Toggle selected state
-			        list.repaint(list.getCellBounds(index, index));// Repaint cell
-			        
-			        gestionnaireFiltre.ajoutFiltrePersonne(f.getNom(), item.toString(), item.isSelected());
-			        f.setVisibilityInfo(item.toString(), item.isSelected());
-			        printWaypoints();
-			      }
-			    });
-			    
-			    JScrollPane scrollPane3 = new JScrollPane(list);
+				list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+				list.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent event) {
+						JList list = (JList) event.getSource();
+						int index = list.locationToIndex(event.getPoint());// Get index of item
+																			// clicked
+						CheckListItem item = (CheckListItem) list.getModel().getElementAt(index);
+						item.setSelected(!item.isSelected()); // Toggle selected state
+						list.repaint(list.getCellBounds(index, index));// Repaint cell
+
+						gestionnaireFiltre.ajoutFiltrePersonne(f.getNom(), item.toString(), item.isSelected());
+						f.setVisibilityInfo(item.toString(), item.isSelected());
+						printWaypoints();
+					}
+				});
+
+				JScrollPane scrollPane3 = new JScrollPane(list);
 				gridBagConstraints = new GridBagConstraints();
 				gridBagConstraints.gridx = 0;
 				gridBagConstraints.gridy = 15 + compteur + compteurFiltre2;
@@ -813,7 +808,7 @@ public class MainWindow extends JFrame {
 				gridBagConstraints.weightx = 1;
 				gridBagConstraints.weighty = 1;
 				menu.add(scrollPane3, gridBagConstraints);
-				
+
 				JSeparator sep4 = new JSeparator(JSeparator.HORIZONTAL);
 				sep4.setPreferredSize(new Dimension(1, 5));
 				gridBagConstraints = new GridBagConstraints();
@@ -826,11 +821,9 @@ public class MainWindow extends JFrame {
 				gridBagConstraints.insets = new Insets(10, 0, 10, 0);
 				menu.add(sep4, gridBagConstraints);
 
-				compteurFiltre2+= 5;
+				compteurFiltre2 += 5;
 			}
 		}
-
-
 
 		JLabel labelFiltre = new JLabel("Filtres : ");
 		gridBagConstraints = new GridBagConstraints();
@@ -869,7 +862,7 @@ public class MainWindow extends JFrame {
 			gridBagConstraints.weightx = 1;
 			gridBagConstraints.weighty = 1;
 			menu.add(checkBox, gridBagConstraints);
-			
+
 			JButton removeFiltre = new JButton();
 			removeFiltre.setIcon(iconCross);
 			removeFiltre.setOpaque(false);
@@ -921,22 +914,15 @@ public class MainWindow extends JFrame {
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		menu.add(checkBox, gridBagConstraints);
-		
-		JScrollPane scrollPane2 = new JScrollPane(menu);
-		//scrollPane2.setOpaque(false);
-		//scrollPane2.setBorder(null);
-		scrollPane2.getViewport().setOpaque(false);
-		
+
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.anchor = GridBagConstraints.NORTH;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 0.01;
-		gridBagConstraints.weighty = 0.7;
-		
-		menuScrollPane = new JScrollPane(menu);
-		this.add(menuScrollPane, gridBagConstraints);
+
+		//menuScrollPane = new JScrollPane(menu);
+		this.add(menu, gridBagConstraints);
 
 		/*
 		 * 
@@ -1108,18 +1094,20 @@ public class MainWindow extends JFrame {
 			String valeur = gestionnaireFiltre.showPersonne(entry.getValue().get(0));
 			if (gestionnaireFichier.getVisibilityFile(fichier) && !valeur.equals("false")) {
 				Coordonnee c = gestionnaireCoordonne.getCoordonnee(entry.getKey());
-				GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
-				pos.add(geo);
-				if (valeur.equals("others"))
-					waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));
-				else {
-					waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIconFiltre()));
+				if (c != null) {
+					GeoPosition geo = new GeoPosition(c.getLat(), c.getLon());
+					pos.add(geo);
+					if (valeur.equals("others"))
+						waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIcon(fichier)));
+					else {
+						waypoints.add(new SwingWaypoint(this, geo, entry.getValue(), gestionnaireFichier.getIconFiltre()));
+					}
 				}
 			}
 		}
 
 		mapViewer.zoomToBestFit(pos, 0.7);
-		
+
 		// Set the overlay painter
 		WaypointPainter<SwingWaypoint> swingWaypointPainter = new SwingWaypointOverlayPainter();
 		swingWaypointPainter.setWaypoints(waypoints);
@@ -1129,11 +1117,11 @@ public class MainWindow extends JFrame {
 		for (SwingWaypoint w : waypoints) {
 			mapViewer.add(w.getButton());
 		}
-		
+
 		return pos;
 	}
-	
+
 	public void autoZoom(Set<GeoPosition> pos) {
-		 mapViewer.zoomToBestFit(pos, 0.7);
+		mapViewer.zoomToBestFit(pos, 0.7);
 	}
 }

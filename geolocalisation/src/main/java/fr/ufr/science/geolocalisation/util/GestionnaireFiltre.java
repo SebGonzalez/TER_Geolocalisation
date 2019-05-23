@@ -112,4 +112,8 @@ public class GestionnaireFiltre implements Serializable {
 		return showOthers;
 	}
 	
+	public void clearFiltre() {
+		this.listeFiltre.clear();
+	}
+	
 }

@@ -13,8 +13,6 @@ public class GestionnairePersonne {
 	//private List<Personne> listePersonne;
 	private Map<String, List<Personne>> dictionnairePersonne;
 	private int nbPersonne = 0;
-	RestaurationCSV rest = new RestaurationCSV();
-	
 	
 	public GestionnairePersonne() {
 		this.dictionnairePersonne = new HashMap<>();
@@ -37,12 +35,8 @@ public class GestionnairePersonne {
 		return dictionnairePersonne;
 	}
 	
-	public Personne getPersonneByID(String id) {		// Pour trouver une personne avec son ID (utile pour afficher les infos)
-		/*for(Personne p : listePersonne) {
-			if(p.getNumClient() == id)
-				return p;
-		}*/
-		return null;
+	public void clearPersonne() {
+		dictionnairePersonne.clear();
 	}
 
 	public int getNbPersonne() {

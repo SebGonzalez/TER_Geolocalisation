@@ -49,6 +49,10 @@ public class GestionnaireMarker {
 	public Icon getIconFiltre() {
 		return iconFiltre;
 	}
+
+	public void clearFichier() {
+		listeFichier.clear();
+	}
 	
 	
 }

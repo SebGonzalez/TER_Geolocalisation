@@ -47,8 +47,6 @@ public class OpenStreetMapUtils {
 
 	private String getRequest(String url) throws Exception {
 
-		System.out.println(url);
-
 		final URL obj = new URL(url);
 		final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -69,15 +67,23 @@ public class OpenStreetMapUtils {
 		}
 		in.close();
 
-		System.out.println("Reponse " + response);
+		if(response.toString().equals("[]")) {
+			System.out.println(url);
+			System.out.println("Reponse " + response);
+		}
 
 		return response.toString();
 	}
 
 	public Map<String, Double> getCoordinates(String address) {
+		
+		String address2 = address.replaceAll(" ", "+");
+		if(address2.toUpperCase().contains("CEDEX"))
+			address2 = address2.split("\\+")[0];
+		
 		Map<String, Double> res;
 		StringBuffer query;
-		String[] split = address.split(" ");
+
 		String queryResult = null;
 
 		query = new StringBuffer();
@@ -85,16 +91,8 @@ public class OpenStreetMapUtils {
 
 		query.append("https://nominatim.openstreetmap.org/search?q=");
 
-		if (split.length == 0) {
-			return null;
-		}
+		query.append(address2);
 
-		for (int i = 0; i < split.length; i++) {
-			query.append(split[i]);
-			if (i < (split.length - 1)) {
-				query.append("+");
-			}
-		}
 		query.append("&format=json&addressdetails=1");
 
 		try {
@@ -103,7 +101,7 @@ public class OpenStreetMapUtils {
 			e.printStackTrace();
 		}
 
-		if (queryResult == null) {
+		if (queryResult == null || queryResult.equals("[]")) {
 			return null;
 		}
 
@@ -121,6 +119,7 @@ public class OpenStreetMapUtils {
 				res.put("lat", Double.parseDouble(lat));
 
 			}
+			else return null;
 		}
 
 		return res;

@@ -89,4 +89,9 @@ public class GestionnaireFichier implements Serializable {
 		
 		return new ArrayList<>(typeInfos);
 	}
+	
+	public void clearFichier() {
+		listeFichier.clear();
+		gestionnaireMarker.clearFichier();
+	}
 }
