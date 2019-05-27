@@ -205,13 +205,17 @@ public class ImportMapWindow extends JFrame{
 				if(e.getSource() == buttonDownload) {
 					try {
 						downloadMap(buttonGroup.getSelection().getActionCommand());
+						RoutingOffline.init(App.getPath());
+						dispose();
+						mainWindow.setMapImported(true);
+						mainWindow.setEnabled(true);
+						mainWindow.setAlwaysOnTop(true);
+						mainWindow.setAlwaysOnTop(false);
 					} catch (MalformedURLException e1) {
 						e1.printStackTrace();
+					} catch (NullPointerException e2) {
+						e2.printStackTrace();
 					}
-					RoutingOffline.init(App.getPath());
-					dispose();
-					mainWindow.setMapImported(true);
-					mainWindow.setEnabled(true);
 				}
 			}
 		});
@@ -238,48 +242,48 @@ public class ImportMapWindow extends JFrame{
 			}
 		};*/
 
-			//size = 47500;
-			Thread thread = new Thread() {
-				public void run() {
-					try {
-						bis = new BufferedInputStream(url.openStream());
-						ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
-						System.out.println("Début DL");
+		//size = 47500;
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					bis = new BufferedInputStream(url.openStream());
+					ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
+					System.out.println("Début DL");
 
-						pmis.getProgressMonitor().setMillisToPopup(10);
-						baos = new BufferedOutputStream(new FileOutputStream(path + "Région-"+mapID+".zip"));
+					pmis.getProgressMonitor().setMillisToPopup(10);
+					baos = new BufferedOutputStream(new FileOutputStream(path + "Région-"+mapID+".zip"));
 
-						byte[] buffer = new byte[2048];
-						int nRead = 0;
+					byte[] buffer = new byte[2048];
+					int nRead = 0;
 
-						while((nRead = pmis.read(buffer)) != -1) {
-							synchronized(lock) {
-								progress+=1;
-								actualizeProgressBar();
-							}
-							//System.out.println("Progress: " + Math.round(progress/size * 100));
-							baos.write(buffer, 0, nRead);
+					while((nRead = pmis.read(buffer)) != -1) {
+						synchronized(lock) {
+							progress+=1;
+							actualizeProgressBar();
 						}
-
-						pmis.close();
-						baos.flush();
-						baos.close();
-
-						System.out.println("Fin DL");
-					} catch(Exception e) {
-						e.printStackTrace();
+						//System.out.println("Progress: " + Math.round(progress/size * 100));
+						baos.write(buffer, 0, nRead);
 					}
+
+					pmis.close();
+					baos.flush();
+					baos.close();
+
+					System.out.println("Fin DL");
+				} catch(Exception e) {
+					e.printStackTrace();
 				}
-			};
-			thread.start();
-
-			//JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
-
-			try {
-				thread.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
+		};
+		thread.start();
+
+		//JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
+
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		FileInputStream fis;
 		File dir = new File(path);
