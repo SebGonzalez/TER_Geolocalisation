@@ -133,6 +133,7 @@ public class MainWindow extends JFrame {
 	private JMenuItem importExcel;
 	private JMenuItem exportExcelFull;
 	private JMenuItem exportExcelFilter;
+	private JMenuItem deleteCachedMap;
 	private JMenuItem clearMap;
 	private JMenuItem exportImage;
 	private JFileChooser chooseExcelImport;
@@ -168,8 +169,7 @@ public class MainWindow extends JFrame {
 		if (!RoutingOffline.init(App.getPath())) {
 			importMapWindow = new ImportMapWindow(this);
 			this.setEnabled(false);
-		} else
-			OpenStreetMapUtils.setOfflineRoutingInitialized(true);
+		}
 
 		// Create a TileFactoryInfo for OpenStreetMap
 		TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -410,6 +410,7 @@ public class MainWindow extends JFrame {
 			menuFichier = new JMenu("Fichier");
 			menuAffichage = new JMenu("Affichage");
 			importExcel = new JMenuItem("Importer Excel");
+			deleteCachedMap = new JMenuItem("Supprimer carte offline");
 			exportExcelFull = new JMenuItem("Exporter");
 			exportExcelFilter = new JMenuItem("Exporter filtre");
 			clearMap = new JMenuItem("Nettoyer la carte");
@@ -425,6 +426,7 @@ public class MainWindow extends JFrame {
 			menuFichier.add(importExcel);
 			menuFichier.add(exportExcelFull);
 			menuFichier.add(exportExcelFilter);
+			menuFichier.add(deleteCachedMap);
 			menuAffichage.add(clearMap);
 			menuAffichage.add(exportImage);
 			menuBar.add(menuFichier);
@@ -508,7 +510,6 @@ public class MainWindow extends JFrame {
 
 					if (e.getSource() == exportExcelFilter) {
 						int returnValue;
-
 						chooseExcelExport.setFileSelectionMode(JFileChooser.FILES_ONLY);
 						chooseExcelExport.setMultiSelectionEnabled(false);
 						FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichier Excel", "xlsx");
@@ -532,7 +533,18 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
+			
+			deleteCachedMap.addActionListener(new ActionHandler(this) {
 
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					RoutingOffline.deleteFiles();
+					window.setImportMapWindow(new ImportMapWindow(window));
+					window.setEnabled(false);
+				}
+				
+			});
+			
 			exportImage.addActionListener(new ActionListener() {
 
 				@Override
@@ -932,6 +944,10 @@ public class MainWindow extends JFrame {
 			this.add(mapViewer, gridBagConstraints);
 		}
 
+		public void setImportMapWindow(ImportMapWindow importMapWindow) {
+			this.importMapWindow = importMapWindow;
+		}
+
 		public void setZoom(int zoom) {
 			zoomChanging = true;
 			mapViewer.setZoom(zoom);
@@ -1120,5 +1136,14 @@ public class MainWindow extends JFrame {
 
 		public void autoZoom(Set<GeoPosition> pos) {
 			mapViewer.zoomToBestFit(pos, 0.7);
+		}
+		
+		abstract class ActionHandler implements ActionListener{
+			MainWindow window;
+			public ActionHandler(MainWindow window) {
+				this.window=window;
+			}
+			
+			public abstract void actionPerformed(ActionEvent e);			
 		}
 	}

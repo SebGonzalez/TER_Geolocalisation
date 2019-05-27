@@ -34,6 +34,7 @@ import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingConstants;
 
 import fr.ufr.science.geolocalisation.App;
+import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
 public class ImportMapWindow extends JFrame{
 	private MainWindow mainWindow;
@@ -207,6 +208,7 @@ public class ImportMapWindow extends JFrame{
 					} catch (MalformedURLException e1) {
 						e1.printStackTrace();
 					}
+					RoutingOffline.init(App.getPath());
 					dispose();
 					mainWindow.setMapImported(true);
 					mainWindow.setEnabled(true);
@@ -221,6 +223,7 @@ public class ImportMapWindow extends JFrame{
 	}
 
 	private void downloadMap(String mapID) throws MalformedURLException {
+		this.setAlwaysOnTop(false);
 		pb = new JProgressBar();
 		pb.setValue(0);
 		pb.setMaximum(100);

@@ -30,8 +30,22 @@ public class RoutingOffline {
 			
 			hopper.importOrLoad();
 			System.out.println("Routing offline Initialisé");
+			OpenStreetMapUtils.setOfflineRoutingInitialized(true);
 			return true;
 		} else return false;
+	}
+	
+	public static void deleteFiles() {
+		for(String fileName : cacheFileNames) {
+			File f = new File(graphHopperPath+fileName);
+			if(f.exists())
+				f.delete();
+		}
+		File f = new File(graphHopperPath+"info");
+		if(f.exists())
+			f.delete();
+		
+		hopper.close();
 	}
 	
 	public static boolean checkIfCached(String path) {
