@@ -11,8 +11,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,6 +33,8 @@ import javax.swing.JRadioButton;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingConstants;
 
+import fr.ufr.science.geolocalisation.App;
+
 public class ImportMapWindow extends JFrame{
 	private MainWindow mainWindow;
 
@@ -39,20 +46,23 @@ public class ImportMapWindow extends JFrame{
 	private JButton buttonDownload;
 	private JButton buttonContinue;
 
-	final String[] regions = {"PACA-LanguedocRoussillon","RhoneAlpes-Auvergne","MidiPyrenees-Aquitaine"};
-	final String[] regionsID =  {"PACA-LR", "RA-A", "MP-A"};
+	private HashMap<String, String> URLs;
 	private ArrayList<JRadioButton> radioButtons;
 	private ButtonGroup buttonGroup;
 
-	String path = "A:\\DownloadTest";
+	String path;
 
 	private double progress, size;
 	private JProgressBar pb;
 	private BufferedInputStream bis;
 	private BufferedOutputStream baos;
 
+	private int nbRegions;
+
 	public ImportMapWindow(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
+		URLs = new HashMap<String, String>();
+		path = App.getPath() + "mapCache";
 		this.setPreferredSize(new Dimension(600,300));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setAlwaysOnTop(true);
@@ -60,6 +70,12 @@ public class ImportMapWindow extends JFrame{
 	}
 
 	public void init() {
+
+		try {
+			readURLFile();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 		GridBagConstraints gridBagConstraints;
 
@@ -74,11 +90,14 @@ public class ImportMapWindow extends JFrame{
 		buttonContinue = new JButton("Continuer sans");
 
 
+		Object[] regions = URLs.keySet().toArray();
 		for(int i = 0; i < regions.length; i++) {
-			JRadioButton radioButton = new JRadioButton(regions[i]);
-			radioButton.setActionCommand(regionsID[i]);
+			String key = (String) regions[i];
+			JRadioButton radioButton = new JRadioButton("Région-" + key);
+			radioButton.setActionCommand(key);
 			radioButtons.add(radioButton);
 		}
+
 
 		mainPanel.setLayout(new GridBagLayout());
 
@@ -112,29 +131,34 @@ public class ImportMapWindow extends JFrame{
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 
-		for(int i = 0; i < radioButtons.size(); i ++) {
-			gridBagConstraints.gridx = 0 + i;
-			gridBagConstraints.gridy = 3;
-			mainPanel.add(radioButtons.get(i), gridBagConstraints);
+		for(int i = 0; i < radioButtons.size(); i = i) {
+			gridBagConstraints.gridy = (int) (3 + Math.floor(i/3));
+			for(int k = 0; k < 3; k ++, i++) {
+				if(i < radioButtons.size()) {
+					gridBagConstraints.gridx = k;
+					mainPanel.add(radioButtons.get(i), gridBagConstraints);
+				}
+			}
 		}
 
+		int y = (int) Math.floor(radioButtons.size()/3) + 4;
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = y;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		mainPanel.add(buttonExit, gridBagConstraints);
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = y;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		mainPanel.add(buttonDownload, gridBagConstraints);
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 2;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = y;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -178,7 +202,11 @@ public class ImportMapWindow extends JFrame{
 		buttonDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == buttonDownload) {
-					downloadMap(buttonGroup.getSelection().getActionCommand());
+					try {
+						downloadMap(buttonGroup.getSelection().getActionCommand());
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
 					dispose();
 					mainWindow.setMapImported(true);
 					mainWindow.setEnabled(true);
@@ -192,7 +220,7 @@ public class ImportMapWindow extends JFrame{
 		dispose();
 	}
 
-	private void downloadMap(String mapID) {
+	private void downloadMap(String mapID) throws MalformedURLException {
 		pb = new JProgressBar();
 		pb.setValue(0);
 		pb.setMaximum(100);
@@ -200,23 +228,23 @@ public class ImportMapWindow extends JFrame{
 		pb.setBorder(BorderFactory.createTitledBorder("Téléchargement en cours"));
 		final Object lock = new Object();
 
+		URL url = new URL(URLs.get(mapID));
 		/*Thread progressBar = new Thread() {
 			public void run() {
 				JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);		
 			}
 		};*/
 
-		if(mapID == "PACA-LR") {
-			size = 47500;
+			//size = 47500;
 			Thread thread = new Thread() {
 				public void run() {
 					try {
-						bis = new BufferedInputStream(new URL("https://drive.google.com/uc?export=download&id=1dAy_ZDsuwRbNK95usf5qKVGbFocIArsl").openStream());
+						bis = new BufferedInputStream(url.openStream());
 						ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
 						System.out.println("Début DL");
 
 						pmis.getProgressMonitor().setMillisToPopup(10);
-						baos = new BufferedOutputStream(new FileOutputStream(path + "PACA-LR.zip"));
+						baos = new BufferedOutputStream(new FileOutputStream(path + "Région-"+mapID+".zip"));
 
 						byte[] buffer = new byte[2048];
 						int nRead = 0;
@@ -240,16 +268,15 @@ public class ImportMapWindow extends JFrame{
 					}
 				}
 			};
-			thread.run();
-			
-			JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
-			
+			thread.start();
+
+			//JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
+
 			try {
 				thread.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}else return;
 
 		FileInputStream fis;
 		File dir = new File(path);
@@ -257,7 +284,7 @@ public class ImportMapWindow extends JFrame{
 
 		byte[] buffer = new byte[1024];
 		try {
-			fis = new FileInputStream(path + "PACA-LR.zip");
+			fis = new FileInputStream(path + "Région-"+mapID+".zip");
 			ZipInputStream zis = new ZipInputStream(fis);
 			ZipEntry ze = zis.getNextEntry();
 			while(ze != null) {
@@ -281,12 +308,30 @@ public class ImportMapWindow extends JFrame{
 			e.printStackTrace();
 		}
 
-		File file = new File(path + "PACA-LR.zip");
+		File file = new File(path + "Région-"+mapID+".zip");
 		file.delete();
 	}
 
 	private synchronized void actualizeProgressBar() {
 		System.out.println("Progress...: " + Math.round(progress/size * 100));
 		pb.setValue((int) Math.round(progress/size * 100));
+	}
+
+	private void readURLFile() throws IOException{
+		File f = new File(App.getPath() + "config\\download.cfg");
+		if(!f.exists())
+			throw new IOException("URL File missing");
+		Properties settings = new Properties();
+		FileInputStream is = new FileInputStream(f);
+		settings.load(is);
+
+		Enumeration<Object> keys = settings.keys();
+
+		while(keys.hasMoreElements()) {
+			String key = (String) keys.nextElement();
+			URLs.put(key, (String) settings.getProperty(key));
+		}
+
+		nbRegions = URLs.size();
 	}
 }
