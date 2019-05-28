@@ -8,14 +8,14 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EncodingManager;
 
 public class ImportOSMFile {
-	
+
 	/*
 	 * Transforme un .osm, .osm.pbf ou .osm.bz2 en fichiers utilisables par GraphHopper
 	 * Long et couteux en RAM
 	 */
-	
+
 	public static void importFile(String OSMFile, String graphHopperLocation, String setName) throws IOException {
-		
+
 		if(!isOSMFile(OSMFile)) {
 			throw new IOException("Fichier OSM invalide (" + OSMFile + ")");
 		}
@@ -23,17 +23,17 @@ public class ImportOSMFile {
 		hopper.setDataReaderFile(OSMFile);
 		hopper.setGraphHopperLocation(graphHopperLocation + setName);
 		hopper.setEncodingManager(EncodingManager.create("car"));
-		
+
 		System.out.println("Début de l'import...");
 		hopper.importOrLoad();
 		System.out.println("Fin de l'import");	
 	}
-	
-	
+
+
 	public static boolean isOSMFile(String path) {
 		return isOSMFile(new File(path));
 	}
-	
+
 	public static boolean isOSMFile(File f) {
 		if(!f.exists())
 			return false;
@@ -42,15 +42,29 @@ public class ImportOSMFile {
 			return true;
 		return false;
 	}
-	
+
 	public static void main(String[] args) {
-		if(args.length < 3) {
+		/*if(args.length < 3) {
 			throw new IllegalArgumentException("Pas de fichier passé en argument");
 		}
 		try {
 			importFile(args[0], args[1], args[2]);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
+
+		/*String path = "B://Ubuntu//share//";
+		String[] regions = {"Bordeaux", "Lyon", "Marseille", "Paris", "RennesNantes", "Strasbourg", "Tourcoing"};
+
+		for(String region : regions) {
+			try {
+				System.out.println("Importing " + region);
+				importFile(path+ region + "//Région-"+region+".osm.pbf", path, "Région-" + region);
+				System.out.println(region + " imported.");
+				System.out.println("");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}*/
 	}
 }

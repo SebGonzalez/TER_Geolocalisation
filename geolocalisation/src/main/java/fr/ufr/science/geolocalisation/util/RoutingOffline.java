@@ -20,9 +20,9 @@ public class RoutingOffline {
 	private static String currentMapPack;
 	private static String graphHopperPath;
 	static final String[] cacheFileNames = {"edges", "geometry", "location_index", "names", "nodes", "nodes_ch_fastest_car_node", "properties", "shortcuts_fastest_car_node"} ; 
-	
+
 	public static boolean init(String graphHopperPathInit) {
-		graphHopperPath = graphHopperPathInit;
+		graphHopperPath = graphHopperPathInit + "mapCache\\";
 		if(checkIfCached(graphHopperPath)) {
 			hopper = new GraphHopperOSM().forDesktop();
 			hopper.setGraphHopperLocation(graphHopperPath);
@@ -30,14 +30,27 @@ public class RoutingOffline {
 			
 			hopper.importOrLoad();
 			System.out.println("Routing offline Initialisé");
+			OpenStreetMapUtils.setOfflineRoutingInitialized(true);
 			return true;
 		} else return false;
+	}
+	
+	public static void deleteFiles() {
+		for(String fileName : cacheFileNames) {
+			File f = new File(graphHopperPath+fileName);
+			if(f.exists())
+				f.delete();
+		}
+		File f = new File(graphHopperPath+"info");
+		if(f.exists())
+			f.delete();
+		
+		hopper.close();
 	}
 	
 	public static boolean checkIfCached(String path) {
 		for(String fileName : cacheFileNames) {
 			if(!new File(path + fileName).exists()) {
-				System.out.println("Fichiers de carte en cache manquant(s)");
 				return false;
 			}
 		}
