@@ -19,6 +19,7 @@ import java.util.zip.ZipInputStream;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -44,7 +45,7 @@ public class ImportMapWindow extends JFrame{
 	private ArrayList<JRadioButton> radioButtons;
 	private ButtonGroup buttonGroup;
 
-	String path = "A:\\DownloadTest";
+	String path = "/Users/gonzo/Desktop/test/";
 
 	private double progress, size;
 	private JProgressBar pb;
@@ -120,21 +121,21 @@ public class ImportMapWindow extends JFrame{
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = 5;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		mainPanel.add(buttonExit, gridBagConstraints);
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = 5;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		mainPanel.add(buttonDownload, gridBagConstraints);
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 2;
-		gridBagConstraints.gridy = 4;
+		gridBagConstraints.gridy = 5;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -194,25 +195,18 @@ public class ImportMapWindow extends JFrame{
 
 	private void downloadMap(String mapID) {
 		pb = new JProgressBar();
-		pb.setValue(0);
-		pb.setMaximum(100);
 		pb.setStringPainted(true);
-		pb.setBorder(BorderFactory.createTitledBorder("Téléchargement en cours"));
-		final Object lock = new Object();
-
-		/*Thread progressBar = new Thread() {
-			public void run() {
-				JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);		
-			}
-		};*/
 
 		if(mapID == "PACA-LR") {
-			size = 47500;
+			size = 363353;
+			pb.setMaximum((int)size);
+			pb.setValue(0);
 			Thread thread = new Thread() {
 				public void run() {
 					try {
 						bis = new BufferedInputStream(new URL("https://drive.google.com/uc?export=download&id=1dAy_ZDsuwRbNK95usf5qKVGbFocIArsl").openStream());
 						ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
+						
 						System.out.println("Début DL");
 
 						pmis.getProgressMonitor().setMillisToPopup(10);
@@ -222,27 +216,28 @@ public class ImportMapWindow extends JFrame{
 						int nRead = 0;
 
 						while((nRead = pmis.read(buffer)) != -1) {
-							synchronized(lock) {
-								progress+=1;
-								actualizeProgressBar();
-							}
-							//System.out.println("Progress: " + Math.round(progress/size * 100));
+							progress+=nRead;
+							actualizeProgressBar();
+							System.out.println("Progress: " + Math.round(progress/size * 100));
 							baos.write(buffer, 0, nRead);
 						}
 
 						pmis.close();
 						baos.flush();
 						baos.close();
-
+ 
 						System.out.println("Fin DL");
 					} catch(Exception e) {
 						e.printStackTrace();
 					}
 				}
 			};
-			thread.run();
+			thread.start();
 			
-			JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
+			//JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
+
+			 JOptionPane.showOptionDialog(mainPanel, pb,"Téléchargement...", JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+
 			
 			try {
 				thread.join();
@@ -283,10 +278,12 @@ public class ImportMapWindow extends JFrame{
 
 		File file = new File(path + "PACA-LR.zip");
 		file.delete();
+		
+		dispose();
 	}
 
 	private synchronized void actualizeProgressBar() {
-		System.out.println("Progress...: " + Math.round(progress/size * 100));
+		//System.out.println("Progress...: " + Math.round(progress/size * 100));
 		pb.setValue((int) Math.round(progress/size * 100));
 	}
 }
