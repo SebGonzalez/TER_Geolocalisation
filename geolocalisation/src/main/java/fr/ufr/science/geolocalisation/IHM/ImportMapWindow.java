@@ -5,44 +5,47 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
-import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import fr.ufr.science.geolocalisation.App;
 import fr.ufr.science.geolocalisation.util.RoutingOffline;
 
-public class ImportMapWindow extends JFrame{
+public class ImportMapWindow extends JFrame {
 	private MainWindow mainWindow;
 
 	private JPanel mainPanel;
 	private JLabel mainText1;
 	private JLabel mainText2;
+	private JLabel telechargement;
 
 	private JButton buttonExit;
 	private JButton buttonDownload;
@@ -55,7 +58,7 @@ public class ImportMapWindow extends JFrame{
 	String path = "/Users/gonzo/Desktop/test/";
 
 	private double progress, size;
-	private JProgressBar pb;
+	private JProgressBar progressBar = new JProgressBar(0, 100);
 	private BufferedInputStream bis;
 	private BufferedOutputStream baos;
 
@@ -142,25 +145,42 @@ public class ImportMapWindow extends JFrame{
 				}
 			}
 		}
-
+		
 		int y = (int) Math.floor(radioButtons.size()/3) + 4;
+		
+		telechargement = new JLabel("Téléchargement en cours");
+		telechargement.setVisible(false);
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = y;
+		gridBagConstraints.weightx = 4;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		mainPanel.add(telechargement, gridBagConstraints);
+		
+		progressBar.setStringPainted(true);
+		progressBar.setVisible(false);
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = y+1;
+		gridBagConstraints.weightx = 4;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		mainPanel.add(progressBar, gridBagConstraints);
+
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = y;
+		gridBagConstraints.gridy = y+2;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		mainPanel.add(buttonExit, gridBagConstraints);
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = y;
+		gridBagConstraints.gridy = y+2;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
 		mainPanel.add(buttonDownload, gridBagConstraints);
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 2;
-		gridBagConstraints.gridy = y;
+		gridBagConstraints.gridy = y+2;
 		gridBagConstraints.anchor = GridBagConstraints.BASELINE_LEADING;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.weighty = 1;
@@ -204,14 +224,11 @@ public class ImportMapWindow extends JFrame{
 		buttonDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == buttonDownload) {
+					progressBar.setVisible(true);
+					telechargement.setVisible(true);
 					try {
 						downloadMap(buttonGroup.getSelection().getActionCommand());
-						RoutingOffline.init(App.getPath());
-						dispose();
-						mainWindow.setMapImported(true);
-						mainWindow.setEnabled(true);
-						mainWindow.setAlwaysOnTop(true);
-						mainWindow.setAlwaysOnTop(false);
+						
 					} catch (MalformedURLException e1) {
 						e1.printStackTrace();
 					} catch (NullPointerException e2) {
@@ -228,96 +245,14 @@ public class ImportMapWindow extends JFrame{
 	}
 
 	private void downloadMap(String mapID) throws MalformedURLException {
-		this.setAlwaysOnTop(false);
-		pb = new JProgressBar();
-		pb.setStringPainted(true);
 
 		final Object lock = new Object();
 
-		URL url = new URL(URLs.get(mapID));
-
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					bis = new BufferedInputStream(url.openStream());
-					ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(mainPanel, "Téléchargement...", bis);
-					System.out.println("Début DL");
-
-					pmis.getProgressMonitor().setMillisToPopup(10);
-					baos = new BufferedOutputStream(new FileOutputStream(path + "Région-"+mapID+".zip"));
-
-					byte[] buffer = new byte[2048];
-					int nRead = 0;
-
-					while((nRead = pmis.read(buffer)) != -1) {
-						synchronized(lock) {
-							progress+=nRead;
-							actualizeProgressBar();
-						}
-						//System.out.println("Progress: " + Math.round(progress/size * 100));
-						baos.write(buffer, 0, nRead);
-					}
-
-					pmis.close();
-					baos.flush();
-					baos.close();
-
-					System.out.println("Fin DL");
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		thread.start();
-
-		//JOptionPane.showMessageDialog(mainPanel, pb, "Téléchargement...", JOptionPane.PLAIN_MESSAGE);
-		JOptionPane.showOptionDialog(mainPanel, pb,"Téléchargement...", JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
-
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		FileInputStream fis;
-		File dir = new File(path);
-		if(!dir.exists()) dir.mkdirs();
-
-		byte[] buffer = new byte[1024];
-		try {
-			fis = new FileInputStream(path + "Région-"+mapID+".zip");
-			ZipInputStream zis = new ZipInputStream(fis);
-			ZipEntry ze = zis.getNextEntry();
-			while(ze != null) {
-				String name = ze.getName();
-				File newFile = new File(path + File.separator + name);
-
-				new File(newFile.getParent()).mkdirs();
-				FileOutputStream fos = new FileOutputStream(newFile);
-				int len;
-				while((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-				}
-				fos.close();
-				zis.closeEntry();
-				ze = zis.getNextEntry();
-			}
-			zis.closeEntry();
-			zis.close();
-			fis.close();
-		} catch (IOException e){
-			e.printStackTrace();
-		}
-
-		File file = new File(path + "Région-"+mapID+".zip");
-		file.delete();
 		
-		dispose();
-	}
+		new BackgroundWorker(mapID).execute();
 
-	private synchronized void actualizeProgressBar() {
-		//System.out.println("Progress...: " + Math.round(progress/size * 100));
-		pb.setValue((int) Math.round(progress/size * 100));
+		System.out.println("fini");
+		
 	}
 
 	private void readURLFile() throws IOException{
@@ -337,4 +272,108 @@ public class ImportMapWindow extends JFrame{
 
 		nbRegions = URLs.size();
 	}
+	
+	public class BackgroundWorker extends SwingWorker<Void, Void> {
+
+		String mapID;
+		public BackgroundWorker(String mapId) {
+			this.mapID = mapId;
+			addPropertyChangeListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					progressBar.setValue(getProgress());
+				}
+
+			});
+		}
+
+		@Override
+		protected void done() {
+			FileInputStream fis;
+			File dir = new File(path);
+			if(!dir.exists()) dir.mkdirs();
+
+			byte[] buffer = new byte[1024];
+			try {
+				fis = new FileInputStream(path + "/Region-"+mapID+".zip");
+				ZipInputStream zis = new ZipInputStream(fis);
+				ZipEntry ze = zis.getNextEntry();
+				while(ze != null) {
+					String name = ze.getName();
+					File newFile = new File(path + File.separator + name);
+
+					new File(newFile.getParent()).mkdirs();
+					FileOutputStream fos = new FileOutputStream(newFile);
+					int len;
+					while((len = zis.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
+					fos.close();
+					zis.closeEntry();
+					ze = zis.getNextEntry();
+				}
+				zis.closeEntry();
+				zis.close();
+				fis.close();
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+
+			File file = new File(path + "/Region-"+mapID+".zip");
+			file.delete();
+			
+			RoutingOffline.init(App.getPath());
+			dispose();
+			mainWindow.setMapImported(true);
+			mainWindow.setEnabled(true);
+			mainWindow.setAlwaysOnTop(true);
+			mainWindow.setAlwaysOnTop(false);
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+
+			try {
+				URL url = new URL(URLs.get(mapID));
+				
+			    URLConnection conexion = url.openConnection();
+			    conexion.connect();	    
+			    int lenghtOfFile = 101349743; 
+			    System.out.println("taille = " + lenghtOfFile);
+			    InputStream input = new BufferedInputStream(url.openStream());
+				
+				// File Name
+				
+
+				// Copy file
+				String saveFile = path + "/Region-"+mapID+".zip";
+			
+				OutputStream output = new FileOutputStream(saveFile);
+				
+			    byte data[] = new byte[1024];
+			    int count;
+			    
+			    	long total = 0;
+			
+			        while ((count = input.read(data)) != -1) {
+			        	total += count;
+			        	setProgress((int)((total*100)/lenghtOfFile));
+			            output.write(data, 0, count);
+			        }
+			
+			        output.flush();
+			        output.close();
+			        input.close(); 
+			        
+			} catch (Exception ex) {
+				System.err.println(ex);
+			}
+			
+			return null;
+			
+
+		}
+	}
+	
 }
+
