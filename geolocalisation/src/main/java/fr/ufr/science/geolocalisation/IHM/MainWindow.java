@@ -164,7 +164,7 @@ public class MainWindow extends JFrame {
 		this.pack();
 
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
+		checkDownloadConfigFile();
 		// Initialisation GraphHopper pour le routing.
 		if (!RoutingOffline.init(App.getPath())) {
 			importMapWindow = new ImportMapWindow(this);
@@ -1094,6 +1094,33 @@ public class MainWindow extends JFrame {
 			Memoire.save(gestionnaireFichier, App.getPath() + "config/fichiers.cfg");
 			Memoire.save(gestionnaireFiltre, App.getPath() + "config/filtres.cfg");
 			System.out.println("coordonnees sauvegardés");
+		}
+		
+		private void checkDownloadConfigFile() {
+			File f = new File(App.getPath() + "config/download.cfg");
+			if(!f.exists()) {
+				System.out.println("Fichier d'URLs manquant: création du fichier par défaut");
+				Properties configFile = new Properties();
+				configFile.setProperty("Bordeaux", "https://drive.google.com/uc?export=download&id=1-lqB7yFXpTB-ILnF1U5Y0d8U7Kmhpo6e");
+				configFile.setProperty("Lyon", "https://drive.google.com/uc?export=download&id=1DHhEFn_zWIdsSt2X6mC5Gs7ZDlak2W6j");
+				configFile.setProperty("Marseille", "https://drive.google.com/uc?export=download&id=1M3_-k-DInVMGFvWBqTJB8FmZK_BwhKta");
+				configFile.setProperty("Paris", "https://drive.google.com/uc?export=download&id=1CuufinBJX418vtS4hoW7Xu1vFoVnmX1K");
+				configFile.setProperty("RennesNantes", "https://drive.google.com/uc?export=download&id=1SS5fIkaTyrokMh7Mu6urH5-O0TT9n0KI");
+				configFile.setProperty("Strasbourg", "https://drive.google.com/uc?export=download&id=1jk8WNV2Y3RuV4Oe6G3qEEmZ2g4uNdaVJ");
+				configFile.setProperty("Tourcoing", "https://drive.google.com/uc?export=download&id=1-ACrz7adpFB-zyZNbDQw6mj6XgrjgqW4");
+				
+				try {
+					OutputStream out = new FileOutputStream(f);
+					try {
+						configFile.store(out, "Paramètres");
+						System.out.println("Fichier d'URL créé créés");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			} else System.out.println("Fichier d'URLs présent");
 		}
 
 		public Set<GeoPosition> printWaypoints() {
